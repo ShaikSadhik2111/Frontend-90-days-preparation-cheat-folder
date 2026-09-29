@@ -2,149 +2,117 @@
 
 This folder is designed to be learned **as one connected TypeScript journey**, not as isolated topics.
 
-The goal is to understand *why* each TypeScript feature exists, how it solves the limitation of the previous concept, and where it is used in real frontend code.
+Each numbered folder builds on the concepts before it. Follow the folders in order.
 
-## The learning chain
+## Learning path
+
+| # | Topic | Builds on |
+|---|---|---|
+| 01 | [Fundamentals](./01-fundamentals/) | — |
+| 02 | [Type Inference](./02-type-inference/) | Fundamentals |
+| 03 | [Types](./03-types/) | Fundamentals + inference |
+| 04 | [Type Aliases](./04-type-aliases/) | Types |
+| 05 | [Interfaces](./05-interfaces/) | Type aliases |
+| 06 | [Function Types](./06-function-types/) | Interfaces |
+| 07 | [Unions](./07-unions/) | Types + functions |
+| 08 | [Intersections](./08-intersections/) | Unions + object composition |
+| 09 | [Tuples](./09-tuples/) | Arrays + fixed structure |
+| 10 | [Enums](./10-enums/) | Literal/domain values |
+| 11 | [Classes](./11-classes/) | Interfaces + object modeling |
+| 12 | [Type Narrowing](./12-type-narrowing/) | Unions |
+| 13 | [Type Guards](./13-type-guards/) | Narrowing |
+| 14 | [Discriminated Unions](./14-discriminated-unions/) | Unions + narrowing |
+| 15 | [unknown vs any](./15-unknown-vs-any/) | Safe boundaries + narrowing |
+| 16 | [never](./16-never/) | Exhaustiveness |
+| 17 | [Generics](./17-generics/) | Functions + reusable types |
+| 18 | [Generic Constraints](./18-generic-constraints/) | Generics |
+| 19 | [keyof](./19-keyof/) | Generics + object keys |
+| 20 | [typeof](./20-typeof/) | Existing values → types |
+| 21 | [Indexed Access Types](./21-indexed-access-types/) | keyof + typeof |
+| 22 | [Utility Types](./22-utility-types/) | Type transformations |
+| 23 | [Mapped Types](./23-mapped-types/) | keyof + generics |
+| 24 | [Conditional Types](./24-conditional-types/) | Generics + type logic |
+| 25 | [Template Literal Types](./25-template-literal-types/) | Literal types + mapped types |
+| 26 | [Assertions & satisfies](./26-assertions-and-satisfies/) | Inference + narrowing |
+| 27 | [Type Compatibility](./27-type-compatibility/) | Structural typing |
+| 28 | [Modules](./28-modules/) | Type/runtime organization |
+| 29 | [tsconfig](./29-tsconfig/) | Compiler enforcement |
+| 30 | [API / Domain Modeling](./30-api-domain-modeling/) | All core type modeling |
+| 31 | [React + TypeScript](./31-react-typescript/) | Types + APIs + functions |
+| 32 | [Advanced Types](./32-advanced-types/) | Combined type-system patterns |
+| 33 | [Interview Questions](./33-interview-questions/) | Complete revision |
+
+## The mental model
 
 ```text
-1. Fundamentals
-      ↓
-2. Type Inference
-      ↓
-3. Type Aliases
-      ↓
-4. Interfaces
-      ↓
-5. Function Types
-      ↓
-6. Unions
-      ↓
-7. Intersections
-      ↓
-8. Tuples / Enums / Classes
-      ↓
-9. Type Narrowing
-      ↓
-10. Type Guards
-      ↓
-11. Discriminated Unions
-      ↓
-12. unknown / any / never
-      ↓
-13. Generics
-      ↓
-14. Generic Constraints
-      ↓
-15. keyof
-      ↓
-16. typeof
-      ↓
-17. Indexed Access Types
-      ↓
-18. Utility Types
-      ↓
-19. Mapped Types
-      ↓
-20. Conditional Types + infer
-      ↓
-21. Template Literal Types
-      ↓
-22. Assertions / satisfies
-      ↓
-23. Type Compatibility
-      ↓
-24. Modules
-      ↓
-25. tsconfig
-      ↓
-26. API / Domain Modeling
-      ↓
-27. React + TypeScript
-      ↓
-28. Advanced Types
-      ↓
-29. Interview Questions
+Describe data
+   ↓
+Reuse data models
+   ↓
+Describe behavior
+   ↓
+Represent alternatives
+   ↓
+Narrow safely
+   ↓
+Model application states
+   ↓
+Make behavior reusable with generics
+   ↓
+Constrain generics
+   ↓
+Derive types from existing types
+   ↓
+Transform types
+   ↓
+Model APIs and domains
+   ↓
+Apply everything in React
+   ↓
+Solve interview problems
 ```
 
-## Why this order?
-
-Every major topic should answer one of these questions:
-
-- **How do I describe data?** → aliases, interfaces
-- **How do I describe behavior?** → function types
-- **How do I represent alternatives?** → unions
-- **How do I safely work with alternatives?** → narrowing and guards
-- **How do I model application states?** → discriminated unions
-- **How do I avoid repeating types?** → generics
-- **How do I make generics safe?** → constraints
-- **How do I derive types from existing types?** → keyof, typeof, indexed access
-- **How do I transform types?** → utility/mapped/conditional types
-- **How do I connect types to real applications?** → API modeling and React
-- **How do I make the compiler enforce the design?** → tsconfig
-
-## How every lesson should be studied
-
-For each folder:
+## How to study each folder
 
 1. Read **Connection from Previous Topic**.
 2. Understand **Why This Topic Exists**.
 3. Type every example yourself.
-4. Modify the example and predict compiler errors.
+4. Change the example and predict the compiler error.
 5. Complete the mini challenge.
 6. Read **What This Unlocks Next**.
-7. Explain the topic aloud in 2–3 minutes.
-8. Only then move to the next folder.
-
-## The golden rule
-
-Do not memorize TypeScript syntax independently.
-
-Instead remember the chain:
-
-```text
-object shape
-→ reusable type
-→ behavior
-→ alternatives
-→ safe narrowing
-→ reusable generic behavior
-→ constrained generic behavior
-→ type relationships
-→ type transformations
-→ real application models
-```
+7. Explain the concept aloud in 2–3 minutes.
+8. Move to the next numbered folder only after you can use the current concept.
 
 ## Connected project thread
 
-Throughout this section, use one imaginary frontend application:
-
-**Repair Online B2B**
-
-We will gradually evolve:
+Use **Repair Online B2B** as the running example:
 
 ```text
-User object
-→ User type
-→ User interface
-→ functions accepting User
-→ User status union
-→ narrowed UI state
+User
+→ reusable User type
+→ interfaces
+→ typed functions
+→ status unions
+→ narrowing
+→ discriminated UI state
 → generic API response
-→ constrained API helpers
-→ keyof-based helpers
-→ derived/utility types
-→ DTO/domain transformation
+→ constrained helpers
+→ keyof / typeof / T[K]
+→ utility and mapped types
+→ API/domain models
 → React components
 ```
 
-This means the same concepts keep reappearing in a realistic context.
+The goal is not to memorize TypeScript features independently. The goal is to understand **why the next feature becomes necessary because of the previous one**.
 
-## Final checklist
+## Completion standard
 
-You should eventually be able to explain not only *what* each feature does, but:
+Before marking TypeScript complete, you should be able to explain both:
 
-> "Why did we need this feature after the previous one?"
+**What does this feature do?**
 
-That is the level expected in strong frontend interviews.
+and
+
+**Why did we need this feature after the previous topic?**
 
 Official Handbook: https://www.typescriptlang.org/docs/handbook/
