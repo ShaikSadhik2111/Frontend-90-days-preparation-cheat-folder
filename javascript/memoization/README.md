@@ -1,5 +1,31 @@
-# memoization
+# Memoization
 
-This topic is part of the 90-day frontend interview preparation syllabus.
+Memoization caches function results so repeated calls with equivalent inputs can avoid repeated expensive computation.
 
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+```js
+function memoize(fn) {
+  const cache = new Map();
+  return (...args) => {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) return cache.get(key);
+    const result = fn(...args);
+    cache.set(key, result);
+    return result;
+  };
+}
+```
+
+This example is educational, not universally safe: serialization can be expensive and does not uniquely represent every JavaScript value.
+
+## Good candidates
+- Pure expensive functions
+- Stable repeated computations
+
+## Risks
+- Unbounded cache growth
+- Incorrect cache keys
+- Stale results
+- Memory retention
+
+## Interview principle
+Memoization is a trade-off: computation time is exchanged for memory and cache-management complexity.

@@ -1,5 +1,22 @@
-# abort cancellation
+# Abort and Cancellation
 
-This topic is part of the 90-day frontend interview preparation syllabus.
+Promises are not inherently cancellable, but APIs can expose cancellation mechanisms.
 
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+## AbortController
+```js
+const controller = new AbortController();
+
+fetch("/api/search", { signal: controller.signal });
+controller.abort();
+```
+
+The receiving API must support the signal for cancellation to have an effect.
+
+## Uses
+- Search requests
+- Component unmount cleanup
+- Timeouts
+- User-cancelled operations
+
+## Interview distinction
+Cancellation is different from ignoring a result. Cancellation attempts to stop the underlying operation; stale-result protection prevents an obsolete result from updating application state.

@@ -1,5 +1,19 @@
-# throttling
+# Throttling
 
-This topic is part of the 90-day frontend interview preparation syllabus.
+Throttling limits execution to at most a controlled frequency during a burst of calls.
 
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+Typical uses:
+- Scroll handlers
+- Pointer movement
+- Resize
+- Analytics events
+
+## Concept
+If calls arrive continuously, execute at most once per interval according to the chosen leading/trailing behavior.
+
+## Debounce vs throttle
+- Debounce: wait for inactivity.
+- Throttle: limit frequency while activity continues.
+
+## Interview concern
+Define whether the first call, last call, or both should execute. That choice changes implementation behavior.

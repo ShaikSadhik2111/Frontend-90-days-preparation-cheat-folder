@@ -1,5 +1,19 @@
-# currying
+# Currying
 
-This topic is part of the 90-day frontend interview preparation syllabus.
+Currying transforms a function with multiple arguments into a sequence of single-argument calls.
 
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+```js
+const add = a => b => a + b;
+add(2)(3); // 5
+```
+
+## Why useful
+- Partial application
+- Reusable configured functions
+- Functional composition
+
+## Partial application
+Partial application fixes some arguments of a function. Currying specifically transforms argument structure into unary function steps.
+
+## Interview exercise
+Implement a generic curry function supporting a function's expected arity and multiple supplied arguments per call.

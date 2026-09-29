@@ -1,5 +1,30 @@
-# debouncing
+# Debouncing
 
-This topic is part of the 90-day frontend interview preparation syllabus.
+Debouncing delays execution until calls stop arriving for a configured period.
 
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+Typical use: search input.
+
+```js
+function debounce(fn, delay) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
+}
+```
+
+## Use cases
+- Search
+- Validation
+- Resize handling
+- Autosave
+
+## Important concerns
+- Preserve arguments
+- Preserve intended `this` when required
+- Cancel pending work when needed
+- Avoid stale asynchronous results
+
+## Interview extension
+For API search, debounce alone does not prevent out-of-order responses. Combine it with request cancellation or response identity checks.

@@ -1,5 +1,28 @@
-# higher order functions
+# Higher-Order Functions
 
-This topic is part of the 90-day frontend interview preparation syllabus.
+A higher-order function accepts a function, returns a function, or both.
 
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+Examples include `map`, `filter`, `reduce`, event handlers and function factories.
+
+```js
+function withLogging(fn) {
+  return (...args) => {
+    console.log(args);
+    return fn(...args);
+  };
+}
+```
+
+## Why important
+Higher-order functions support:
+- Composition
+- Reusable behavior
+- Middleware
+- Decorator-like patterns
+- Functional programming
+- React callbacks
+
+## Interview exercise
+Implement a reusable `compose` function that combines functions from right to left.
+
+Key concern: define the expected argument/return contract before implementing.

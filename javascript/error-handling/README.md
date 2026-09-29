@@ -1,5 +1,32 @@
-# error handling
+# Error Handling
 
-This topic is part of the 90-day frontend interview preparation syllabus.
+Errors represent exceptional conditions that should be handled intentionally.
 
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+## Synchronous errors
+```js
+try {
+  riskyOperation();
+} catch (error) {
+  handle(error);
+}
+```
+
+## Promise errors
+Use `.catch()` or `try/catch` around awaited operations.
+
+## Error objects
+Prefer meaningful error types/messages and preserve the original cause when wrapping errors.
+
+```js
+throw new Error("Unable to load user", { cause: originalError });
+```
+
+## Good practice
+- Handle errors at the correct boundary
+- Do not silently swallow failures
+- Distinguish expected failures from programming bugs
+- Never expose secrets in error messages
+- Log useful context without sensitive data
+
+## Pitfall
+Returning `null` for every failure destroys error semantics and makes debugging harder.

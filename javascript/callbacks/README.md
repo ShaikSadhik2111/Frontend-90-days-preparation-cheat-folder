@@ -1,5 +1,32 @@
-# callbacks
+# Callbacks
 
-This topic is part of the 90-day frontend interview preparation syllabus.
+A callback is a function supplied to another function to be invoked later or as part of an operation.
 
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+## Uses
+- Array methods
+- Event handlers
+- Timers
+- Node.js APIs
+- Custom asynchronous abstractions
+
+## Callback hell
+Deeply nested callbacks can make control flow difficult to read and error handling difficult to compose.
+
+Promises and async/await improve composability for many asynchronous workflows.
+
+## Error-first Node callback
+A historical Node pattern:
+
+```js
+fs.readFile("file.txt", (err, data) => {
+  if (err) return console.error(err);
+  console.log(data);
+});
+```
+
+## Pitfalls
+- Losing error context
+- Multiple callback invocation
+- Callback never invoked
+- Excessive nesting
+- Accidentally passing a function call instead of a function reference
