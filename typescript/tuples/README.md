@@ -1,5 +1,32 @@
-# tuples
+# Tuples
 
-This topic is part of the 90-day frontend interview preparation syllabus.
+Tuples represent fixed-position arrays with known element types.
 
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+```ts
+type ApiResult = [status: number, body: string];
+
+const result: ApiResult = [200, "OK"];
+const status = result[0]; // number
+const body = result[1];   // string
+```
+
+## Optional tuple element
+
+```ts
+type Point = [number, number, number?];
+```
+
+## Rest tuple
+
+```ts
+type Route = [string, ...string[]];
+```
+
+## Readonly tuple
+
+```ts
+const point = [10, 20] as const;
+// readonly [10, 20]
+```
+
+Use tuples when position has semantic meaning. Use arrays for homogeneous collections.
