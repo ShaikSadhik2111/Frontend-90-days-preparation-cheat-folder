@@ -1,5 +1,40 @@
-# mapped types
+# Mapped Types
 
-This topic is part of the 90-day frontend interview preparation syllabus.
+Mapped types transform each property of another type.
 
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+## Basic
+
+```ts
+type Optional<T> = {
+  [K in keyof T]?: T[K];
+};
+
+type Nullable<T> = {
+  [K in keyof T]: T[K] | null;
+};
+```
+
+## Remove readonly
+
+```ts
+type Mutable<T> = {
+  -readonly [K in keyof T]: T[K];
+};
+```
+
+## Key remapping
+
+```ts
+type Getters<T> = {
+  [K in keyof T as `get${Capitalize<string & K>}`]: () => T[K];
+};
+
+type UserGetters = Getters<{
+  name: string;
+  age: number;
+}>;
+// getName: () => string
+// getAge: () => number
+```
+
+Mapped types connect directly to `keyof`, indexed access and utility types.
