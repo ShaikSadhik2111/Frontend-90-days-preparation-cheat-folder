@@ -1,6 +1,10 @@
-# Discriminated Unions
+# 14 — Discriminated Unions
 
-A discriminated union has a shared literal property that identifies each variant.
+## Connection from Previous Topic
+
+Type guards let us narrow arbitrary alternatives. A **discriminated union** gives every variant a shared literal property, making the narrowing predictable and exhaustive.
+
+## Why This Topic Exists
 
 ```ts
 type RequestState =
@@ -9,10 +13,12 @@ type RequestState =
   | { status: "error"; message: string };
 ```
 
+The `status` field is the discriminant.
+
 ## Narrowing
 
 ```ts
-function render(state: RequestState) {
+function render(state: RequestState): string {
   switch (state.status) {
     case "loading":
       return "Loading...";
@@ -24,24 +30,61 @@ function render(state: RequestState) {
 }
 ```
 
+Once `status === "success"`, TypeScript knows `data` exists.
+
+## Why this is better than unrelated booleans
+
+This model:
+
+```ts
+{ isLoading: boolean; isError: boolean; isSuccess: boolean }
+```
+
+can represent impossible combinations.
+
+A discriminated union represents only valid states.
+
 ## Exhaustive checking
 
 ```ts
 function assertNever(value: never): never {
   throw new Error("Unexpected variant");
 }
+
+function render(state: RequestState) {
+  switch (state.status) {
+    case "loading": return "Loading...";
+    case "success": return state.data.join(", ");
+    case "error": return state.message;
+    default: return assertNever(state);
+  }
+}
 ```
 
-Use it in a default branch when you want newly-added variants to fail compilation until handled.
+Adding a new state later causes the compiler to identify unhandled cases.
 
-## Real frontend use
+## Frontend use cases
 
-Use discriminated unions for:
-- loading/success/error
+- API loading/success/error
 - reducer actions
-- modal states
-- payment states
-- form submission states
-- API result types
+- modal state
+- payment state
+- form submission state
+- async workflows
+- component variants
 
-This is much safer than several unrelated booleans such as `isLoading`, `isError`, `isSuccess`.
+## Interview questions
+
+**Why discriminated unions?** They make valid states explicit and enable precise control-flow narrowing.
+
+**Why use `never`?** It turns missing cases into compile-time failures when the switch is expected to be exhaustive.
+
+## Mini challenge
+
+Model a file-upload state machine with `idle`, `uploading`, `success`, and `error`. Make each state carry only the data it actually needs.
+
+## What This Unlocks Next
+
+Now we can model safe application states. Next we handle the most common unsafe boundary: a value whose type we genuinely do not know.
+
+**Discriminated Unions → unknown vs any**.
