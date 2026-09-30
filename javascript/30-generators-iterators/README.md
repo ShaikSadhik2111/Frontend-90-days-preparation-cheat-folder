@@ -1,25 +1,50 @@
-# Generators and Iterators
+# 30 — Generators and Iterators
 
-An iterator follows the protocol of exposing a `next()` method that returns objects such as `{ value, done }`.
+## Iterator protocol
+An iterator exposes next(), returning objects such as { value, done }.
 
-A generator function (`function*`) creates an iterator and can pause at `yield`.
+## Manual iterator
+    const iterator = {
+      current: 1,
+      next() {
+        if (this.current <= 3) return { value: this.current++, done: false };
+        return { value: undefined, done: true };
+      }
+    };
 
-```js
-function* ids() {
-  yield 1;
-  yield 2;
-}
-const iterator = ids();
-iterator.next();
-```
+## Generator
+    function* ids() {
+      yield 101;
+      yield 102;
+      yield 103;
+    }
+    const iterator = ids();
+    console.log(iterator.next().value); // 101
 
-## Why useful
-- Lazy sequences
-- Custom iteration
-- Streaming-style workflows
-- Controlling incremental computation
+Execution pauses at yield and resumes on the next call.
 
-Objects implementing `Symbol.iterator` can be consumed by `for...of`, spread and other iteration constructs.
+## for...of
+    for (const id of ids()) {
+      console.log(id);
+    }
 
-## Pitfall
-A generator is not automatically asynchronous. Async generators use `async function*` and work with `for await...of`.
+## Custom iterable
+    const range = {
+      start: 1,
+      end: 3,
+      *[Symbol.iterator]() {
+        for (let i = this.start; i <= this.end; i++) yield i;
+      }
+    };
+    console.log([...range]); // [1, 2, 3]
+
+## Use cases
+- lazy sequences
+- large data processing
+- custom iteration
+- incremental algorithms
+- state-machine style workflows
+
+Async generators use async function* and can be consumed with for await...of.
+
+**Next:** debouncing controls bursty UI input.
