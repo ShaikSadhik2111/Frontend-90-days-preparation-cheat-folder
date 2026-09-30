@@ -2,7 +2,7 @@
 
 **Connection:** modern frontend applications use capabilities beyond DOM and networking.
 
-**Learn:** Clipboard, File/Blob, URL/URLSearchParams, History, BroadcastChannel, Page Visibility, IntersectionObserver, ResizeObserver, Notifications/Permissions conceptually, Media APIs, Web Share and Web Locks.
+**Learn:** Clipboard, File/Blob, URL/URLSearchParams, History, BroadcastChannel, Page Visibility, IntersectionObserver, ResizeObserver, Notifications/Permissions conceptually, Media APIs, Web Share, Web Locks, Navigation API, WebTransport and Reporting API.\n\n**Future-proofing:** Navigation API is a modern SPA navigation primitive; WebTransport is an HTTP/3 transport option with streams/datagrams; Reporting API can surface policy/deprecation/intervention reports. Treat these as capability-dependent and check Baseline/compatibility before production adoption.
 
 **Example**
 ```js
