@@ -1,22 +1,37 @@
-# Abort and Cancellation
+# 26 — Abort and Cancellation
 
-Promises are not inherently cancellable, but APIs can expose cancellation mechanisms.
+Promises themselves are not cancellable. APIs can expose cancellation separately, commonly through AbortController.
 
-## AbortController
-```js
-const controller = new AbortController();
+## Cancel fetch
+    const controller = new AbortController();
+    fetch("/api/search?q=react", { signal: controller.signal });
+    controller.abort();
 
-fetch("/api/search", { signal: controller.signal });
-controller.abort();
-```
+The receiving API must honor the signal.
 
-The receiving API must support the signal for cancellation to have an effect.
+## Search use case
+    let controller;
+    async function search(query) {
+      controller?.abort();
+      controller = new AbortController();
+      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`, { signal: controller.signal });
+      return response.json();
+    }
 
-## Uses
-- Search requests
-- Component unmount cleanup
-- Timeouts
-- User-cancelled operations
+## Cancellation vs stale-result protection
+Cancellation attempts to stop underlying work. Stale-result protection prevents an obsolete result from updating state. Robust search UIs can use both.
 
-## Interview distinction
-Cancellation is different from ignoring a result. Cancellation attempts to stop the underlying operation; stale-result protection prevents an obsolete result from updating application state.
+## Timeout
+    const signal = AbortSignal.timeout(5000);
+    await fetch("/api/data", { signal });
+
+Check target runtime support for newer APIs.
+
+## Use cases
+- search-as-you-type
+- route changes
+- component cleanup
+- cancelled uploads
+- request timeouts
+
+**Next:** modules create explicit dependency boundaries.
