@@ -130,3 +130,49 @@ Learn:
 That connected explanation is what makes the concepts stick.
 
 Official MDN JavaScript Guide: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide
+
+
+## What every topic must contain
+
+This folder is not intended to be a glossary. Each topic should be learned at four levels:
+
+1. **Concept** — what the JavaScript feature does and how the runtime behaves.
+2. **Code example** — a small example you can type, run and modify.
+3. **Real use case** — where the feature appears in frontend engineering, React/Angular applications, browser APIs, Node tooling, or performance work.
+4. **Interview reasoning** — common pitfalls, output-prediction questions, trade-offs, complexity or implementation exercises where relevant.
+
+### Study rule
+
+For every folder, ask yourself:
+
+> **What problem does this feature solve? When would I use it in a real frontend application? What can go wrong? Can I explain the runtime behavior without memorizing the answer?**
+
+For example:
+
+```text
+Functions
+  ↓
+Closures
+  ↓
+Debounce / Throttle / Memoization
+  ↓
+Real UI behavior
+```
+
+and:
+
+```text
+Callbacks
+  ↓
+Promises
+  ↓
+async/await
+  ↓
+Event Loop
+  ↓
+AbortController
+  ↓
+Reliable API-driven UI
+```
+
+This is the standard for the JavaScript section going forward.
