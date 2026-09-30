@@ -1,20 +1,21 @@
-# Type Guards
+# 13 — Type Guards
 
-A type guard is a runtime check that gives TypeScript evidence for narrowing.
+## Connection from Previous Topic
 
-## typeof
+Type narrowing is the result. A **type guard** is the runtime evidence that allows TypeScript to perform that narrowing.
+
+## Built-in guards
+
+### typeof
 
 ```ts
 function format(value: string | number) {
-  if (typeof value === "string") {
-    return value.toUpperCase();
-  }
-
+  if (typeof value === "string") return value.toUpperCase();
   return value.toFixed(2);
 }
 ```
 
-## instanceof
+### instanceof
 
 ```ts
 function printError(error: unknown) {
@@ -24,31 +25,66 @@ function printError(error: unknown) {
 }
 ```
 
-## in
+### in
 
 ```ts
 type Admin = { permissions: string[] };
 type User = { name: string };
 
 function describe(value: Admin | User) {
-  if ("permissions" in value) {
-    return value.permissions;
-  }
-
+  if ("permissions" in value) return value.permissions;
   return value.name;
 }
 ```
 
-## Custom predicate
+## Custom type predicates
 
 ```ts
-function isUser(value: unknown): value is User {
-  if (typeof value !== "object" || value === null) {
-    return false;
-  }
+interface User {
+  id: string;
+  name: string;
+}
 
-  return "id" in value && "name" in value;
+function isUser(value: unknown): value is User {
+  if (typeof value !== "object" || value === null) return false;
+
+  return (
+    "id" in value &&
+    typeof value.id === "string" &&
+    "name" in value &&
+    typeof value.name === "string"
+  );
 }
 ```
 
-A type predicate must correspond to a real runtime check. It does not magically validate data.
+The `value is User` return type tells TypeScript what is true when the function returns `true`.
+
+## Important limitation
+
+A predicate does not magically validate data. If the implementation is incorrect, TypeScript trusts the predicate.
+
+For nested API data, a real runtime schema validator may be appropriate.
+
+## Frontend use cases
+
+- validating API responses
+- handling `unknown` errors
+- narrowing DOM values
+- feature-specific object variants
+- reusable domain checks
+
+## Interview questions
+
+**Is a type guard compile-time or runtime?** The check executes at runtime; its result gives the compiler narrowing information.
+
+**What does `value is User` mean?** When true, TypeScript may treat `value` as `User` in the relevant control-flow branch.
+
+## Mini challenge
+
+Write `isApiError(value: unknown): value is { message: string }` with a genuine runtime check.
+
+## What This Unlocks Next
+
+Custom guards work well for independent shapes. For application state, a shared literal discriminant gives an even cleaner model:
+
+**Type Guards → Discriminated Unions**.
