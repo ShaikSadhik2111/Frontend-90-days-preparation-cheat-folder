@@ -1,26 +1,81 @@
-# 22 — Union-Find
+# 22 — Union-Find / DSU
 
-## Purpose
-Track connected components while edges are added.
+Disjoint Set Union maintains connected components under repeated union operations.
 
-Operations:
-find(x) → representative.
-union(a,b) → merge components.
+Each element points toward a representative parent.
 
-## Optimizations
-Path compression makes find flatten paths. Union by size/rank keeps trees shallow. Together they give near-constant amortized complexity.
+## Core operations
 
-## Mental model
-If find(a) === find(b), both belong to the same component.
+- find(x): locate component representative
+- union(a,b): merge components
 
-## Uses
-Dynamic connectivity, Kruskal MST, redundant connection, account merging, component grouping.
+### Path compression
 
-## Pitfalls
-Incorrect parent initialization, merging non-roots, forgetting size/rank, confusing connectivity with traversal order.
+During find, point visited nodes directly toward the root.
 
-## Challenge
-Implement DSU from scratch with parent and size arrays. Then solve Number of Provinces and Redundant Connection.
+### Union by size/rank
 
-## Next
-Greedy algorithms make a locally optimal decision and require a proof that it is globally safe.
+Attach the smaller tree beneath the larger tree.
+
+Together these make operations extremely close to constant amortized time: O(alpha(n)).
+
+## Implementation
+
+```js
+class DSU {
+  constructor(n) {
+    this.parent = Array.from({length: n}, (_, i) => i);
+    this.size = Array(n).fill(1);
+  }
+
+  find(x) {
+    if (this.parent[x] !== x) {
+      this.parent[x] = this.find(this.parent[x]);
+    }
+    return this.parent[x];
+  }
+
+  union(a, b) {
+    let ra = this.find(a);
+    let rb = this.find(b);
+
+    if (ra === rb) return false;
+
+    if (this.size[ra] < this.size[rb]) [ra, rb] = [rb, ra];
+
+    this.parent[rb] = ra;
+    this.size[ra] += this.size[rb];
+    return true;
+  }
+}
+```
+
+## Problem 1 — Number of Provinces
+
+Union every connected city pair, then count distinct representatives.
+
+## Problem 2 — Redundant Connection
+
+Process edges. If union(a,b) returns false, a and b were already connected, so that edge creates a cycle.
+
+## Problem 3 — Connected Components
+
+Start with n components. Each successful union decreases the count by one.
+
+## Problem 4 — Accounts Merge
+
+Treat emails as nodes and union emails belonging to the same account.
+
+## Problem 5 — Kruskal's MST
+
+Sort edges by weight and union endpoints. Accept an edge only when it connects different components.
+
+## When NOT to use DSU
+
+DSU is poor for questions requiring actual traversal paths, distances, or ordered neighbor exploration.
+
+## Recognition
+Repeated connectivity queries, merging groups, cycle detection in undirected edge sets, minimum spanning tree.
+
+## Connection
+DSU complements graph traversal: it answers connectivity efficiently without constructing traversal state.
