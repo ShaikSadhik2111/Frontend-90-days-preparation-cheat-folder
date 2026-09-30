@@ -1,25 +1,66 @@
-# 16 — Matrix
+# 16 — Matrix and Grid
 
-## Mental model
-A matrix is an indexed grid. Many problems are graph problems disguised as arrays.
+A matrix is usually an array of arrays. Grid problems combine indexing with boundary checks and often transition into BFS/DFS.
 
-Coordinates are row and column. Validate bounds before accessing neighbors.
+## Problem 1 — Transpose
 
-## Four directions
-~~~js
-const directions = [[1,0], [-1,0], [0,1], [0,-1]];
-~~~
+```js
+function transpose(matrix) {
+  const rows = matrix.length;
+  const cols = matrix[0].length;
+  const result = Array.from({length: cols}, () => Array(rows));
 
-For each cell, add direction offsets to find neighbors.
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      result[c][r] = matrix[r][c];
+    }
+  }
 
-## Traversal
-Number of Islands can be solved by DFS/BFS: when land is found, traverse the entire connected component and mark it visited.
+  return result;
+}
+```
 
-## Common bugs
-Row/column reversal, boundary errors, revisiting cells, modifying input unexpectedly, and assuming rectangular dimensions without constraints.
+## Problem 2 — Spiral Matrix
 
-## Challenges
-Spiral Matrix, Set Matrix Zeroes, Number of Islands, Rotting Oranges, Flood Fill.
+Maintain top, bottom, left, right boundaries and shrink them after completing each edge.
 
-## Next
-Recursion provides the foundation for tree traversal, DFS, and backtracking.
+Invariant: everything outside the four boundaries has already been emitted.
+
+## Problem 3 — Rotate Image
+
+Transpose then reverse every row for a square matrix.
+
+```js
+function rotate(matrix) {
+  const n = matrix.length;
+
+  for (let r = 0; r < n; r++) {
+    for (let c = r + 1; c < n; c++) {
+      [matrix[r][c], matrix[c][r]] = [matrix[c][r], matrix[r][c]];
+    }
+  }
+
+  for (const row of matrix) row.reverse();
+}
+```
+
+This is in-place O(1) auxiliary space excluding the matrix itself.
+
+## Problem 4 — Set Matrix Zeroes
+
+Track which rows and columns contain zero, then perform a second pass. Advanced version uses first row/column as marker storage.
+
+## Grid traversal bridge
+Treat cells as graph nodes with up/down/left/right neighbors.
+
+Problems:
+- Flood Fill
+- Number of Islands
+- Word Search
+- Rotting Oranges
+
+## Pitfalls
+Boundary errors, accidentally revisiting cells, mutating while still needing original values.
+
+## Connection
+**Matrix → Graphs**: a grid is an implicit graph.

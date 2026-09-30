@@ -1,11 +1,12 @@
 # 15 — Intervals
 
-## Core pattern
-Sort by start time, then maintain the merged range.
+Interval problems become easier after sorting by start/end.
 
-~~~js
+## Pattern 1 — Merge overlaps
+
+```js
 function merge(intervals) {
-  intervals.sort((a, b) => a[0] - b[0]);
+  intervals.sort((a,b) => a[0] - b[0]);
   const result = [];
 
   for (const [start, end] of intervals) {
@@ -20,17 +21,51 @@ function merge(intervals) {
 
   return result;
 }
-~~~
+```
 
-Invariant: result contains merged non-overlapping intervals for everything processed so far.
+Invariant: result contains non-overlapping merged intervals for everything processed.
 
-Time O(n log n) from sorting.
+## Problem 2 — Insert Interval
 
-## Watch
-Endpoint semantics matter. Is [1,2] overlapping [2,3]? Usually yes for closed intervals, but always follow the problem's definition.
+```js
+function insert(intervals, newInterval) {
+  const result = [];
+  let i = 0;
 
-## Challenges
-Merge Intervals, Insert Interval, Meeting Rooms II, Non-overlapping Intervals.
+  while (i < intervals.length && intervals[i][1] < newInterval[0]) {
+    result.push(intervals[i++]);
+  }
 
-## Next
-Matrices add coordinates and often turn into graph traversal.
+  while (i < intervals.length && intervals[i][0] <= newInterval[1]) {
+    newInterval[0] = Math.min(newInterval[0], intervals[i][0]);
+    newInterval[1] = Math.max(newInterval[1], intervals[i][1]);
+    i++;
+  }
+
+  result.push(newInterval);
+
+  while (i < intervals.length) result.push(intervals[i++]);
+  return result;
+}
+```
+
+## Problem 3 — Meeting Rooms II
+
+Sort starts and ends separately. If the next meeting starts before the earliest meeting ends, another room is needed; otherwise release a room.
+
+This is a sweep-line/two-pointer technique.
+
+## Additional
+- Non-overlapping Intervals
+- Meeting Rooms
+- Minimum Arrows to Burst Balloons
+- Employee Free Time
+
+## Recognition
+Scheduling, overlapping ranges, merge/insert/remove intervals, minimum resources.
+
+## Pitfalls
+Clarify whether touching intervals overlap. Check whether intervals are closed [a,b] or use another convention.
+
+## Connection
+Intervals depend on sorting and naturally lead to greedy reasoning.
