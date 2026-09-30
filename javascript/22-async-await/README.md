@@ -45,3 +45,50 @@ Consider API rate limits before increasing concurrency.
     finally { hideLoader(); }
 
 **Interview checklist:** async return type, await semantics, parallel work, try/catch/finally, Promise composition, cancellation.
+
+## Deeper learning standard
+
+### What await actually does
+
+Await suspends the continuation of the current async function. It does not block the entire JavaScript runtime.
+
+```js
+async function run() {
+  console.log("A");
+  await Promise.resolve();
+  console.log("B");
+}
+
+run();
+console.log("C");
+// A, C, B
+```
+
+### Important performance distinction
+
+Independent operations should normally start together:
+
+```js
+const [user, orders] = await Promise.all([
+  loadUser(),
+  loadOrders()
+]);
+```
+
+Sequential awaits are appropriate when the second operation depends on the first.
+
+### Common interview trap
+
+```js
+ids.forEach(async id => {
+  await loadUser(id);
+});
+```
+
+forEach does not wait for the returned Promises. Use for...of for intentional sequential work or Promise.all(ids.map(...)) for intentional concurrency.
+
+### Practical challenge
+
+Implement a dashboard loader with loading, success and error states. Run independent API requests concurrently and explain the trade-off between sequential and concurrent work.
+
+**What this unlocks:** asynchronous code now needs reliable error handling, cancellation and stale-response protection.
