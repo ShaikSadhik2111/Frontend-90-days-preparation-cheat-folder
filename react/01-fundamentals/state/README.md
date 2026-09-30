@@ -40,3 +40,13 @@ Next, connect this model to **rendering and Hooks**, where React's snapshot and 
 
 ## Official reference
 https://react.dev/
+
+
+## Deep reasoning
+State is a render snapshot, not a mutable variable React rewrites immediately. Calling a setter schedules another render, while event handlers close over the snapshot from the render that created them.
+
+### Production reasoning
+Keep state minimal. Derive values from existing state where possible, colocate state with the component that owns the behavior, and lift it only when multiple consumers need one source of truth.
+
+### Interview drill
+Build a cart with quantity updates and a derived total. Explain which values are state, which are derived, and why functional updates matter.
