@@ -1,19 +1,22 @@
-# Garbage Collection
+# 34 — Garbage Collection
 
-Garbage collection automatically reclaims memory that is no longer reachable.
+Garbage collection automatically reclaims memory that is no longer reachable. Exact algorithms are engine-specific.
 
-Modern engines use sophisticated generational and incremental strategies; exact algorithms are engine-specific.
+## Reachability
+Conceptually, GC starts from roots and follows references. Objects outside the reachable graph become eligible for collection.
 
 ## Generational idea
-Short-lived objects are common, so collectors often treat young and old objects differently.
+Modern engines commonly exploit the fact that many objects are short-lived, so young and older objects can be handled differently.
 
-## GC is not deterministic
-Do not write application logic that depends on exactly when garbage collection happens.
+## GC is nondeterministic
+Never write application logic that depends on collection happening at an exact moment.
+
+Setting a reference to null may make an object collectible if no other references remain, but it does not mean memory is immediately freed.
 
 ## Weak references
-`WeakMap` and `WeakSet` can associate data with objects without keeping those objects strongly reachable. `WeakRef` and `FinalizationRegistry` exist for specialized cases and require careful use.
+WeakMap and WeakSet can associate information with objects without strongly retaining those objects. WeakRef and FinalizationRegistry exist for specialized cases and should be used cautiously.
 
-## Pitfalls
-- Thinking `delete` immediately frees memory
-- Assuming GC prevents all memory leaks
-- Holding unnecessary references in caches or listeners
+## Interview trap
+Garbage collection does not prevent all memory leaks. If code accidentally retains an object through a listener, timer, global cache or closure, the object remains reachable.
+
+**Next:** Proxy and Reflect cover metaprogramming and interception.
