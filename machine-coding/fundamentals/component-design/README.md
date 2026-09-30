@@ -1,3 +1,6 @@
-# component design
+# Component Design
+For each component define inputs, outputs/events, owned state, side effects and reusable contract.
 
-Machine-coding preparation topic. Detailed notes, implementation examples, trade-offs, edge cases, testing, and interview guidance will be added when this topic is studied.
+Split by behavior and ownership; avoid giant components and premature abstractions.
+
+Practice: decompose autocomplete, data table and checkout page.

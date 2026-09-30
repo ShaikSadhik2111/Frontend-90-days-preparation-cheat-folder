@@ -1,3 +1,6 @@
-# performance
+# Machine Coding Performance
+Measure before optimizing. Risks include huge DOMs, expensive filtering, unnecessary rerenders, waterfalls and duplicate requests.
 
-Machine-coding preparation topic. Detailed notes, implementation examples, trade-offs, edge cases, testing, and interview guidance will be added when this topic is studied.
+Tools: debounce, profiled memoization, virtualization, pagination, caching and workers for CPU-heavy work.
+
+Challenge: optimize a 100k-row table without changing behavior.

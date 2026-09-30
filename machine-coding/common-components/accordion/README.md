@@ -1,3 +1,6 @@
-# accordion
+# Accordion — Machine Coding
+Decide single-open vs multi-open and store active IDs.
 
-Machine-coding preparation topic. Detailed notes, implementation examples, trade-offs, edge cases, testing, and interview guidance will be added when this topic is studied.
+Requirements: expand/collapse, disabled items, keyboard behavior and accessible expanded/controlled relationships.
+
+Follow-ups: nested sections and lazy content.

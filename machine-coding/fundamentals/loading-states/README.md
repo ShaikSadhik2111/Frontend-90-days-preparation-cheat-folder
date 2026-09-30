@@ -1,3 +1,6 @@
-# loading states
+# Loading States
+Distinguish initial loading, background refetch and mutation pending.
 
-Machine-coding preparation topic. Detailed notes, implementation examples, trade-offs, edge cases, testing, and interview guidance will be added when this topic is studied.
+States: idle, loading, success, empty, error, refreshing.
+
+Challenge: design a dashboard where one widget refreshes while others remain interactive.

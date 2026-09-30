@@ -1,3 +1,6 @@
-# tooltip
+# Tooltip — Machine Coding
+Handle hover/focus, delay, Escape, positioning and cleanup. Do not put essential information only in a tooltip.
 
-Machine-coding preparation topic. Detailed notes, implementation examples, trade-offs, edge cases, testing, and interview guidance will be added when this topic is studied.
+Keyboard users need equivalent information on focus.
+
+Follow-ups: collision detection, portal and touch behavior.

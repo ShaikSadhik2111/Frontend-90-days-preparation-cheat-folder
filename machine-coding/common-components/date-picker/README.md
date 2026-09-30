@@ -1,3 +1,6 @@
-# date picker
+# Date Picker — Machine Coding
+Hard parts: calendar grid, month navigation, min/max, locale, timezone, keyboard and range selection.
 
-Machine-coding preparation topic. Detailed notes, implementation examples, trade-offs, edge cases, testing, and interview guidance will be added when this topic is studied.
+State: visible month, selected range and focused date.
+
+Prefer native date input when requirements allow it; custom calendars carry significant accessibility work.

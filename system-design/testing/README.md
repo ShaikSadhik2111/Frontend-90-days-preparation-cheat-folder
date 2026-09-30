@@ -1,5 +1,17 @@
-# testing
+# System Design Testing
 
-This topic is part of the 90-day frontend interview preparation syllabus.
+Test architecture through contracts and failure scenarios, not only component snapshots.
 
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+Layers:
+- unit domain logic
+- API contract tests
+- component tests
+- integration tests
+- end-to-end critical journeys
+- performance tests
+- accessibility tests
+- resilience/failure tests.
+
+Design test seams around module and API boundaries.
+
+Practice: create a test matrix for dashboard, search and file upload including timeout, stale response, 403, empty and offline cases.

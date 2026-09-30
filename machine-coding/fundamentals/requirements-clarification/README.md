@@ -1,3 +1,6 @@
-# requirements clarification
+# Requirement Clarification
+Ask: exact behavior, data source, persistence, responsive behavior, accessibility, loading/error/empty states, performance and time.
 
-Machine-coding preparation topic. Detailed notes, implementation examples, trade-offs, edge cases, testing, and interview guidance will be added when this topic is studied.
+Turn answers into acceptance criteria. Clarify only requirements that change implementation.
+
+Example autocomplete: debounce, latest response wins, keyboard selection, loading/empty/error and clear behavior.

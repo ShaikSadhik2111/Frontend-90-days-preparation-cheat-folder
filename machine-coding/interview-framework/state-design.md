@@ -1,3 +1,4 @@
 # State Design
+Classify local UI, form, URL, server, shared client and derived state. Define one owner and one update path for each source of truth.
 
-Classify local UI, shared client, server/remote, URL, form and derived state. Avoid duplicated derived state. Keep state near its owner and document important transitions.
+Interview follow-up: what happens when two components need the same server data?

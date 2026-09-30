@@ -1,5 +1,16 @@
-# deployment
+# Frontend Deployment Design
 
-This topic is part of the 90-day frontend interview preparation syllabus.
+Key concerns:
+- immutable hashed assets
+- CDN delivery
+- cache headers
+- environment configuration
+- rollback
+- source maps
+- feature flags
+- progressive rollout
+- release monitoring.
 
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+Avoid asset mismatch between old HTML and new JS by using immutable versioned assets and compatible rollout strategy.
+
+Practice: design deployment for a SPA with 5 teams releasing independently every week.

@@ -1,3 +1,4 @@
 # Problem Clarification
+Ask what is required, what is optional, data source, persistence, responsive/a11y requirements, performance constraints and timebox.
 
-Ask: Who is the user? What interactions are required? What is out of scope? Is data mocked/API-driven? What are success/failure states? Are libraries constrained? Is persistence required? What accessibility and scale constraints exist? What is the time limit?
+Turn answers into acceptance criteria before coding.

@@ -1,3 +1,4 @@
 # Testing Strategy
+Prioritize unit tests for pure logic, component tests for behavior, integration for async/data boundaries and E2E for critical journeys.
 
-Test primary flow, validation failures, loading, empty state, API failure/retry, rapid actions, boundary values, keyboard interaction and critical async transitions. Explain additional tests you would add with more time.
+Explain which invariant each test protects.

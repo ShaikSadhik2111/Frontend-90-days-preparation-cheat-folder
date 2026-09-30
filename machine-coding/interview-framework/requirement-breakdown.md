@@ -1,3 +1,4 @@
 # Requirement Breakdown
+Separate must-have behavior, quality requirements and optional extensions. Convert each into a testable acceptance criterion.
 
-Separate functional requirements, state, data/API needs and non-functional requirements. Explicitly list empty, invalid, slow-network, duplicate-action, cancellation and large-data cases.
+Example: autocomplete must debounce, show states, prevent stale overwrites and support keyboard selection.
