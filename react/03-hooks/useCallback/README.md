@@ -41,3 +41,13 @@ Continue into **state management, forms, and data fetching**, where Hook choices
 
 ## Official reference
 https://react.dev/reference/react/hooks
+
+
+## Deep reasoning
+useCallback preserves a function reference while its dependencies remain unchanged. Its value is reference stability when a memoized child or dependency-sensitive Hook benefits from it.
+
+### Pitfalls
+Incorrect dependencies create stale closures. Wrapping every callback adds complexity without necessarily improving performance. State colocation can sometimes be a better optimization than callback memoization.
+
+### Interview drill
+Compare a plain callback, useCallback, React.memo, and moving state closer to the child. Explain when each changes observable work.
