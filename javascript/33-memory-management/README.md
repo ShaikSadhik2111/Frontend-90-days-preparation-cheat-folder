@@ -1,26 +1,32 @@
-# Memory Management
+# 33 — Memory Management
 
-JavaScript engines automatically manage memory.
+JavaScript memory management is largely automatic. The key frontend skill is understanding reachability and unintended retention.
 
-## Conceptual lifecycle
-1. Allocate values/objects
-2. Use them
-3. Make unreachable objects collectible
-4. Garbage collector reclaims memory
+## Lifecycle
+    allocate → use → become unreachable → garbage collection
 
-## Reachability
-An object remains eligible for collection only when it is no longer reachable from roots such as active execution contexts and global references.
+Objects can remain reachable through globals, active execution contexts, event listeners, timers, closures and caches.
 
-## Common retention sources
-- Long-lived global references
-- Event listeners not removed
-- Timers
-- Closures retaining large objects
-- Caches without eviction
-- Detached DOM structures retained by JavaScript
+## Common retention problems
+### Event listeners
+    element.addEventListener("click", handler);
+    element.removeEventListener("click", handler);
 
-## Practical rule
-Prefer clear ownership and cleanup for long-lived resources.
+### Timers
+Clear long-lived intervals/timeouts when their work is no longer needed.
 
-## Interview distinction
-Memory leak in JavaScript usually means unintended retention, not that the garbage collector is absent.
+### Caches
+An unbounded Map cache can retain data indefinitely. Use an eviction policy when necessary.
+
+### Closures
+A long-lived closure can retain objects it references.
+
+## Frontend use case
+Single-page applications can remain open for hours. A small retention problem repeated across route changes can grow into significant memory usage.
+
+## Debugging
+Browser DevTools can help with heap snapshots, allocation timelines and retained-size analysis.
+
+**Interview distinction:** a JavaScript memory leak usually means unintended retention. Garbage collection cannot reclaim reachable objects.
+
+**Next:** garbage collection explains reclamation.
