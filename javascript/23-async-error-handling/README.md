@@ -38,3 +38,34 @@ AbortController is another solution.
 Do not catch and ignore errors merely to silence them.
 
 **Next:** general error handling covers synchronous exceptions.
+
+## Deeper learning standard
+
+### Failure taxonomy
+
+Separate network failure, HTTP failure, timeout, cancellation, parsing failure, validation failure, business failure and stale responses. They do not necessarily deserve the same retry or UI behavior.
+
+### Retry reasoning
+
+Retry only plausibly transient failures. Production retry logic may require bounded attempts, exponential backoff, jitter, cancellation and idempotency awareness.
+
+### Stale response protection
+
+```js
+let requestId = 0;
+
+async function search(query) {
+  const id = ++requestId;
+  const result = await fetchResults(query);
+  if (id !== requestId) return;
+  render(result);
+}
+```
+
+Cancellation and stale-result protection are different: cancellation attempts to stop work, while stale protection prevents obsolete work from updating current UI state.
+
+### Interview scenario
+
+A user types quickly into search. Explain how debounce, AbortController and request identity can work together to avoid unnecessary requests and stale results.
+
+**What this unlocks:** general error handling applies the same reasoning to synchronous exceptions and application architecture.
