@@ -1,31 +1,80 @@
-# Union Types
+# 07 — Union Types
 
-A union means a value can be one of several types.
+## Connection from Previous Topic
+
+Function types describe behavior. Real applications often accept **different valid shapes**. A union lets one value represent a controlled set of alternatives.
+
+## Why This Topic Exists
+
+`A | B` means a value may be one of several types.
 
 ```ts
-type Id = string | number;
+type UserId = string | number;
 
-function formatId(id: Id): string {
-  return typeof id === "string"
-    ? id.toUpperCase()
-    : id.toString();
+function formatUserId(id: UserId): string {
+  return typeof id === "string" ? id.toUpperCase() : String(id);
 }
 ```
 
-Before narrowing, only operations valid for every union member are safe.
+Until narrowing proves otherwise, only operations safe for every union member are available.
 
-## Literal union
+## Literal unions
 
 ```ts
-type Status = "idle" | "loading" | "success" | "error";
+type RequestStatus = "idle" | "loading" | "success" | "error";
 ```
 
-This is excellent for UI state because invalid states become harder to represent.
+Literal unions are excellent for UI state and configuration because invalid values are rejected.
 
-## Interview question
+## Object unions
 
-Union = alternatives. Intersection = combined requirements.
+```ts
+type Payment =
+  | { method: "card"; last4: string }
+  | { method: "upi"; upiId: string }
+  | { method: "cash" };
 
-## Exercise
+function describe(payment: Payment): string {
+  switch (payment.method) {
+    case "card": return `Card ending ${payment.last4}`;
+    case "upi": return payment.upiId;
+    case "cash": return "Cash";
+  }
+}
+```
 
-Create a `Payment` union with `card`, `upi`, and `cash`, each carrying different fields.
+The next topics explain how TypeScript narrows such unions.
+
+## Union vs intersection
+
+- `A | B` → alternatives.
+- `A & B` → combined requirements.
+
+## Frontend use cases
+
+- API result states
+- form values
+- reducer actions
+- payment methods
+- route parameters
+- component variants
+
+## Common mistakes
+
+Do not replace a known union with `any`. A union documents valid possibilities and preserves compiler checking.
+
+## Interview questions
+
+**Why are unions safer than `any`?** They restrict values to known alternatives.
+
+**Can you access a property present on only one union member?** Not until you narrow to that member.
+
+## Mini challenge
+
+Create a `SearchResult` union for `user`, `product`, and `order`, each with a unique property. Write a function that renders the correct label.
+
+## What This Unlocks Next
+
+A union gives us alternatives. Next we need a systematic way to determine which alternative we have:
+
+**Unions → Type Narrowing → Type Guards → Discriminated Unions**.
