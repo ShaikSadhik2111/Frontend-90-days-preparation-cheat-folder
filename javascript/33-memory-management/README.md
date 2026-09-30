@@ -30,3 +30,45 @@ Browser DevTools can help with heap snapshots, allocation timelines and retained
 **Interview distinction:** a JavaScript memory leak usually means unintended retention. Garbage collection cannot reclaim reachable objects.
 
 **Next:** garbage collection explains reclamation.
+
+## Deeper learning standard
+
+### Reachability mental model
+
+```text
+GC roots
+  ↓
+references
+  ↓
+reachable objects → retained
+
+unreachable objects → eligible for collection
+```
+
+Common roots and retention paths include globals, active execution contexts, event listeners, timers, closures and caches.
+
+### SPA-specific risk
+
+A single-page application can stay open for hours. Repeated route changes can accumulate listeners, timers, subscriptions or cached objects if cleanup is missing.
+
+### Practical cleanup
+
+```js
+const handler = () => update();
+element.addEventListener("click", handler);
+
+// later
+ element.removeEventListener("click", handler);
+```
+
+The same function reference is needed for reliable listener removal.
+
+### Debugging
+
+Use browser DevTools heap snapshots, allocation timelines and retained-size analysis. Do not diagnose a memory leak from symptoms alone.
+
+### Interview question
+
+Explain why garbage collection cannot fix a leak when application code continues to hold a reachable reference.
+
+**What this unlocks:** garbage collection explains how unreachable objects are eventually reclaimed.
