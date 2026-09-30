@@ -40,3 +40,13 @@ Next, connect this model to **rendering and Hooks**, where React's snapshot and 
 
 ## Official reference
 https://react.dev/
+
+
+## Deep reasoning
+Props are parent-owned inputs. Treat them as read-only and communicate changes through callbacks or shared state. Distinguish value equality from object/function identity because reference changes affect memoization and dependency-sensitive Hooks.
+
+### Pitfalls
+Do not automatically copy props into state. First decide whether the child truly owns an editable value or is merely displaying parent data. Avoid mutating prop objects because ownership becomes ambiguous.
+
+### Interview drill
+Explain how a child should update a parent-owned order, why direct mutation is unsafe, and how immutable updates preserve one-way data flow.
