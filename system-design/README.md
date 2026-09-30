@@ -1,40 +1,9 @@
-# Frontend System Design
+# Frontend System Design — Study Track
 
-This track converts frontend fundamentals into senior-level architecture reasoning.
+Sequence: Requirements → Constraints → Scale → Architecture → State ownership → API/data flow → Caching → Reliability → Performance → Security → Accessibility → Observability → Deployment → Trade-offs → Case studies.
 
-## Interview progression
+For every design answer: clarify users and flows; separate functional/NFR requirements; estimate scale; define browser/server boundaries; choose rendering/deployment; define module and state boundaries; design APIs; define caching and invalidation; handle loading/empty/error/retry/cancellation/stale data; review performance/security/accessibility; add observability; explain trade-offs.
 
-1. Requirements
-2. Architecture
-3. Component design
-4. State architecture
-5. API design
-6. Caching
-7. Data fetching
-8. Performance
-9. Scalability
-10. Security
-11. Accessibility
-12. Observability
-13. Testing
-14. Micro-frontends
-15. Design systems
-16. Real-time applications
-17. File-upload systems
-18. Search/autocomplete
-19. E-commerce
-20. Dashboard
-21. Chat application
-22. Notification system
-23. Feed system
-24. Interview questions
+Study guides: fundamentals, architecture, state-management, api-data, api-contracts, caching, performance, security, scalability, real-time-applications, micro-frontends, design-systems, file-processing-systems, large-form-design, search-filter-systems, reliability-failure-modes, observability, real-world-designs, interview-questions.
 
-Existing system-design folders should be reused where they already cover these concerns; do not duplicate material merely to match names.
-
-## Case-study method
-
-`requirements → constraints → scale → architecture → data flow → state ownership → API/cache strategy → failure modes → performance → security → accessibility → observability → testing → trade-offs`
-
-## Senior expectation
-
-A good answer is not a diagram alone. Explain why each boundary exists, what state is local/server/global, how failures propagate, what happens at scale, and what you would measure after launch.
+Core mental model: a frontend is a distributed client coordinating UI state, server state, browser APIs, network failures, auth, rendering and multiple teams. Do not memorize diagrams; explain why each boundary exists and what changes at 10× scale.
