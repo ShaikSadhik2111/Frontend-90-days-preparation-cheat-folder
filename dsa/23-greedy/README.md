@@ -1,25 +1,58 @@
-# 23 — Greedy Algorithms
+# 23 — Greedy
 
-## Core warning
-A locally best choice is not automatically globally optimal.
+Greedy algorithms make a locally optimal choice while maintaining a proof that the choice cannot prevent a global optimum.
 
-## Greedy checklist
-1. Identify the local choice.
-2. Explain why it preserves feasibility.
-3. Prove that an optimal solution can be transformed to contain that choice, often using an exchange argument.
-4. State the invariant.
+Do not equate "greedy seems good" with correctness.
 
-## Example
-Interval scheduling is solved by choosing the interval with earliest finishing time because it leaves the largest remaining opportunity for future intervals.
+## Problem 1 — Assign Cookies
 
-## Counterexample mindset
-0/1 Knapsack shows why intuitive greedy choices can fail. If a proof is missing, consider DP.
+Sort both arrays. Give the smallest sufficient cookie to the least-demanding child. If a cookie cannot satisfy the current child, try a larger cookie.
 
-## Challenges
-Jump Game, Gas Station, Non-overlapping Intervals, Partition Labels.
+## Problem 2 — Jump Game
 
-## Interview expectation
-Do not say "greedy because it seems optimal." Explain the proof or exchange argument.
+Track the farthest reachable index.
 
-## Next
-When decisions depend on overlapping subproblems, dynamic programming models the required state.
+```js
+function canJump(nums) {
+  let farthest = 0;
+
+  for (let i = 0; i < nums.length; i++) {
+    if (i > farthest) return false;
+    farthest = Math.max(farthest, i + nums[i]);
+  }
+
+  return true;
+}
+```
+
+Invariant: farthest is the maximum index reachable using positions processed so far.
+
+## Problem 3 — Jump Game II
+
+Track the current reachable layer and the farthest next layer. When reaching the current layer boundary, increment jumps.
+
+This is effectively BFS-level reasoning compressed into a greedy scan.
+
+## Problem 4 — Gas Station
+
+If total gas < total cost, no solution exists. When the current tank becomes negative, restart after the current index because none of the failed segment's starts can work.
+
+## Problem 5 — Non-overlapping Intervals
+
+Sort by end time and keep the interval ending earliest. An earlier finish leaves maximum room for future intervals.
+
+## Problem 6 — Partition Labels
+
+Record each character's last occurrence. Extend the current partition until every character inside has its last occurrence within the partition.
+
+## Proof intuition
+Common greedy proofs use:
+- exchange argument
+- staying-ahead argument
+- cut/property argument
+
+## Pitfalls
+Greedy is not interchangeable with DP. If a local choice cannot be justified, look for DP, graph shortest path, or another pattern.
+
+## Recognition
+Earliest finish, maximum reach, scheduling, choose as many compatible items as possible, local choice with provable future flexibility.

@@ -1,24 +1,68 @@
 # 25 — Bit Manipulation
 
-## Operators
-AND &, OR |, XOR ^, NOT ~, left shift <<, right shift >>.
+JavaScript bitwise operators convert numbers to signed 32-bit integers. This is a crucial JS-specific caveat.
 
-JavaScript bitwise operators convert operands to signed 32-bit integers, so know this before using them on large values.
+Operators:
+`&`, `|`, `^`, `~`, `<<`, `>>`, `>>>`.
 
-## XOR identities
-x ^ x = 0.
-x ^ 0 = x.
+## Core patterns
 
-Therefore, if every value occurs twice except one, XOR cancels all pairs and leaves the unique value.
+### Check bit
+```js
+(value & (1 << bit)) !== 0
+```
 
-## Uses
-Parity, power-of-two checks, masks, subset state, bit counting, XOR cancellation.
+### Set bit
+```value | (1 << bit)``
+
+### Clear bit
+```value & ~(1 << bit)``
+
+### Toggle bit
+```value ^ (1 << bit)``
+
+## Problem 1 — Single Number
+
+XOR cancels equal values because x ^ x = 0 and x ^ 0 = x.
+
+```js
+function singleNumber(nums) {
+  let answer = 0;
+  for (const num of nums) answer ^= num;
+  return answer;
+}
+```
+
+## Problem 2 — Number of 1 Bits
+
+Repeatedly clear the lowest set bit:
+
+``n = n & (n - 1)``
+
+Each iteration removes one set bit.
+
+## Problem 3 — Counting Bits
+
+Build answers for every number using:
+
+``bits[i] = bits[i >> 1] + (i & 1)``
+
+## Problem 4 — Missing Number
+
+XOR indices and values; equal values cancel, leaving the missing index.
+
+## Problem 5 — Power of Two
+
+For a positive power of two, exactly one bit is set.
+
+``n > 0 && (n & (n - 1)) === 0``
+
+## Problem 6 — Reverse Bits
+
+Process 32 bits and construct the reversed result.
 
 ## Pitfalls
-32-bit conversion, signed values, negative numbers, Number vs BigInt, and assuming bitwise code is automatically faster in real applications.
+Bitwise operations are 32-bit in JavaScript. For values outside that domain, consider BigInt where appropriate and understand that BigInt and Number cannot be mixed directly.
 
-## Challenges
-Single Number, Number of 1 Bits, Counting Bits, Missing Number, Power of Two.
-
-## Next
-Monotonic stacks add ordering constraints to ordinary stack state.
+## Recognition
+XOR cancellation, binary flags, masks, powers of two, set-bit counting.
