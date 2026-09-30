@@ -24,3 +24,41 @@ Do not assume module.exports is always semantically identical to export default.
 5. Verify default vs named export shape.
 
 **Next:** dynamic import enables lazy loading and code splitting.
+
+## Deeper learning standard
+
+### CommonJS
+
+```js
+const util = require("./util");
+module.exports = util;
+```
+
+### ES Modules
+
+```js
+import util from "./util.js";
+export default util;
+```
+
+These systems have different loading and export semantics. Tooling may provide interoperability, but default and named exports should not be assumed to map identically.
+
+### Debugging import errors
+
+Check:
+
+1. package type
+2. file extension
+3. package exports
+4. whether the dependency is CJS or ESM
+5. default versus named export shape
+
+### Frontend relevance
+
+Vite, Webpack, test runners and Node scripts can encounter dependencies using different module systems. Understanding the boundary makes otherwise confusing import errors easier to diagnose.
+
+### Practical challenge
+
+Take one dependency from a frontend project and identify its package type and export shape. Explain what your bundler does with it.
+
+**What this unlocks:** dynamic import uses asynchronous module loading for lazy features and code splitting.
