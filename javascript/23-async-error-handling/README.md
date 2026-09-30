@@ -1,24 +1,40 @@
-# Async Error Handling
+# 23 — Async Error Handling
 
-Async failures can occur during promise creation, promise settlement, network operations or application logic.
+Async failures include network errors, HTTP failures, timeouts, cancellation, parsing errors, validation failures and stale responses.
 
-## Patterns
-```js
-async function load() {
-  try {
-    return await fetchData();
-  } catch (error) {
-    throw new Error("Failed to load data", { cause: error });
-  }
-}
-```
+## Normalize transport failures
+    async function loadProfile() {
+      const response = await fetch("/api/profile");
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return response.json();
+    }
 
-## Important rules
-- Always define who owns failure handling.
-- Preserve original causes when wrapping.
-- Do not catch and ignore errors.
-- Distinguish retryable failures from permanent failures.
-- Use timeouts and cancellation for external operations when appropriate.
+## Preserve causes
+    try {
+      await loadProfile();
+    } catch (error) {
+      throw new Error("Profile loading failed", { cause: error });
+    }
 
-## Race conditions
-A successful older request can arrive after a newer request. Track request identity or cancel obsolete work when the UI requires latest-result semantics.
+## Retry
+Retry only failures that are plausibly transient. Production retry logic should normally use backoff and jitter.
+
+## Stale search responses
+An older request can finish after a newer request.
+    let requestId = 0;
+    async function search(query) {
+      const id = ++requestId;
+      const result = await fetchResults(query);
+      if (id !== requestId) return;
+      render(result);
+    }
+
+AbortController is another solution.
+
+## UI state
+    idle → loading → success
+                  ↘ error
+
+Do not catch and ignore errors merely to silence them.
+
+**Next:** general error handling covers synchronous exceptions.
