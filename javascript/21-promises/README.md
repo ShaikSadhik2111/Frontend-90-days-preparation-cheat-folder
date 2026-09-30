@@ -1,31 +1,39 @@
-# Promises
+# 21 — Promises
 
-A Promise represents the eventual result of an asynchronous operation.
+A Promise represents the eventual outcome of asynchronous work. It can be pending, fulfilled, or rejected, and settles only once.
 
-## States
-- pending
-- fulfilled
-- rejected
+## Basic example
+    const promise = new Promise(resolve => {
+      setTimeout(() => resolve("Data loaded"), 500);
+    });
+    promise.then(value => console.log(value));
 
-A promise settles only once.
+## Real frontend use case — API calls
+    fetch("/api/users")
+      .then(response => {
+        if (!response.ok) throw new Error("Request failed");
+        return response.json();
+      })
+      .then(users => renderUsers(users))
+      .catch(error => showError(error));
 
-```js
-fetch("/api/users")
-  .then(response => response.json())
-  .then(users => console.log(users))
-  .catch(error => console.error(error));
-```
+Important: fetch normally does not reject only because the server returns HTTP 404/500. Check response.ok.
+
+## Promise chaining
+    getUser()
+      .then(user => getOrders(user.id))
+      .then(orders => renderOrders(orders))
+      .catch(handleError);
+
+Return the next Promise. Forgetting to return it breaks the chain.
 
 ## Composition
-- `Promise.all`: fulfills when all fulfill; rejects when one rejects.
-- `Promise.allSettled`: waits for every promise and reports each outcome.
-- `Promise.race`: settles with the first settled promise.
-- `Promise.any`: fulfills with the first fulfilled promise; rejects with AggregateError if all reject.
+- Promise.all: all must fulfill; one rejection rejects the combined Promise.
+- Promise.allSettled: waits for every result.
+- Promise.race: first settlement wins; it does not cancel the losers.
+- Promise.any: first fulfillment wins; all rejection produces AggregateError.
 
-## Error propagation
-A rejection travels down the promise chain until a rejection handler handles it.
+## Interview point
+A Promise does not create a new JavaScript thread. It provides a composable model for asynchronous completion.
 
-## Pitfalls
-- Forgetting to return a promise inside `.then`
-- Using `Promise.all` when partial success is acceptable
-- Assuming Promise means a new thread
+**Next:** async/await provides cleaner Promise control flow.
