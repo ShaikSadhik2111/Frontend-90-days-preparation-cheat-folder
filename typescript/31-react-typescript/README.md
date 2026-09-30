@@ -1,4 +1,8 @@
-# React + TypeScript
+# 31 — React + TypeScript
+
+## Connection from Previous Topic
+
+API/domain modeling gives us safe data contracts. React TypeScript applies those contracts to components, state, events, refs and reusable UI.
 
 ## Props
 
@@ -30,18 +34,23 @@ function SearchBox() {
 }
 ```
 
-Common event types:
-- `React.ChangeEvent<HTMLInputElement>`
-- `React.MouseEvent<HTMLButtonElement>`
-- `React.FormEvent<HTMLFormElement>`
-- `React.KeyboardEvent<HTMLInputElement>`
+Common types include `React.ChangeEvent<HTMLInputElement>`, `React.MouseEvent<HTMLButtonElement>`, `React.FormEvent<HTMLFormElement>`, and `React.KeyboardEvent<HTMLInputElement>`.
 
 ## State
 
+Let inference work when the initial value is obvious:
+
 ```tsx
 const [count, setCount] = useState(0);
+```
+
+Use an explicit union when the state can have meaningful alternatives:
+
+```tsx
 const [user, setUser] = useState<User | null>(null);
 ```
+
+For complex async state, prefer a discriminated union rather than several independent booleans.
 
 ## Refs
 
@@ -57,7 +66,7 @@ type CardProps = {
 };
 ```
 
-## Generic component
+## Generic components
 
 ```tsx
 type SelectProps<T> = {
@@ -65,7 +74,21 @@ type SelectProps<T> = {
   getLabel: (item: T) => string;
   onSelect: (item: T) => void;
 };
+
+function Select<T>({ items, getLabel, onSelect }: SelectProps<T>) {
+  return (
+    <div>
+      {items.map(item => (
+        <button key={getLabel(item)} onClick={() => onSelect(item)}>
+          {getLabel(item)}
+        </button>
+      ))}
+    </div>
+  );
+}
 ```
+
+The key benefit is that the selected item type remains connected to the callback.
 
 ## Reducer actions
 
@@ -76,8 +99,29 @@ type Action =
   | { type: "set"; value: number };
 ```
 
-Use discriminated unions for reducers and explicit UI state.
+A discriminated union makes reducer actions exhaustive and self-documenting.
 
-## Interview focus
+## API integration
 
-Know props, events, state, refs, children, reducers, generic components and typed API data without falling back to `any`.
+Keep the API/domain model separate from component props when the UI needs a different shape.
+
+## Common mistakes
+
+- using `any` for event/state/API data
+- asserting API JSON instead of validating it
+- over-annotating obvious state
+- using several booleans for mutually exclusive states
+
+## Interview questions
+
+Be ready to type props, events, state, refs, children, reducers, generic components and API data without falling back to `any`.
+
+## Mini challenge
+
+Build a generic `Select<T>` that accepts `User[]`, preserves the selected `User` type in `onSelect`, and displays a loading/success/error state using a discriminated union.
+
+## What This Unlocks Next
+
+We have applied the type system to a real frontend stack. Next we combine the advanced pieces into reusable type-level designs:
+
+**React + TypeScript → Advanced Types**.
