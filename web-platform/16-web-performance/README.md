@@ -2,7 +2,7 @@
 
 **Connection:** networking, JavaScript, rendering and memory all contribute to perceived performance.
 
-**Learn:** Core Web Vitals, LCP, INP, CLS, TTFB, resource loading, code splitting, lazy loading, images/fonts, long tasks, memory and virtualization.
+**Learn:** Core Web Vitals, LCP, INP, CLS, TTFB, resource loading, code splitting, lazy loading, images/fonts, long tasks, memory, virtualization and back/forward cache (bfcache).\n\n**Modern performance:** include field measurement and lifecycle behavior such as bfcache restores, not only initial-load metrics.
 
 **Example**
 ```js
