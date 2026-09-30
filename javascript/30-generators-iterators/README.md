@@ -48,3 +48,53 @@ Execution pauses at yield and resumes on the next call.
 Async generators use async function* and can be consumed with for await...of.
 
 **Next:** debouncing controls bursty UI input.
+
+## Deeper learning standard
+
+### Iterator protocol
+
+An iterator exposes next(), returning an object containing value and done.
+
+```js
+const iterator = {
+  current: 1,
+  next() {
+    if (this.current <= 3) {
+      return { value: this.current++, done: false };
+    }
+    return { value: undefined, done: true };
+  }
+};
+```
+
+### Generator mental model
+
+```text
+generator()
+   ↓
+iterator
+   ↓ next()
+run until yield
+   ↓
+paused
+   ↓ next()
+resume
+```
+
+### Symbol connection
+
+A custom object becomes iterable by implementing Symbol.iterator. This directly connects folder 15 to this folder.
+
+### Practical frontend use
+
+Generators are less common in ordinary React/Angular business code, but they are useful for lazy sequences, custom iteration and some state-machine/workflow abstractions.
+
+### Interview questions
+
+- What is an iterator?
+- What does next() return?
+- What does yield do?
+- How is Symbol.iterator related to for...of?
+- What is the difference between a generator and an ordinary function?
+
+**What this unlocks:** high-frequency browser events require debouncing and throttling.
