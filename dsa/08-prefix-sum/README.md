@@ -1,34 +1,109 @@
 # 08 — Prefix Sum
 
-## Core idea
-Precompute cumulative values so a range query becomes a constant-time subtraction.
+Prefix sums turn repeated range aggregation into constant-time range calculations after O(n) preprocessing.
 
-For prefix with leading zero:
-range l..r = prefix[r + 1] - prefix[l].
+## Core formula
 
-## Example
-~~~js
-function buildPrefix(nums) {
-  const prefix = new Array(nums.length + 1).fill(0);
+```
+prefix[i] = sum of values before i
+sum(l..r) = prefix[r + 1] - prefix[l]
+```
 
-  for (let i = 0; i < nums.length; i++) {
-    prefix[i + 1] = prefix[i] + nums[i];
+The same idea extends to prefix XOR, prefix frequency, and prefix state + hashing.
+
+## Problem 1 — Running Sum
+
+```js
+function runningSum(nums) {
+  const result = [];
+  let sum = 0;
+
+  for (const num of nums) {
+    sum += num;
+    result.push(sum);
   }
 
-  return prefix;
+  return result;
 }
-~~~
+```
 
-The leading zero means index 0 has sum 0, eliminating a special case.
+Invariant: sum equals the total of all processed values.
 
-## Hash-map prefix pattern
-For subarray sum K, if currentPrefix - oldPrefix = K, then the segment between those positions sums to K. Store frequencies of previous prefix sums because the same sum can occur multiple times.
+## Problem 2 — Pivot Index
+
+```js
+function pivotIndex(nums) {
+  const total = nums.reduce((sum, n) => sum + n, 0);
+  let left = 0;
+
+  for (let i = 0; i < nums.length; i++) {
+    const right = total - left - nums[i];
+    if (left === right) return i;
+    left += nums[i];
+  }
+
+  return -1;
+}
+```
+
+The key observation is that right sum can be derived from total instead of rescanning.
+
+## Problem 3 — Subarray Sum Equals K
+
+```js
+function subarraySum(nums, k) {
+  const count = new Map([[0, 1]]);
+  let prefix = 0;
+  let answer = 0;
+
+  for (const num of nums) {
+    prefix += num;
+
+    answer += count.get(prefix - k) ?? 0;
+    count.set(prefix, (count.get(prefix) ?? 0) + 1);
+  }
+
+  return answer;
+}
+```
+
+Derivation:
+prefixCurrent - prefixPrevious = k
+therefore prefixPrevious = prefixCurrent - k.
+
+The Map stores how many previous prefixes equal the required state.
+
+## Difference arrays
+
+For repeated range updates, a difference array marks where a change begins and ends, then a prefix sum reconstructs final values.
+
+Example: add +5 to indices 2..4:
+
+```js
+diff[2] += 5;
+diff[5] -= 5;
+```
+
+Prefixing diff applies the update to every position in the range.
+
+## Additional problems
+- Range Sum Query
+- Contiguous Array
+- Product of Array Except Self
+- Corporate Flight Bookings / range updates
+
+## Prefix variants
+- prefix sum
+- prefix XOR
+- prefix frequency
+- 2D prefix sum
+- prefix + Set/Map
 
 ## Pitfalls
-Off-by-one boundaries, forgetting duplicate prefix sums, and using sliding window when negative values make its monotonic assumption invalid.
+Define clearly whether prefix[i] includes nums[i]. The extra leading zero convention often prevents off-by-one errors.
 
-## Challenges
-Range Sum Query, Subarray Sum Equals K, Pivot Index, Product Except Self.
+## Interview drill
+Given a range query, ask whether repeated aggregation can be replaced by cumulative state. For subarray-count problems, ask whether two prefix states have a required difference.
 
-## Next
-A stack models unresolved work where the newest item must be handled first.
+## Connection
+**Prefix Sum → Stack**: prefix methods preserve cumulative state; stacks preserve unresolved order and allow reverse/last-in-first-out reasoning.

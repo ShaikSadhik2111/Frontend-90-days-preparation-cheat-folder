@@ -1,10 +1,44 @@
 # 07 — Sliding Window
 
-## Mental model
-A window is [left...right]. Expand right to include data; move left when the window violates its invariant.
+Sliding window is a specialized two-pointer technique for **contiguous** ranges.
 
-## Example
-~~~js
+## Mental model
+[left, right] is the current window. Expand right to include data; when the window violates a constraint, move left until it is valid again.
+
+The core invariant is:
+
+> After the inner loop finishes, the current window satisfies the problem constraint.
+
+### Fixed vs variable
+- Fixed: window length is predetermined.
+- Variable: length changes according to validity.
+
+## Problem 1 — Maximum sum of size K
+
+```js
+function maxSum(nums, k) {
+  if (k <= 0 || k > nums.length) return null;
+
+  let sum = 0;
+  for (let i = 0; i < k; i++) sum += nums[i];
+
+  let best = sum;
+
+  for (let right = k; right < nums.length; right++) {
+    sum += nums[right];
+    sum -= nums[right - k];
+    best = Math.max(best, sum);
+  }
+
+  return best;
+}
+```
+
+Instead of recalculating every window in O(nk), remove the outgoing value and add the incoming value. Time O(n), space O(1).
+
+## Problem 2 — Longest substring without repeating characters
+
+```js
 function lengthOfLongestSubstring(s) {
   const seen = new Set();
   let left = 0;
@@ -22,18 +56,66 @@ function lengthOfLongestSubstring(s) {
 
   return best;
 }
-~~~
+```
 
-Each character enters once and leaves at most once, so the nested while does not make this O(n²). Total pointer movement is O(n).
+The window is always duplicate-free. Although there is a nested while, each character enters and leaves the Set at most once: O(n).
 
-## Fixed vs variable
-Fixed window has size k. Variable window expands/shrinks according to a condition.
+## Problem 3 — Permutation in String
 
-## Warning
-Sliding window is not universally valid. Negative numbers can break common sum-based shrinking assumptions because adding/removing an element may not change the sum monotonically.
+Use a fixed-size frequency window.
 
-## Challenges
-Maximum Average Subarray, Longest Repeating Character Replacement, Minimum Window Substring, Max Consecutive Ones III.
+```js
+function checkInclusion(pattern, text) {
+  if (pattern.length > text.length) return false;
 
-## Next
-Prefix sums solve many range-sum problems by storing cumulative information.
+  const need = new Map();
+  const have = new Map();
+
+  for (const c of pattern) {
+    need.set(c, (need.get(c) ?? 0) + 1);
+  }
+
+  let matches = 0;
+  const required = need.size;
+
+  for (let right = 0; right < text.length; right++) {
+    const c = text[right];
+    have.set(c, (have.get(c) ?? 0) + 1);
+
+    if (need.has(c) && have.get(c) === need.get(c)) matches++;
+
+    if (right >= pattern.length) {
+      const out = text[right - pattern.length];
+      if (need.has(out) && have.get(out) === need.get(out)) matches--;
+      have.set(out, have.get(out) - 1);
+    }
+
+    if (matches === required) return true;
+  }
+
+  return false;
+}
+```
+
+This demonstrates that sliding windows can track **frequency state**, not just membership.
+
+## Advanced problems
+- Find All Anagrams in a String
+- Longest Repeating Character Replacement
+- Fruit Into Baskets
+- Minimum Window Substring
+
+### Minimum-window reasoning
+Expand until valid; then shrink while still valid. Record the smallest valid window before shrinking makes it invalid.
+
+## Recognition
+Look for: contiguous substring/subarray, longest/shortest, at most/exactly K, fixed K, frequency constraints.
+
+## Pitfalls
+Do not use sliding window for arbitrary subsequences. Be precise about whether validity is checked before or after adding/removing an element.
+
+## Interview drill
+Explain what the window represents, what makes it invalid, why left only moves forward, and why total pointer movement is O(n).
+
+## Connection
+**Sliding Window → Prefix Sum**: windows maintain a dynamic contiguous state; prefix sums store cumulative state so range sums can be answered or combined with hashing.
