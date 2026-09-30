@@ -41,3 +41,16 @@ Continue into **state management, forms, and data fetching**, where Hook choices
 
 ## Official reference
 https://react.dev/reference/react/hooks
+
+
+## Deep reasoning
+Treat an Effect as synchronization with an external system after React commits the UI—not as a generic place for calculations. External systems include subscriptions, timers, browser APIs, imperative widgets, and some network synchronization flows.
+
+### Runtime reasoning
+When dependencies change, the previous cleanup runs before the next setup. Missing dependencies can create stale closures; missing cleanup can leak listeners, timers, or subscriptions. Development Strict Mode can exercise setup and cleanup more than once to expose unsafe effects.
+
+### Important distinction
+For a typeahead search, debounce controls request frequency, AbortController cancels work when possible, and stale-response protection prevents an older response from overwriting newer state. These solve different problems.
+
+### Interview drill
+Given an Effect that fetches search results, identify unnecessary dependencies, cleanup requirements, race conditions, and whether the work belongs in an Effect at all.
