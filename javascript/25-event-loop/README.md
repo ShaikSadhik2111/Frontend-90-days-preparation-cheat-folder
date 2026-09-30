@@ -1,40 +1,28 @@
-# Event Loop
+# 25 — Event Loop
 
-JavaScript executes synchronous code on the call stack. Asynchronous APIs arrange later work through queues/tasks, allowing the runtime to continue.
+JavaScript executes synchronous code on the call stack. Host APIs handle external work and later schedule callbacks through task/microtask mechanisms.
 
-## Simplified model
-```text
-Call Stack
-   ↓
-Host APIs
-   ↓
-Task / Microtask queues
-   ↓
-Event loop
-   ↓
-Call Stack
-```
+## Predict the output
+    console.log("A");
+    setTimeout(() => console.log("B"), 0);
+    Promise.resolve().then(() => console.log("C"));
+    console.log("D");
 
-Promise reactions are scheduled as microtasks. Timers such as `setTimeout` use task/timer mechanisms provided by the host.
+Typical browser output: A, D, C, B.
 
-## Example
-```js
-console.log("A");
-setTimeout(() => console.log("B"), 0);
-Promise.resolve().then(() => console.log("C"));
-console.log("D");
-```
+Why: synchronous code finishes first; the Promise reaction is a microtask; the timer callback is a later task.
 
-Typical browser ordering:
+## Microtasks
+Common examples are Promise reactions and queueMicrotask.
+    queueMicrotask(() => console.log("microtask"));
 
-```text
-A
-D
-C
-B
-```
+## Why frontend engineers care
+This explains Promise vs timer ordering, async/await continuation, UI responsiveness, debounce/throttle behavior and why long synchronous loops block the main thread.
 
-The exact scheduling model depends on the host, but microtask processing occurs before the next task in the common browser model.
+## Blocking example
+    const start = Date.now();
+    while (Date.now() - start < 3000) {}
 
-## Interview focus
-Explain the difference between synchronous stack execution, microtasks, tasks and host APIs. Avoid saying "JavaScript has only one thread" without explaining browser/Node worker capabilities.
+For CPU-heavy work, Web Workers may be appropriate.
+
+**Interview warning:** distinguish the JavaScript execution context from browser/Node host capabilities and worker threads.
