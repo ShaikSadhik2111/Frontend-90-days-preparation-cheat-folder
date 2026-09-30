@@ -1,30 +1,30 @@
-# Debouncing
+# 31 — Debouncing
 
-Debouncing delays execution until calls stop arriving for a configured period.
+Debouncing waits until calls stop arriving for a specified period before invoking a function.
 
-Typical use: search input.
+## Implementation
+    function debounce(fn, delay) {
+      let timer;
+      return function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), delay);
+      };
+    }
 
-```js
-function debounce(fn, delay) {
-  let timer;
-  return (...args) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => fn(...args), delay);
-  };
-}
-```
+## Search use case
+Without debounce, typing react could create requests for r, re, rea and react. A 300ms debounce waits for the user's pause.
+    const search = debounce(query => fetchResults(query), 300);
 
-## Use cases
-- Search
-- Validation
-- Resize handling
-- Autosave
+## Other use cases
+- validation
+- autosave
+- resize calculations
+- filtering
+- expensive input processing
 
-## Important concerns
-- Preserve arguments
-- Preserve intended `this` when required
-- Cancel pending work when needed
-- Avoid stale asynchronous results
+## Cleanup
+A production implementation can expose cancel() so component cleanup can clear pending work.
 
-## Interview extension
-For API search, debounce alone does not prevent out-of-order responses. Combine it with request cancellation or response identity checks.
+Debounce does not solve stale responses. Combine it with AbortController or request identity checks.
+
+**Next:** throttling limits frequency while activity continues.
