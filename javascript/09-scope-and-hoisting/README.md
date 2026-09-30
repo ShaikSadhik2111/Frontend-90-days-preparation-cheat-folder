@@ -1,40 +1,144 @@
-# Scope and Hoisting
+# 09 — Scope and Hoisting
 
-## Scope types
-- Global scope
-- Module scope
-- Function scope
-- Block scope
+## Scope
 
-`let` and `const` are block-scoped. `var` is function-scoped.
+Scope answers:
 
-## Lexical scope
-A function can access variables from the scope where it was defined, not where it is called.
+> Where can this binding be accessed?
+
+JavaScript uses lexical scope: the source-code structure determines which outer bindings a function can access.
+
+## 1. Global, module, function and block scope
 
 ```js
-const outer = "A";
-function read() {
-  return outer;
+const globalValue = 1;
+
+function demo() {
+  const functionValue = 2;
+
+  if (true) {
+    const blockValue = 3;
+
+    console.log(globalValue);
+    console.log(functionValue);
+    console.log(blockValue);
+  }
 }
 ```
 
-## Hoisting
-Declarations are processed when an execution context is created, but different declarations behave differently.
+`let` and `const` are block-scoped. `var` is function-scoped.
 
-- Function declarations can generally be called before their declaration.
-- `var` is initialized to `undefined`.
-- `let`/`const` are in the temporal dead zone until initialization.
+## 2. var vs let
 
 ```js
-console.log(a); // undefined
-var a = 1;
+if (true) {
+  var a = 10;
+  let b = 20;
+}
 
-console.log(b); // ReferenceError
-let b = 2;
+console.log(a); // 10
+// console.log(b); // ReferenceError
 ```
 
-## Temporal Dead Zone
-The TDZ is the period from entering the relevant scope until a `let`/`const`/class binding is initialized.
+This is one reason modern code generally prefers `let`/`const` over `var`.
 
-## Pitfalls
-Do not describe hoisting as simply "moving code to the top." It is better to explain binding creation and initialization during execution-context setup.
+## 3. Lexical scope
+
+```js
+const name = "outer";
+
+function readName() {
+  return name;
+}
+
+function run() {
+  const name = "inner";
+  return readName();
+}
+
+console.log(run()); // outer
+```
+
+The function uses the scope where it was **defined**, not where it was called.
+
+This is the foundation of closures.
+
+## 4. Hoisting
+
+Avoid saying “JavaScript moves declarations to the top.” A better explanation is:
+
+> During execution-context setup, bindings are created and initialized according to their declaration kind.
+
+Function declaration:
+
+```js
+greet(); // works
+
+function greet() {
+  console.log("hello");
+}
+```
+
+var:
+
+```js
+console.log(value); // undefined
+var value = 10;
+```
+
+let/const:
+
+```js
+// console.log(value); // ReferenceError
+let value = 10;
+```
+
+## 5. Temporal Dead Zone
+
+The TDZ is the period after entering a scope and before a `let`, `const` or class binding is initialized.
+
+```js
+{
+  // TDZ for count
+  // console.log(count); // ReferenceError
+
+  let count = 0;
+}
+```
+
+## 6. Real frontend use case
+
+Understanding scope prevents bugs in:
+
+- event handlers
+- callbacks
+- loops
+- React hooks
+- asynchronous code
+- module-level configuration
+
+Example:
+
+```js
+const handlers = [];
+
+for (let i = 0; i < 3; i++) {
+  handlers.push(() => i);
+}
+
+console.log(handlers.map(fn => fn())); // [0, 1, 2]
+```
+
+Using `let` creates a binding appropriate to each iteration.
+
+## Interview checklist
+
+- lexical scope
+- block vs function scope
+- declaration vs initialization
+- hoisting
+- TDZ
+- closure connection
+- loop/callback behavior
+
+**Next:** execution contexts explain how these bindings are established when code runs.
