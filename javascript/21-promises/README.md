@@ -37,3 +37,38 @@ Return the next Promise. Forgetting to return it breaks the chain.
 A Promise does not create a new JavaScript thread. It provides a composable model for asynchronous completion.
 
 **Next:** async/await provides cleaner Promise control flow.
+
+## Deeper learning standard
+
+### Mental model
+
+```text
+pending → fulfilled
+        ↘ rejected
+```
+
+A Promise settles only once. Promise chaining works because then/catch/finally return new Promises.
+
+### Important distinction
+
+Promise.all is coordination, not cancellation. Promise.race is also coordination, not cancellation. If an operation must stop, use an API that supports cancellation such as AbortController.
+
+### Interview exercise
+
+Build a dashboard loader with three independent requests. Start them concurrently, handle HTTP failures, and explain why Promise.all is appropriate.
+
+### Frontend connection
+
+```text
+Callback
+  ↓
+Promise
+  ↓
+async/await
+  ↓
+Error handling
+  ↓
+Event loop
+```
+
+**What this unlocks:** async/await gives Promise-based code a sequential-looking syntax.
