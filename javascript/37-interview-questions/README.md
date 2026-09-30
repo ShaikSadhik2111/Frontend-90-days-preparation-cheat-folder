@@ -1,150 +1,184 @@
-# JavaScript Interview Questions — With Answers
+# 37 — JavaScript Interview Questions
+
+This folder is the final revision layer. Do not memorize one-line definitions. For each question, explain the concept, show a small example, give a frontend use case, and mention one pitfall.
 
 ## Fundamentals
 
-### 1. What is the difference between primitive and reference values?
-**Answer:** Primitive values represent immutable values such as strings, numbers and booleans. Objects, including arrays and functions, are object values and variables hold references to them.
+### 1. Primitive vs object values
+Primitives are immutable values. Objects are reference values. This affects equality, mutation and state updates.
 
-**Example:**
-```js
-let a = 1, b = a;
-b = 2; // a remains 1
+    const a = { count: 1 };
+    const b = a;
+    b.count++;
+    console.log(a.count); // 2
 
-const x = {}, y = x;
-y.name = "Sam"; // x.name also exists
-```
+**Use case:** understand why direct mutation can affect shared frontend state.
 
-### 2. What is hoisting?
-**Answer:** During execution-context setup, JavaScript creates bindings before executing statements. Function declarations can be initialized for use before their source position; `var` is initialized to `undefined`; `let`, `const` and class bindings remain unavailable in the TDZ until initialization.
+### 2. var, let and const
+- var: function scoped.
+- let/const: block scoped.
+- let/const bindings are unavailable in the TDZ before initialization.
+- const prevents rebinding, not object mutation.
 
-### 3. What is a closure?
-**Answer:** A closure is a function together with access to its lexical environment, allowing it to use variables from an outer scope even after that outer function has returned.
+### 3. Closure
+A function retains access to its lexical environment.
 
-### 4. How is `this` determined?
-**Answer:** For ordinary functions it primarily depends on the call form: method call, constructor call, explicit binding or plain call. Arrow functions capture `this` lexically.
+    function counter() {
+      let count = 0;
+      return () => ++count;
+    }
 
-### 5. What is the prototype chain?
-**Answer:** If a property is not found on an object, JavaScript looks for it on the object's prototype and continues until the chain reaches `null`.
+**Use cases:** private state, callbacks, memoization, debounce and React hooks.
 
-### 6. What is the event loop?
-**Answer:** Synchronous JavaScript runs on the call stack. Host environments schedule asynchronous work and callbacks through task/microtask mechanisms. Promise reactions are microtasks and commonly run before the next task.
+### 4. this
+Ordinary function this depends on the call form. Arrow functions capture this lexically.
 
-### 7. What is the difference between Promise.all and Promise.allSettled?
-**Answer:** `Promise.all` fulfills only when all inputs fulfill and rejects when one rejects. `Promise.allSettled` waits for every input and returns each fulfillment/rejection result.
+### 5. Prototype chain
+If a property is not found on the object, JavaScript searches its prototype chain.
 
-### 8. Does async/await block JavaScript?
-**Answer:** No. `await` suspends the current async function's continuation until the promise settles; it does not block the entire JavaScript runtime.
+### 6. Event loop
+Synchronous code runs first. Promise reactions are microtasks; timers and many browser callbacks are scheduled as tasks.
 
-### 9. What is the difference between debounce and throttle?
-**Answer:** Debounce waits until calls stop for a period before running. Throttle limits execution frequency while calls continue.
+### 7. Promise.all vs allSettled
+Promise.all fails fast on rejection. Promise.allSettled waits for every input.
 
-### 10. What is memoization?
-**Answer:** Memoization caches results for repeated inputs, trading memory and cache-management complexity for reduced computation.
+### 8. async/await
+async returns a Promise. await suspends the current async function's continuation; it does not block the whole runtime.
 
-### 11. What is the difference between shallow and deep copy?
-**Answer:** A shallow copy duplicates the outer object but preserves references to nested objects. A deep copy recursively creates independent nested values according to the cloning mechanism.
+### 9. Debounce vs throttle
+Debounce waits for inactivity. Throttle limits execution frequency during continuous activity.
 
-### 12. Why is 0.1 + 0.2 not exactly 0.3?
-**Answer:** JavaScript numbers use IEEE-754 binary floating-point representation, and many decimal fractions cannot be represented exactly in binary.
+### 10. Memoization
+Cache results for repeated inputs, trading memory and cache-management complexity for computation time.
 
-### 13. What is the difference between == and ===?
-**Answer:** `===` performs strict comparison without the normal type coercion of `==`. `==` applies JavaScript's coercion rules before comparison.
+## Data and language mechanics
 
-### 14. What is the difference between null and undefined?
-**Answer:** `undefined` generally represents an absent/uninitialized value, while `null` is an explicit empty value chosen by application code or APIs. They are distinct values.
+### 11. Shallow vs deep copy
+A shallow copy creates a new outer object while nested references remain shared.
 
-### 15. Why does typeof null return object?
-**Answer:** It is a historical language-design behavior preserved for web compatibility.
+### 12. == vs ===
+=== does not perform the normal coercion of ==. Prefer === for predictable application logic.
+
+### 13. null vs undefined
+undefined commonly means missing/uninitialized; null is an explicit empty value. They are distinct.
+
+### 14. Why is 0.1 + 0.2 not exactly 0.3?
+JavaScript Number uses IEEE-754 binary floating point, so many decimal fractions cannot be represented exactly.
+
+### 15. Why is typeof null object?
+Historical behavior preserved for web compatibility.
+
+## Collections and objects
+
+### 16. Map vs Object
+Map is a collection with arbitrary key types, size and collection-oriented iteration. Object is usually better for record-like domain data.
+
+### 17. Why WeakMap?
+It allows object keys to be weakly held, useful for metadata tied to object lifetime.
+
+### 18. Set use case
+Use Set for uniqueness and fast membership semantics, such as selected IDs.
+
+### 19. Symbol
+A unique primitive commonly used as a non-string property key and for language protocols such as Symbol.iterator.
+
+## Async and browser-facing problems
+
+### 20. Can Promises be cancelled?
+Not directly. APIs such as fetch can support cancellation through AbortController.
+
+### 21. Prevent stale search results
+Debounce input, then use AbortController or request/version identity so obsolete results cannot overwrite newer state.
+
+### 22. Why can async code still make the UI freeze?
+A long synchronous computation blocks the main JavaScript thread even if the application also uses Promises.
+
+### 23. Why use dynamic import?
+To defer loading optional/heavy code, often enabling route-level lazy loading and code splitting.
 
 ## Advanced
 
-### 16. What is the difference between Map and Object?
-**Answer:** Map is a dedicated key/value collection supporting keys of any type, explicit size, iteration and collection-oriented APIs. Objects are general records with prototype behavior and string/symbol property keys.
+### 24. Generators
+Generators pause at yield and produce iterators. Useful for lazy sequences and custom iteration.
 
-### 17. Why use WeakMap?
-**Answer:** WeakMap allows object keys to be weakly held, so metadata associated with an object does not by itself prevent garbage collection.
+### 25. Proxy
+Proxy intercepts object operations such as get and set. Useful for validation, reactivity and instrumentation.
 
-### 18. What are generators?
-**Answer:** Generators are functions that can pause at `yield` and resume later, producing an iterator. They are useful for lazy sequences and custom iteration.
+### 26. Polyfill
+A runtime implementation for a missing platform feature. Interview implementations should mention important specification edge cases.
 
-### 19. What is a Symbol?
-**Answer:** Symbol is a unique primitive commonly used for non-colliding property keys and language protocols such as `Symbol.iterator`.
+### 27. Memory leak despite GC
+GC removes unreachable objects. A leak occurs when application code unintentionally keeps objects reachable through listeners, timers, caches or closures.
 
-### 20. What does Proxy do?
-**Answer:** Proxy intercepts operations on an object through traps such as `get` and `set`, enabling controlled customization of object behavior.
+## Practical coding questions
 
-### 21. Why can a JavaScript application have a memory leak despite garbage collection?
-**Answer:** Garbage collection only removes unreachable objects. If application code accidentally retains references through listeners, timers, global caches or closures, the objects remain reachable and cannot be collected.
+### Implement debounce
+Keep a timer in a closure, clear it on every call, and schedule the latest call after the delay. Decide whether cancel/flush behavior is required.
 
-### 22. Can Promises be cancelled?
-**Answer:** A Promise itself does not provide cancellation. An underlying API can expose cancellation, such as fetch using AbortController.
+### Implement throttle
+Track execution time and/or a pending timer. Explicitly define leading and trailing behavior.
 
-### 23. How would you prevent stale search results?
-**Answer:** Debounce input to reduce requests and then use cancellation or request/version identity checks so an obsolete response cannot overwrite a newer result.
+### Implement memoize
+Keep a cache in a closure and define a reliable key strategy for the input domain.
 
-### 24. What is the difference between currying and partial application?
-**Answer:** Currying transforms a multi-argument function into a sequence of unary functions. Partial application fixes some arguments and returns a function for the remaining arguments.
+### Implement Promise.all
+Convert inputs with Promise.resolve, preserve original indexes, count fulfilled results, reject on the first rejection and resolve after all fulfill.
 
-### 25. Why is array sort tricky?
-**Answer:** Default sort compares string representations, so numeric sorting requires a comparator such as `(a, b) => a - b`. Sort also mutates the array.
+### Implement curry
+Track the target function's arity and accumulate supplied arguments until enough arguments exist to invoke the function.
 
-### 26. What happens when a method is passed as a callback?
-**Answer:** The original receiver is not automatically preserved for an ordinary function. Calling the detached function can change or lose `this`. Binding or an arrow wrapper can preserve the intended context.
+## Output prediction practice
 
-### 27. What is the difference between ESM and CommonJS?
-**Answer:** ESM uses `import/export` and has standardized module semantics. CommonJS uses `require/module.exports`. Node supports both with different resolution and interop rules.
+    console.log("A");
+    setTimeout(() => console.log("B"), 0);
+    Promise.resolve().then(() => console.log("C"));
+    console.log("D");
 
-### 28. What is a polyfill?
-**Answer:** A polyfill is an implementation that provides a platform feature to environments where that feature is unavailable.
+Typical browser output: A, D, C, B.
 
-### 29. How would you implement Promise.all conceptually?
-**Answer:** Convert inputs to promises, preserve input order, track how many have fulfilled, store each result at its original index, resolve when all fulfill, and reject immediately when a promise rejects.
+Explain the result using synchronous execution, microtasks and tasks instead of memorizing the output.
 
-### 30. What JavaScript topics should a senior frontend engineer be able to explain deeply?
-**Answer:** Scope/closures, execution context, this, prototypes, asynchronous execution, promises/event loop, memory, browser APIs, modules, immutability, functional patterns, performance and common implementation exercises such as debounce, throttle, memoization and Promise utilities.
+## Senior frontend scenario questions
 
-## Practical interview problems
+### Search API fires too many requests. What do you do?
+Debounce input, cancel obsolete requests where supported, protect against stale responses, show loading/error state, and consider server-side rate limits.
 
-### Problem 1 — Implement debounce
-**Solution:** Maintain a timer in a closure, clear the previous timer on every call, and schedule the latest invocation after the delay.
+### React state appears not to update correctly.
+Check mutation vs immutable updates, reference identity, stale closures, batching and whether the component actually reads the changed value.
 
-### Problem 2 — Implement throttle
-**Solution:** Track the last execution time or a pending timer and prevent execution until the configured interval has elapsed. Explicitly decide leading/trailing behavior.
+### Page becomes slow after navigating repeatedly.
+Inspect retained objects, listeners, timers, subscriptions and caches. Use browser heap snapshots and performance tooling rather than guessing.
 
-### Problem 3 — Implement memoize
-**Solution:** Keep a cache in a closure, derive a reliable key for the function's input domain, return cached values when present, otherwise calculate/store/return.
-
-### Problem 4 — Implement Promise.all
-**Solution:** Wrap each input with Promise.resolve, allocate a results array, track remaining promises, write each result by original index, reject on the first rejection, and resolve when the count reaches zero.
-
-### Problem 5 — Explain this output
-```js
-console.log("A");
-setTimeout(() => console.log("B"), 0);
-Promise.resolve().then(() => console.log("C"));
-console.log("D");
-```
-
-**Solution:** In a typical browser environment the output is `A D C B`: synchronous logs run first, the Promise reaction is a microtask, and the timer callback is a later task.
+### Dashboard takes too long to load.
+Identify independent requests and run them concurrently where safe, lazy-load heavy features, reduce initial JavaScript and measure before/after.
 
 ## Final revision checklist
 
-- [ ] Scope and TDZ
-- [ ] Execution context
-- [ ] Closures
+- [ ] values and types
+- [ ] equality and coercion
+- [ ] arrays and objects
+- [ ] destructuring/spread/rest
+- [ ] functions
+- [ ] scope/hoisting
+- [ ] execution context
 - [ ] this
-- [ ] Prototypes
-- [ ] Objects/arrays
+- [ ] closures
+- [ ] prototypes
+- [ ] Map/Set/WeakMap/WeakSet
+- [ ] Symbols
+- [ ] HOFs/callbacks
+- [ ] functional programming
+- [ ] currying/memoization
 - [ ] Promises
 - [ ] async/await
-- [ ] Event loop
-- [ ] Modules
-- [ ] Memory/GC
-- [ ] Debounce/throttle
-- [ ] Currying/memoization
-- [ ] Polyfills
-- [ ] Iterators/generators
-- [ ] Map/Set/WeakMap/WeakSet
+- [ ] async errors
+- [ ] event loop
+- [ ] cancellation
+- [ ] modules
+- [ ] dynamic import
+- [ ] generators/iterators
+- [ ] debounce/throttle
+- [ ] memory/GC
 - [ ] Proxy/Reflect
-- [ ] Async cancellation
-- [ ] Senior-level interview explanations
+- [ ] polyfills
+- [ ] practical implementation questions
