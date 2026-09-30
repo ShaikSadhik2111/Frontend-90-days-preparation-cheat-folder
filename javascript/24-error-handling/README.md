@@ -1,32 +1,37 @@
-# Error Handling
+# 24 — Error Handling
 
-Errors represent exceptional conditions that should be handled intentionally.
+## Throwing
+    function parseUser(input) {
+      if (!input.name) throw new Error("Name is required");
+      return input;
+    }
 
-## Synchronous errors
-```js
-try {
-  riskyOperation();
-} catch (error) {
-  handle(error);
-}
-```
+## try/catch/finally
+    try { parseUser({}); }
+    catch (error) { console.error(error.message); }
+    finally { console.log("validation finished"); }
 
-## Promise errors
-Use `.catch()` or `try/catch` around awaited operations.
+## Built-in errors
+- Error
+- TypeError
+- RangeError
+- SyntaxError
+- ReferenceError
 
-## Error objects
-Prefer meaningful error types/messages and preserve the original cause when wrapping errors.
+## Custom errors
+    class ValidationError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = "ValidationError";
+      }
+    }
 
-```js
-throw new Error("Unable to load user", { cause: originalError });
-```
+## Error architecture
+- API service: normalize transport failures.
+- Domain layer: classify business failures.
+- UI: show user-facing messages.
+- Global error boundary: capture unexpected failures.
 
-## Good practice
-- Handle errors at the correct boundary
-- Do not silently swallow failures
-- Distinguish expected failures from programming bugs
-- Never expose secrets in error messages
-- Log useful context without sensitive data
+Do not swallow errors silently, and never expose secrets in user-facing messages or uncontrolled logs.
 
-## Pitfall
-Returning `null` for every failure destroys error semantics and makes debugging harder.
+**Next:** the event loop explains when asynchronous callbacks execute.
