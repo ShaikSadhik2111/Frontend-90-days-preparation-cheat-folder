@@ -52,3 +52,12 @@ Split components around responsibility and state ownership, not arbitrary line c
 
 ### Interview drill
 Design an OrderTable with filters, selection, pagination, loading, empty, and error states. Explain which state belongs to the page, table, filter controls, and row components.
+
+## Deep reasoning
+A component maps props, state, and context to a React element tree. Keep rendering pure and make ownership explicit: the component that owns changing data should usually own that state, while children receive the minimum inputs and callbacks they need.
+
+### Production reasoning
+Split components around responsibility and state ownership, not arbitrary line counts. Avoid components that simultaneously own data fetching, complex business rules, layout, and low-level UI when separate boundaries make changes safer.
+
+### Interview drill
+Design an OrderTable with filters, selection, pagination, loading, empty, and error states. Explain which state belongs to the page, table, filter controls, and row components.
