@@ -1,5 +1,6 @@
 # Application Components
+Build complete product behaviors, not isolated widgets.
 
-Problems: dashboard, e-commerce, shopping cart, comments, notification system, file manager, image gallery and chat.
+Core problems: Todo, Kanban, cart, checkout, dashboard, chat, notifications, file upload and admin screens.
 
-Each solution should include architecture, state/data flow, API assumptions, edge cases, tests and performance notes.
+For each, model state ownership, async behavior, failure recovery, accessibility, performance and tests. Use `study-guide.md` plus the flagship folder for worked practice.

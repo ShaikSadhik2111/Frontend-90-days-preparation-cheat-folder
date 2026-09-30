@@ -1,3 +1,4 @@
-# Fundamentals
+# Machine Coding Fundamentals
+Before coding: clarify requirements, define acceptance criteria, component boundaries and state ownership.
 
-Every solution should consider requirements, assumptions, component ownership, local/shared/server state, data flow, API behavior, loading/error/empty/success states, accessibility, responsiveness, edge cases, performance and testing.
+Then implement a vertical slice, add loading/error/empty states, accessibility, edge cases, performance and tests. The nested topic files provide the interview checklist.

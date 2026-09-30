@@ -1,5 +1,4 @@
 # Data Display
+Study tables, data grids, sorting, filtering, pagination, infinite scroll, virtualization and tree views.
 
-Problems: data table, sorting, filtering, pagination, search, autocomplete/typeahead and virtualized list.
-
-Cover client vs server operations, debouncing, URL state, stable keys, large datasets, race conditions and accessibility.
+Start local, then move to server-side data and finally add caching, cancellation, URL state, virtualization, accessibility and tests.

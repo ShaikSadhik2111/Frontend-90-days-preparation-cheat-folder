@@ -1,5 +1,4 @@
-# fundamentals
+# Fundamentals
+Start with requirements, NFRs, constraints, scale estimation, browser/server boundaries and quality attributes.
 
-This topic is part of the 90-day frontend interview preparation syllabus.
-
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+Do not draw architecture until the problem and scale are explicit.

@@ -1,5 +1,4 @@
-# caching
+# Caching
+Study browser/HTTP/CDN/query/server caches, cache keys, freshness, invalidation, request coalescing and cache stampedes.
 
-This topic is part of the 90-day frontend interview preparation syllabus.
-
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+Always state the consistency/freshness requirement before choosing a caching strategy.

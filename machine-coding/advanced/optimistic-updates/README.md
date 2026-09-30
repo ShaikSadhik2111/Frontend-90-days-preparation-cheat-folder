@@ -1,3 +1,6 @@
-# optimistic updates
+# Optimistic Updates
+Update UI immediately, send mutation, then confirm or rollback.
 
-Machine-coding preparation topic.
+Before coding define rollback data and conflict behavior.
+
+Practice optimistic like/unlike, reorder and delete with server failure. Follow-up: duplicate requests and idempotency.

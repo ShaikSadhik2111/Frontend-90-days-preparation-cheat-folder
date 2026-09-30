@@ -1,5 +1,6 @@
-# Advanced
+# Advanced Machine Coding
+This folder covers correctness under concurrency and production constraints.
 
-Debounced search, caching, optimistic updates, polling, real-time UI, state machines, concurrency and race-condition handling.
+Topics: cancellation, stale responses, request deduplication, caching, optimistic updates, retries/backoff, polling, real-time UI, state machines and performance under large data.
 
-Explain stale data, cancellation, retries, request deduplication and optimistic rollback.
+Use `../study-guide.md` for the connected explanation. Practice by implementing one feature, then injecting slow responses, failures, duplicate events and unmounts.

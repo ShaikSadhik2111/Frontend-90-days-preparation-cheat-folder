@@ -1,3 +1,2 @@
 # Testing
-
-Cover component, interaction, validation, async, loading/error/empty, accessibility and edge-case testing. Prefer behavior-focused tests.
+Test user behavior, state transitions, keyboard paths, async races, loading/error/empty states and accessibility. Prioritize correctness invariants.
