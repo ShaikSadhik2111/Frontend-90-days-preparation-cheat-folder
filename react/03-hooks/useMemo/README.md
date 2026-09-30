@@ -41,3 +41,13 @@ Move into **state management and modern React** and decide when local state is e
 
 ## Official reference
 https://react.dev/reference/react/hooks
+
+
+## Deep reasoning
+useMemo caches a calculation result between renders until dependencies change. It is a performance optimization, not a correctness mechanism.
+
+### Production reasoning
+Profile before adding memoization. A large table filter may justify it; a trivial calculation usually does not. Also inspect component boundaries and state ownership before optimizing one calculation.
+
+### Interview drill
+Measure a slow table, identify the expensive calculation, add memoization, and verify the actual render or commit improvement.
