@@ -1,5 +1,9 @@
-# performance
+# Performance — Legacy Entry Point
 
-This topic is part of the 90-day frontend interview preparation syllabus.
+Performance is now taught in the connected Web Platform course at:
 
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+**16-web-performance**
+
+It connects rendering, networking, JavaScript execution, Core Web Vitals, resource loading, long tasks, memory, virtualization and measurement.
+
+The debugging workflow continues in **17-devtools-debugging**.
