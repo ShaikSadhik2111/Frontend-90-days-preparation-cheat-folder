@@ -1,5 +1,9 @@
-# security
+# Security — Legacy Entry Point
 
-This topic is part of the 90-day frontend interview preparation syllabus.
+Security is now taught in the connected Web Platform course at:
 
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+**14-browser-security**
+
+It covers origin, Same-Origin Policy, CORS, XSS, CSRF, CSP, Trusted Types, cookies, iframe isolation, postMessage and browser trust boundaries.
+
+Continue through the numbered Web Platform sequence rather than treating security as an isolated topic.
