@@ -105,14 +105,36 @@ User
 
 The goal is not to memorize TypeScript features independently. The goal is to understand **why the next feature becomes necessary because of the previous one**.
 
+## Single-source-of-truth standard
+
+These notes are intentionally written to be **learnable, not just revisable**.
+
+For every important topic, the folder should contain enough context to answer:
+
+1. What is this feature?
+2. Why does it exist?
+3. How does it work?
+4. What does the syntax look like?
+5. What are the important edge cases and mistakes?
+6. Where would I use it in a real frontend application?
+7. What would an interviewer expect me to explain?
+8. What practical exercise proves I understand it?
+9. Why does the next folder become necessary?
+
+The folders should therefore be usable months later as a **single source of truth for normal TypeScript learning, relearning and interview preparation**. External documentation is still useful for language-version-specific changes or specialist edge cases, but you should not need another tutorial to understand the core topic covered by this roadmap.
+
 ## Completion standard
 
-Before marking TypeScript complete, you should be able to explain both:
+Before marking TypeScript complete, you should be able to explain:
 
 **What does this feature do?**
 
-and
+**Why does it exist?**
 
-**Why did we need this feature after the previous topic?**
+**How does it behave?**
+
+**Where would I use it in a production frontend application?**
+
+**What problem does the next topic solve that this topic cannot?**
 
 Official Handbook: https://www.typescriptlang.org/docs/handbook/
