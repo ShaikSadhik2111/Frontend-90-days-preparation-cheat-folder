@@ -1,21 +1,34 @@
-# Dynamic Import
+# 29 — Dynamic Import
 
-Dynamic import loads a module asynchronously:
+Dynamic import() loads a module asynchronously and returns a Promise.
 
-```js
-const module = await import("./feature.js");
-```
+## Example
+    const module = await import("./feature.js");
+    module.start();
 
-## Uses
-- Code splitting
-- Lazy features
-- Optional dependencies
-- Reducing initial bundle work
+## Frontend use cases
+- route-level lazy loading
+- admin-only screens
+- heavy chart/editor libraries
+- optional features
+- reducing initial JavaScript
+
+Example:
+    button.addEventListener("click", async () => {
+      const { openEditor } = await import("./editor.js");
+      openEditor();
+    });
 
 Bundlers such as Vite and Webpack can turn dynamic imports into separate chunks.
 
-## Trade-offs
-Dynamic loading can improve initial load time but introduces additional network requests and loading states.
+## Loading and errors
+    try {
+      const module = await import("./feature.js");
+      module.start();
+    } catch (error) {
+      showFeatureError(error);
+    }
 
-## Interview connection
-Explain dynamic import together with lazy loading, code splitting and route-level optimization.
+Dynamic loading can reduce initial work but introduces loading latency, another request and loading/error states.
+
+**Next:** generators and iterators explain incremental value production.
