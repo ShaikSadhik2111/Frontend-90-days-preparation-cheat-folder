@@ -71,3 +71,58 @@ For every problem:
 10. Solve a variation.
 
 This is the standard required for the DSA section to support serious interview preparation.
+
+
+## End-to-end coverage contract
+
+A DSA topic is **not complete** when it only contains definitions or a list of patterns. Every major pattern must be taught through multiple implementations.
+
+For each important pattern, the learning sequence is:
+
+**What → Why → Recognition signals → Brute force → Bottleneck → Optimized idea → Invariant/state → JavaScript implementation → line-by-line explanation → dry run → complexity → edge cases → common bugs → variation → interview questions.**
+
+### Minimum coding coverage
+
+Each major pattern must have **at least 2–3 coding problems**, with additional problems for patterns that commonly appear in interviews.
+
+Problems should progress from:
+1. Basic implementation
+2. Standard interview problem
+3. Variation / harder problem
+
+### Coverage checklist
+
+The DSA roadmap must cover, where applicable:
+
+- JavaScript array/string operations and their complexity
+- Traversal and in-place techniques
+- Hashing, Map and Set
+- Two pointers
+- Sliding window
+- Prefix/suffix and prefix-sum techniques
+- Stack, queue, deque and monotonic structures
+- Linked-list pointer manipulation
+- Binary search and search-on-answer
+- Sorting algorithms and sorting-based problem solving
+- Heap / priority queue and Top-K problems
+- Intervals and sweep-line reasoning
+- Matrix/grid traversal
+- Recursion and call-stack reasoning
+- Backtracking and pruning
+- Trees: DFS, BFS, BST and path/state problems
+- Trie and prefix problems
+- Graphs: BFS, DFS, components, cycles, topological sort, shortest paths and bipartite graphs
+- Union-Find / DSU
+- Greedy reasoning and proof intuition
+- Dynamic programming: 1D, 2D, grid, knapsack, subsequence, string, state-machine and interval DP
+- Bit manipulation
+- Monotonic stack/deque
+- Mixed pattern recognition and interview revision
+
+### Completion rule
+
+A problem list alone does **not** count as completion. The corresponding topic README must contain enough worked examples for the learner to derive the solution rather than memorize it.
+
+The final goal is:
+
+**Recognize the pattern → derive brute force → identify the bottleneck → choose the data structure/technique → state the invariant → implement → trace every line → prove complexity → handle edge cases → solve a variation.**
