@@ -35,3 +35,53 @@ Check target runtime support for newer APIs.
 - request timeouts
 
 **Next:** modules create explicit dependency boundaries.
+
+## Deeper learning standard
+
+### AbortController mental model
+
+```text
+Controller
+   ↓ abort()
+AbortSignal
+   ↓
+fetch / API that honors signal
+   ↓
+operation rejects with abort-related error
+```
+
+Promises themselves are not cancellable. Cancellation is provided by the operation consuming the signal.
+
+### Search-as-you-type
+
+```js
+let controller;
+
+async function search(query) {
+  controller?.abort();
+  controller = new AbortController();
+
+  const response = await fetch(
+    `/api/search?q=${encodeURIComponent(query)}`,
+    { signal: controller.signal }
+  );
+
+  return response.json();
+}
+```
+
+Cancellation should normally be combined with stale-result protection because cancellation cannot guarantee that obsolete work has no effect everywhere.
+
+### Use cases
+
+- search requests
+- route changes
+- component cleanup
+- request timeout
+- uploads and streams where supported
+
+### Interview question
+
+Explain the difference between cancellation and stale-response protection. They solve different problems.
+
+**What this unlocks:** modules provide explicit dependency boundaries for application code.
