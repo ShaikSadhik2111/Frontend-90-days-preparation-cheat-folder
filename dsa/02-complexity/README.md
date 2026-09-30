@@ -1,41 +1,109 @@
 # 02 — Complexity Analysis
 
-## Why it matters
-The same correct answer can be unusable at scale. Complexity measures how runtime and memory grow with input size.
+Complexity describes how resource usage grows as input size n grows.
 
-## Core classes
-O(1), O(log n), O(n), O(n log n), O(n²), O(2^n), O(n!).
+## Common classes
 
-## Read code mechanically
-Ask how many times each loop can execute and what each operation inside costs.
+| Complexity | Typical example |
+|---|---|
+| O(1) | array index access |
+| O(log n) | binary search |
+| O(n) | one scan |
+| O(n log n) | merge sort |
+| O(n²) | pair comparison |
+| O(2^n) | many subset/backtracking trees |
+| O(n!) | permutations |
 
-Two sequential O(n) loops are O(n). A nested loop is not automatically O(n²); if two pointers each move only forward, total movement can still be O(n).
+## Problem 1 — Analyze loops
 
-## JavaScript costs
-- Array index: O(1)
-- push/pop: amortized O(1)
-- shift/unshift: typically O(n)
-- Array includes/indexOf: O(n)
-- Map/Set lookup: expected O(1)
-- sorting: O(n log n) is a common bound, but do not rely on undocumented implementation details
-- recursion: add call-stack space
+```js
+for (let i = 0; i < n; i++) {
+  console.log(i);
+}
+```
 
-## Example
-~~~js
+O(n).
+
+Nested independent loops:
+
+```js
 for (let i = 0; i < n; i++) {
   for (let j = 0; j < n; j++) {}
 }
-~~~
-The inner loop runs n times for each of n outer iterations: O(n²).
+```
 
-## Space
-Separate output space from auxiliary space. If an algorithm creates a Map containing n entries, that is O(n) auxiliary memory.
+O(n²).
 
-## Amortized analysis
-An occasional expensive dynamic-array resize does not make every append O(n); append is commonly O(1) amortized.
+Sequential loops add:
 
-## Interview habit
-Always state worst-case complexity unless the problem asks otherwise, then mention average/amortized behavior when relevant.
+O(n) + O(n) = O(n).
 
-## Next
-Arrays are the basic sequence structure from which many patterns are derived.
+## Problem 2 — Logarithmic reduction
+
+```js
+while (n > 1) {
+  n = Math.floor(n / 2);
+}
+```
+
+Each iteration halves n, so O(log n).
+
+## Problem 3 — Hidden nested loop
+
+Sliding-window algorithms often contain a for loop and while loop. Do not automatically call them O(n²).
+
+If left and right each move only forward n times total, total work is O(n).
+
+## Problem 4 — Recursion
+
+For binary search, one recursive branch is explored and the problem halves:
+
+O(log n) time and O(log n) call-stack space.
+
+For naive Fibonacci:
+
+```js
+function fib(n) {
+  if (n <= 1) return n;
+  return fib(n - 1) + fib(n - 2);
+}
+```
+
+There are exponentially many repeated subproblems.
+
+## Space categories
+
+Distinguish:
+- input space
+- auxiliary space
+- output space
+- call-stack space
+
+If an algorithm returns a new array of size n, that output is not automatically counted as auxiliary space.
+
+## Amortized complexity
+
+Dynamic arrays may occasionally resize, but repeated push operations are typically amortized O(1).
+
+## Expected vs worst case
+
+Hash Map/Set lookup is generally expected O(1), not an unconditional guarantee.
+
+## JavaScript-specific complexity traps
+
+- `shift()` / `unshift()`: typically O(n)
+- `push()` / `pop()`: amortized O(1)
+- `sort()`: implementation-dependent complexity; do not blindly claim a specific internal algorithm
+- `includes()`: O(n)
+- `Map.has/get/set`: expected O(1)
+- string operations can depend on string length
+
+## Interview drill
+
+For every solution state:
+
+**Time:** what operations repeat as n grows?
+
+**Space:** what additional state grows with n?
+
+Then identify whether the bound is worst-case, average/expected, or amortized.

@@ -1,59 +1,100 @@
 # 01 — Problem Solving Framework
 
-## Goal
-DSA interviews test whether you can derive an algorithm, not whether you remember a solution.
+This is the method to use before writing interview code.
 
-## Interview loop
-1. Clarify input, output, constraints, duplicates, ordering, and edge cases.
-2. Build the simplest correct brute-force solution.
-3. Identify repeated work.
-4. Look for structure: sortedness, frequency, contiguity, monotonicity, graph connectivity, overlapping subproblems.
-5. Choose a data structure/pattern.
-6. State the invariant.
-7. Implement.
-8. Dry-run normal and edge cases.
-9. Give time/space complexity.
-10. Explain trade-offs.
+## Step 1 — Clarify
 
-## Example — Two Sum
-~~~js
+Identify:
+- input type
+- output
+- constraints
+- duplicates
+- ordering
+- mutation requirements
+- empty input
+- valid/invalid input assumptions
+
+## Step 2 — Brute force
+
+Write the simplest correct solution first.
+
+Example: Two Sum.
+
+```js
+function twoSumBrute(nums, target) {
+  for (let i = 0; i < nums.length; i++) {
+    for (let j = i + 1; j < nums.length; j++) {
+      if (nums[i] + nums[j] === target) return [i, j];
+    }
+  }
+  return [];
+}
+```
+
+The important observation is that the inner loop repeatedly searches for a complement.
+
+## Step 3 — Identify the bottleneck
+
+Ask what work is repeated.
+
+For Two Sum, instead of searching the remainder of the array each time, remember values already seen.
+
+## Step 4 — Optimize
+
+```js
 function twoSum(nums, target) {
-  const seen = new Map();
+  const indexByValue = new Map();
 
   for (let i = 0; i < nums.length; i++) {
     const needed = target - nums[i];
 
-    if (seen.has(needed)) {
-      return [seen.get(needed), i];
+    if (indexByValue.has(needed)) {
+      return [indexByValue.get(needed), i];
     }
 
-    seen.set(nums[i], i);
+    indexByValue.set(nums[i], i);
   }
 
   return [];
 }
-~~~
+```
 
-### Line-by-line
-- Map stores previously processed values and their indices.
-- The loop visits each element once.
-- needed is the only value that can complete the current number.
-- has checks only earlier elements.
-- get returns the earlier index.
-- set happens after the check, preventing an element from matching itself.
-- return [] represents no pair.
+## Step 5 — State the invariant
 
-### Invariant
-Before index i is processed, seen contains exactly indices 0 through i-1.
+> Before processing index i, the Map contains the values and indices from indices 0..i-1.
 
-### Complexity
-Expected O(n) time and O(n) auxiliary space.
+## Step 6 — Trace
 
-## Debugging method
-When code fails, inspect input, initial state, each mutation, loop condition, invariant, and return condition. Do not immediately rewrite the algorithm.
+Use a small input and write every state change.
 
-## Practical rule
-For every problem write: brute force → bottleneck → observation → pattern → invariant → complexity.
+## Step 7 — Complexity
 
-## Next
-Complexity analysis tells you whether the solution can survive the input constraints.
+Brute force: O(n²) time, O(1) auxiliary space.
+
+Hashing: expected O(n) time, O(n) space.
+
+## Step 8 — Break it deliberately
+
+Try:
+- empty input
+- one item
+- duplicate values
+- negative values
+- no solution
+- multiple valid pairs
+
+## Step 9 — Variation
+
+Change the problem:
+- return all pairs
+- return values instead of indices
+- input is sorted
+- use constant extra space
+
+The correct pattern may change.
+
+## Core interview sequence
+
+**Clarify → brute force → bottleneck → observation → pattern → invariant → implementation → dry run → complexity → edge cases → trade-off → variation.**
+
+This sequence is more important than memorizing individual solutions.
