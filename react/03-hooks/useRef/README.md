@@ -41,3 +41,13 @@ Move into **state management and modern React** and decide when local state is e
 
 ## Official reference
 https://react.dev/reference/react/hooks
+
+
+## Deep reasoning
+A ref is a stable mutable cell that persists across renders without scheduling a render when current changes. Use state for visual data and refs for imperative handles or persistent values that should not themselves trigger rendering.
+
+### Production examples
+DOM focus, timer IDs, third-party widget instances, previous-value bookkeeping, and the latest value needed by an asynchronous callback.
+
+### Interview trap
+A ref is not a replacement for state. Hiding visual state in a ref produces UI that does not update when the value changes.
