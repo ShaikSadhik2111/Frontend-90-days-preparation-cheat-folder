@@ -1,31 +1,47 @@
-# Async / Await
+# 22 — Async / Await
 
-`async` functions always return promises. `await` pauses the async function's continuation until the awaited promise settles; it does not block the JavaScript thread in the usual sense.
+An async function always returns a Promise. await suspends that async function's continuation until the awaited Promise settles; it does not block the whole runtime.
 
-```js
-async function loadUser() {
-  const response = await fetch("/api/user");
-  return response.json();
-}
-```
-
-## Parallel work
-Avoid accidental sequential waits:
-
-```js
-const [users, orders] = await Promise.all([
-  loadUsers(),
-  loadOrders()
-]);
-```
+## API example
+    async function loadUser() {
+      const response = await fetch("/api/user");
+      if (!response.ok) throw new Error("Failed to load user");
+      return response.json();
+    }
 
 ## Error handling
-Use `try/catch` for local handling or allow rejection to propagate to a caller.
+    async function load() {
+      try {
+        return await loadUser();
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
+    }
 
-## Cancellation
-Promises themselves are not cancellable. APIs such as `fetch` can support cancellation through `AbortController`.
+## Sequential vs parallel
+Independent calls should often run together:
+    const [users, orders] = await Promise.all([
+      loadUsers(),
+      loadOrders()
+    ]);
 
-## Pitfalls
-- Awaiting independent operations sequentially
-- Forgetting to handle rejection
-- Assuming `await` blocks the entire runtime
+This is common for dashboard pages where widgets use independent APIs.
+
+## Loops
+Sequential:
+    for (const id of ids) {
+      await loadUser(id);
+    }
+
+Concurrent when appropriate:
+    const users = await Promise.all(ids.map(id => loadUser(id)));
+
+Consider API rate limits before increasing concurrency.
+
+## finally
+    try { await save(); }
+    catch (error) { handle(error); }
+    finally { hideLoader(); }
+
+**Interview checklist:** async return type, await semantics, parallel work, try/catch/finally, Promise composition, cancellation.
