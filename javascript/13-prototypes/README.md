@@ -1,35 +1,119 @@
-# Prototypes
+# 13 — Prototypes
 
-JavaScript objects can delegate property lookup through a prototype chain.
+## Core idea
+
+JavaScript uses prototype-based delegation.
+
+If a property is not found directly on an object, JavaScript looks through its prototype chain.
+
+```text
+object
+  ↓
+prototype
+  ↓
+prototype's prototype
+  ↓
+null
+```
+
+## 1. Object.create
 
 ```js
 const animal = {
-  speak() { return "sound"; }
+  speak() {
+    return "sound";
+  }
 };
 
 const dog = Object.create(animal);
 dog.name = "Rex";
-dog.speak();
+
+dog.speak(); // "sound"
 ```
 
-If a property is not found on the object, JavaScript looks up its prototype, continuing until `null`.
+`dog` does not own `speak`; lookup delegates to `animal`.
 
-## Constructor functions and classes
-`class` syntax provides a higher-level model over JavaScript's prototype-based inheritance.
+## 2. Own vs inherited
+
+```js
+Object.hasOwn(dog, "name");  // true
+Object.hasOwn(dog, "speak"); // false
+```
+
+## 3. Constructor functions
+
+```js
+function User(name) {
+  this.name = name;
+}
+
+User.prototype.greet = function () {
+  return `Hi ${this.name}`;
+};
+
+const user = new User("Sam");
+
+user.greet();
+```
+
+The `greet` function is shared through the prototype instead of being created separately for every instance.
+
+## 4. Classes use prototypes
 
 ```js
 class User {
-  greet() { return "hello"; }
+  constructor(name) {
+    this.name = name;
+  }
+
+  greet() {
+    return `Hi ${this.name}`;
+  }
 }
+
+const user = new User("Sam");
 ```
 
-Methods are placed on `User.prototype`, rather than copied into every instance.
+Conceptually, `greet` lives on `User.prototype`.
 
-## Key methods
-- `Object.create`
-- `Object.getPrototypeOf`
-- `Object.setPrototypeOf`
-- `hasOwn`
+## 5. Real frontend use
 
-## Pitfalls
-Prototype inheritance is not the same as classical class inheritance. Property lookup and delegation are the core mechanism.
+Prototype knowledge helps when debugging:
+
+- class instances
+- inherited methods
+- third-party libraries
+- `instanceof`
+- custom data structures
+- polyfills
+
+Example:
+
+```js
+console.log(user instanceof User); // true
+console.log(Object.getPrototypeOf(user) === User.prototype); // true
+```
+
+## 6. Prototype mutation warning
+
+Changing built-in prototypes globally is usually dangerous:
+
+```js
+// Avoid in application code:
+Array.prototype.myMethod = ...
+```
+
+It can create collisions and surprising behavior across the application.
+
+## Interview checklist
+
+- prototype chain
+- property lookup
+- own vs inherited
+- Object.create
+- constructor functions
+- class/prototype relationship
+- instanceof
+- why prototype mutation is risky
+
+**Next:** Map/Set and weak collections solve different collection problems.
