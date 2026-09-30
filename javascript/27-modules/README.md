@@ -1,35 +1,25 @@
-# Modules
+# 27 — Modules
 
-Modules create explicit boundaries for code and dependencies.
+Modules create explicit boundaries for dependencies, exports, encapsulation, reuse and testing.
 
-## ES Modules
-```js
-export function add(a, b) { return a + b; }
-export default class User {}
-```
+## Named exports
+    // math.js
+    export function add(a, b) { return a + b; }
+    export function multiply(a, b) { return a * b; }
+    // consumer
+    import { add, multiply } from "./math.js";
 
-```js
-import User, { add } from "./user.js";
-```
+## Default export
+    export default class UserService {}
+    import UserService from "./UserService.js";
 
-## CommonJS
-Node historically used:
+## Frontend architecture
+A feature can be split into UserPage.js, userService.js, userMapper.js and userValidation.js. Imports make the dependency graph explicit instead of relying on globals.
 
-```js
-const fs = require("node:fs");
-module.exports = {};
-```
+## Circular dependencies
+Cycles can produce partially initialized bindings or confusing runtime behavior. Often shared logic should move into a third module.
 
-Modern Node supports ESM as well.
+## ESM vs CommonJS
+ESM uses import/export. CommonJS uses require/module.exports. Node supports both with different resolution and interop rules.
 
-## Benefits
-- Encapsulation
-- Dependency clarity
-- Reusability
-- Better tooling
-- Easier testing
-
-## Pitfalls
-- Mixing ESM and CommonJS without understanding interop
-- Circular dependencies
-- Confusing default and named exports
+**Next:** CommonJS interop.
