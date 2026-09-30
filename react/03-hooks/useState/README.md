@@ -41,3 +41,13 @@ Move into **state management and modern React** and decide when local state is e
 
 ## Official reference
 https://react.dev/reference/react/hooks
+
+
+## Deep reasoning
+Each render receives a state snapshot, and event handlers close over that snapshot. Setters queue updates rather than mutating the current render's value.
+
+### Critical pattern
+When the next value depends on the previous value, use a functional updater. This makes multiple queued updates compose correctly.
+
+### Interview drill
+Explain the difference between three direct increments and three functional increments, including the role of closures and batching.
