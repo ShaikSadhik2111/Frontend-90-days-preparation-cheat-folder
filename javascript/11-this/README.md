@@ -1,28 +1,129 @@
-# this
+# 11 — this
 
-`this` is determined primarily by how a function is called, not where it is defined.
+## Core rule
 
-## Common rules
-1. Constructor call: `new` creates a new instance and binds `this`.
-2. Explicit binding: `call`, `apply`, `bind`.
-3. Method call: `obj.fn()` gives `obj` as `this`.
-4. Plain function call: depends on strict mode; in strict mode `this` is `undefined`.
-5. Arrow functions do not create their own `this`; they capture it lexically.
+For an ordinary function, `this` is primarily determined by **how the function is called**.
+
+Arrow functions are different: they capture `this` lexically from their surrounding scope.
+
+## 1. Method call
 
 ```js
 const user = {
   name: "Sam",
-  normal() { return this.name; },
+  greet() {
+    return `Hello ${this.name}`;
+  }
+};
+
+user.greet(); // Hello Sam
+```
+
+The call form `user.greet()` supplies `user` as the receiver.
+
+## 2. Detached method
+
+```js
+const greet = user.greet;
+
+// In strict/module code, this is not user.
+greet();
+```
+
+Passing a method as a callback does not automatically preserve its receiver.
+
+### Frontend use case
+
+This can appear when passing class methods to event handlers or callbacks.
+
+## 3. Explicit binding
+
+```js
+function greet(prefix) {
+  return `${prefix} ${this.name}`;
+}
+
+const user = { name: "Sam" };
+
+greet.call(user, "Hello");
+greet.apply(user, ["Hello"]);
+
+const bound = greet.bind(user);
+bound("Hello");
+```
+
+- `call`: invokes immediately with explicit `this`
+- `apply`: same idea with an argument array
+- `bind`: returns a new function with fixed `this`
+
+## 4. Constructor call
+
+```js
+function User(name) {
+  this.name = name;
+}
+
+const user = new User("Sam");
+```
+
+With `new`, a new object is created and used as `this`, with prototype linkage established.
+
+## 5. Arrow functions
+
+```js
+const user = {
+  name: "Sam",
+
+  normal() {
+    return this.name;
+  },
+
   arrow: () => this.name
 };
 ```
 
-Do not expect the arrow method above to use `user` as its `this`.
+The arrow does not get `user` as `this`.
 
-## bind
-`bind` returns a new function with a fixed `this` and optionally pre-filled arguments.
+A practical pattern:
 
-## Pitfalls
-- Confusing lexical `this` with dynamic call-site binding
-- Losing `this` when passing a method as a callback
-- Assuming arrow functions can be rebound with `call`/ `bind`
+```js
+const user = {
+  name: "Sam",
+
+  greetLater() {
+    setTimeout(() => {
+      console.log(this.name);
+    }, 100);
+  }
+};
+```
+
+The arrow callback captures `this` from `greetLater`.
+
+## 6. Strict mode
+
+In strict-mode ordinary function calls:
+
+```js
+"use strict";
+
+function test() {
+  return this;
+}
+
+console.log(test()); // undefined
+```
+
+ES modules are strict by default.
+
+## Interview checklist
+
+- method call
+- plain call
+- constructor call
+- call/apply/bind
+- arrow lexical `this`
+- detached methods
+- strict mode
+
+**Next:** closures connect functions with the lexical environments they retain.
