@@ -1,19 +1,33 @@
-# Throttling
+# 32 — Throttling
 
-Throttling limits execution to at most a controlled frequency during a burst of calls.
+Throttling limits how often a function executes during a burst of calls.
 
-Typical uses:
-- Scroll handlers
-- Pointer movement
-- Resize
-- Analytics events
+## Basic implementation
+    function throttle(fn, interval) {
+      let lastTime = 0;
+      return function (...args) {
+        const now = Date.now();
+        if (now - lastTime >= interval) {
+          lastTime = now;
+          fn.apply(this, args);
+        }
+      };
+    }
 
-## Concept
-If calls arrive continuously, execute at most once per interval according to the chosen leading/trailing behavior.
+## Use cases
+- scroll handlers
+- pointer movement
+- resize
+- analytics events
+- drag interactions
+
+Example:
+    window.addEventListener("scroll", throttle(updateScrollPosition, 100));
 
 ## Debounce vs throttle
 - Debounce: wait for inactivity.
 - Throttle: limit frequency while activity continues.
 
-## Interview concern
-Define whether the first call, last call, or both should execute. That choice changes implementation behavior.
+A production throttle should define leading/trailing behavior: first call, last call, or both.
+
+**Next:** memory management explains object lifetime and retention.
