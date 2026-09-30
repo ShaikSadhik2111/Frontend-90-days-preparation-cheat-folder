@@ -35,3 +35,49 @@
 Do not swallow errors silently, and never expose secrets in user-facing messages or uncontrolled logs.
 
 **Next:** the event loop explains when asynchronous callbacks execute.
+
+## Deeper learning standard
+
+### Error propagation
+
+If a function does not catch an exception, it can propagate to its caller. Catch where you can recover, translate, add useful context or perform required cleanup.
+
+```js
+try {
+  await saveUser();
+} catch (error) {
+  showError(error);
+} finally {
+  hideLoader();
+}
+```
+
+### Frontend architecture
+
+```text
+API/service
+   ↓
+transport error
+   ↓
+domain classification
+   ↓
+UI state
+   ↓
+user-facing message
+```
+
+Unexpected rendering failures can be captured by a framework error boundary, but error boundaries are not a replacement for Promise rejection handling.
+
+### Common mistakes
+
+- swallowing errors
+- exposing stack traces to users
+- logging secrets
+- classifying errors only by message text
+- catching without adding value
+
+### Practical challenge
+
+Create a service error type that preserves the original cause while exposing a safe user-facing category.
+
+**What this unlocks:** the event loop explains when Promise continuations, timers and other asynchronous callbacks actually execute.
