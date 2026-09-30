@@ -1,3 +1,4 @@
-# interaction testing
+# Interaction Testing
+Test keyboard, pointer and rapid interactions: ArrowDown autocomplete, Escape modal, double-submit, drag reorder and undo.
 
-Machine-coding preparation topic.
+Control async response timing to test races.

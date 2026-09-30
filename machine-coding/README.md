@@ -1,13 +1,36 @@
-# Machine Coding — Interview-Ready Track
+# Machine Coding — Complete Interview Track
 
-Machine coding tests requirement clarification, component design, state modeling, correctness, accessibility, performance, testing and communication under time pressure.
+This track is a build-practice curriculum, not a list of UI components. Every problem should be implemented under a timer and reviewed for correctness, accessibility, performance and testability.
 
-Workflow: Clarify → Model → Component tree → State/data flow → Vertical slice → Edge states → Accessibility → Performance → Tests → Trade-offs.
+## Learning order
 
-For every problem define requirements, acceptance criteria, state model, component boundaries, API assumptions, loading/empty/error states, edge cases, keyboard behavior, performance risks, tests and follow-ups.
+Requirements → Component design → State/data flow → Async/concurrency → Common components → Data-heavy UI → Forms → Interaction → Application components → Testing → Performance → Production follow-ups.
 
-Study guides: fundamentals, common-components, data-display, forms, interaction, application-components, advanced, testing and interview-framework.
+## Coverage
 
-Core practice: autocomplete, debounced search, modal, tabs, accordion, dropdown, toast, pagination, table, infinite scroll, virtualization, tree view, multi-step form, dependent fields, date picker, drag/drop, undo/redo, todo, kanban, cart, chat, notifications, dashboard and file upload.
+- [Complete topic catalog](./topic-catalog.md)
+- [80-problem bank](./problem-bank.md)
+- [Flagship problems](./flagship-problems.md)
+- [Fundamentals](./fundamentals/study-guide.md)
+- [Common components](./common-components/study-guide.md)
+- [Data display](./data-display/study-guide.md)
+- [Forms](./forms/study-guide.md)
+- [Interaction](./interaction/study-guide.md)
+- [Applications](./application-components/study-guide.md)
+- [Concurrency](./advanced/study-guide.md)
+- [Testing](./testing/study-guide.md)
+- [Interview framework](./interview-framework/study-guide.md)
 
-Rule: rebuild from requirements with a timer; do not memorize implementations.
+## Problem-solving contract
+
+For every problem produce: requirements, acceptance criteria, component tree, state model, API/data model, loading/empty/error states, edge cases, accessibility, performance risks, tests and interviewer follow-ups.
+
+## Mastery levels
+
+Level 1: build happy path.
+Level 2: add loading/error/empty and edge cases.
+Level 3: add accessibility and tests.
+Level 4: add concurrency/caching/performance.
+Level 5: explain architecture and trade-offs under interview pressure.
+
+Do not consider a problem complete because the UI works once.

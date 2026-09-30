@@ -1,5 +1,16 @@
-# requirements
+# Requirements Engineering
 
-This topic is part of the 90-day frontend interview preparation syllabus.
+## Functional requirements
+Write the user journeys first: who acts, what they do, what data changes, and what success looks like.
 
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+## Non-functional requirements
+Clarify latency targets, freshness, availability, accessibility, security, scale, browser support and observability.
+
+## Questions
+Users? Devices? Auth? Peak concurrency? Data size? Read/write ratio? Real-time? Offline? SEO? Regulatory constraints? Team ownership?
+
+## Interview output
+Write assumptions explicitly, then convert each requirement into an architectural consequence.
+
+## Practice
+For an order dashboard, write 5 functional and 5 non-functional requirements before drawing architecture.

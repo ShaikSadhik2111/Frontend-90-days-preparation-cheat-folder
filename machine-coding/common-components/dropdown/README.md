@@ -1,3 +1,6 @@
-# dropdown
+# Dropdown — Machine Coding
+Requirements: open/close, selection, keyboard navigation, outside click and disabled options.
 
-Machine-coding preparation topic. Detailed notes, implementation examples, trade-offs, edge cases, testing, and interview guidance will be added when this topic is studied.
+Hard parts: positioning, portals, Escape, focus restoration and typeahead.
+
+Prefer native select when requirements permit it. Follow-ups: async options, multi-select and virtualization.

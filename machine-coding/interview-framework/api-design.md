@@ -1,3 +1,4 @@
-# API Design
+# API Design in Machine Coding
+Define endpoint/input, response shape, loading/error states, pagination, cancellation, retry and cache key. Keep API details out of presentational components.
 
-Define endpoint/method, request/response model, loading/error behavior, retry/cancellation, pagination/filter/sort semantics, caching and race-condition handling. Separate API access from presentation when useful.
+Follow-up: how does the UI behave when the endpoint is slow or returns partial data?

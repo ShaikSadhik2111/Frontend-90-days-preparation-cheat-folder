@@ -1,3 +1,4 @@
-# edge case testing
+# Edge-Case Testing
+Build a matrix for empty, slow, failed, duplicate, stale, offline, unauthorized, huge-data and unmount scenarios.
 
-Machine-coding preparation topic.
+Prioritize tests around correctness invariants and user-critical flows.

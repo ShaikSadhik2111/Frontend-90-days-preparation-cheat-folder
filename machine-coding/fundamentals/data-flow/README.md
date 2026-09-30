@@ -1,3 +1,6 @@
-# data flow
+# Data Flow
+Use user event → state transition → request/action → result → state → render.
 
-Machine-coding preparation topic. Detailed notes, implementation examples, trade-offs, edge cases, testing, and interview guidance will be added when this topic is studied.
+Define who owns data and who can mutate it. Avoid duplicated sources of truth.
+
+Practice: trace a table filter from input to API request to rendered rows.

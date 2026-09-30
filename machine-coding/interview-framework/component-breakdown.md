@@ -1,7 +1,4 @@
 # Component Breakdown
+Identify page/container, feature components, reusable primitives and data boundaries. For each: responsibility, props, events, owned state and side effects.
 
-Example:
-
-Page → Toolbar (Search, Filters, Actions) → Content (Table, EmptyState) → Pagination.
-
-Define responsibility, props, state ownership and callbacks. Avoid both giant components and excessive fragmentation.
+Avoid splitting purely to reduce file size.

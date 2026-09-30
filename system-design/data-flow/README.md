@@ -1,5 +1,15 @@
-# data flow
+# Frontend Data Flow
 
-This topic is part of the 90-day frontend interview preparation syllabus.
+Model:
+user intent → component event → state transition → query/mutation → network → validation → cache/store → render.
 
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+Distinguish:
+- UI state
+- server state
+- derived state
+- URL state
+- persisted state.
+
+Prevent duplicated sources of truth. Define ownership and update direction.
+
+Practice: trace a filter change from URL input through API request, cache update and table render.

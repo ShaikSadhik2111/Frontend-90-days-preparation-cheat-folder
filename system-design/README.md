@@ -1,9 +1,36 @@
-# Frontend System Design — Study Track
+# Frontend System Design — Complete Interview Track
 
-Sequence: Requirements → Constraints → Scale → Architecture → State ownership → API/data flow → Caching → Reliability → Performance → Security → Accessibility → Observability → Deployment → Trade-offs → Case studies.
+This is the senior frontend system-design curriculum. The folders are intentionally broad; each topic is a decision point in a real system.
 
-For every design answer: clarify users and flows; separate functional/NFR requirements; estimate scale; define browser/server boundaries; choose rendering/deployment; define module and state boundaries; design APIs; define caching and invalidation; handle loading/empty/error/retry/cancellation/stale data; review performance/security/accessibility; add observability; explain trade-offs.
+## Learning order
 
-Study guides: fundamentals, architecture, state-management, api-data, api-contracts, caching, performance, security, scalability, real-time-applications, micro-frontends, design-systems, file-processing-systems, large-form-design, search-filter-systems, reliability-failure-modes, observability, real-world-designs, interview-questions.
+Requirements → Estimation → Constraints/Trade-offs → Architecture → Layering/Modularity → Feature Architecture → State → Data Flow → API Contracts → Caching → Performance → Security → Reliability → Offline → Real-time → Scalability → Deployment → Observability → Testing → Specialized Systems → Case Studies → Interview Drills.
 
-Core mental model: a frontend is a distributed client coordinating UI state, server state, browser APIs, network failures, auth, rendering and multiple teams. Do not memorize diagrams; explain why each boundary exists and what changes at 10× scale.
+## Coverage
+
+- [Complete topic catalog](./topic-catalog.md)
+- [60-problem design bank](./problem-bank.md)
+- [Requirements](./requirements/README.md)
+- [Estimation](./estimation/README.md)
+- [Architecture](./architecture/study-guide.md)
+- [State architecture](./state-management/study-guide.md)
+- [API/data](./api-data/study-guide.md)
+- [Caching](./caching/study-guide.md)
+- [Performance](./performance/study-guide.md)
+- [Security](./security/study-guide.md)
+- [Reliability](./reliability-failure-modes/study-guide.md)
+- [Real-time](./real-time-applications/study-guide.md)
+- [Micro-frontends](./micro-frontends/study-guide.md)
+- [Offline-first](./offline-first/README.md)
+- [File processing](./file-processing-systems/study-guide.md)
+- [Large forms](./large-form-design/study-guide.md)
+- [Search/filter](./search-filter-systems/study-guide.md)
+- [Observability](./observability/study-guide.md)
+- [Testing](./testing/README.md)
+- [Worked case studies](./real-world-designs/study-guide.md)
+
+## Senior answer contract
+
+For every design: clarify requirements; estimate scale; define architecture; assign state ownership; define API/data flow; explain caching; model loading/error/offline/conflict; address performance/security/accessibility; add observability; explain trade-offs and what changes at 10× scale.
+
+Do not treat a topic list as completion. The goal is to be able to reason through the design aloud.

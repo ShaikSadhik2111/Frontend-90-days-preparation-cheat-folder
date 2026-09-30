@@ -1,5 +1,12 @@
-# layering modularity
+# Layering and Modularity
 
-This topic is part of the 90-day frontend interview preparation syllabus.
+Layers can be:
+UI → application → domain → data access → infrastructure.
 
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+UI should express interaction, not know transport details. Data access should handle DTOs and transport. Domain logic should remain testable without the browser where possible.
+
+Modularity is successful when a change stays inside the smallest reasonable boundary.
+
+Red flags: circular imports, shared dumping grounds, feature internals imported elsewhere, giant hooks and components with unrelated responsibilities.
+
+Practice: refactor a component that fetches data, transforms it, owns global state and renders four unrelated sections.

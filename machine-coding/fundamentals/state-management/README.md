@@ -1,3 +1,6 @@
-# state management
+# State Management
+Classify state as local UI, form, URL, server, shared client or derived.
 
-Machine-coding preparation topic. Detailed notes, implementation examples, trade-offs, edge cases, testing, and interview guidance will be added when this topic is studied.
+Keep ownership close to consumers. Server data needs explicit loading/error/stale/refetch states.
+
+Challenge: assign owners for cart, filters, modal, query results and selected row.

@@ -1,3 +1,8 @@
-# button
+# Button — Machine Coding
+Requirements: variants, disabled/loading, click handling, keyboard behavior and accessible name.
 
-Machine-coding preparation topic. Detailed notes, implementation examples, trade-offs, edge cases, testing, and interview guidance will be added when this topic is studied.
+State is usually controlled by the parent. Prevent duplicate submits and preserve focus-visible behavior.
+
+Tests: click, disabled, loading, keyboard and accessible name.
+
+Follow-ups: polymorphic API, icon-only buttons, analytics and async actions.

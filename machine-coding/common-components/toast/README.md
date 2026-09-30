@@ -1,3 +1,6 @@
-# toast
+# Toast — Machine Coding
+Model a queue with ID, type, message, timeout and dismissal.
 
-Machine-coding preparation topic. Detailed notes, implementation examples, trade-offs, edge cases, testing, and interview guidance will be added when this topic is studied.
+Clean up timers, handle duplicates and define focus behavior.
+
+Follow-ups: pause on hover/focus, persistence and global notification API.

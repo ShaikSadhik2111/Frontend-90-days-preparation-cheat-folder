@@ -1,5 +1,16 @@
-# constraints tradeoffs
+# Constraints and Trade-offs
 
-This topic is part of the 90-day frontend interview preparation syllabus.
+A senior answer states what is optimized and what is sacrificed.
 
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+Common pairs:
+- freshness vs cacheability
+- latency vs consistency
+- simplicity vs independent deployment
+- bundle size vs functionality
+- optimistic UX vs rollback complexity
+- virtualization vs accessibility/measurement complexity
+- micro-frontends vs runtime complexity
+
+Use: decision → reason → downside → mitigation → trigger for revisiting.
+
+Practice: choose between polling and WebSocket for a notification center and defend the decision.

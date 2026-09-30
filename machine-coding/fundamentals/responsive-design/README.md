@@ -1,3 +1,4 @@
-# responsive design
+# Responsive Design
+Consider narrow widths, touch targets, overflow, long text and dynamic content. Prefer CSS layout over JavaScript viewport checks when possible.
 
-Machine-coding preparation topic. Detailed notes, implementation examples, trade-offs, edge cases, testing, and interview guidance will be added when this topic is studied.
+Challenge: build a data card from mobile to desktop without layout shift.

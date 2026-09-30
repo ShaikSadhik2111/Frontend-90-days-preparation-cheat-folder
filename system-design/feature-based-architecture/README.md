@@ -1,5 +1,19 @@
-# feature based architecture
+# Feature-Based Architecture
 
-This topic is part of the 90-day frontend interview preparation syllabus.
+Organize around business capabilities rather than technical file type.
 
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+Example:
+features/orders/{api,components,hooks,model}
+features/customers/{api,components,model}
+shared/{ui,lib,config}
+
+Rules:
+- features own domain behavior
+- shared cannot depend on features
+- expose stable public APIs
+- avoid deep imports
+- keep infrastructure behind boundaries.
+
+When an abstraction is used once, keep it local until reuse is proven.
+
+Practice: split a repair application into Orders, Customers, Repairs and shared UI.
