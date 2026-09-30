@@ -1,18 +1,21 @@
-# typeof
+# 20 — typeof
 
-There are two important meanings.
+## Connection from Previous Topic
 
-## JavaScript runtime typeof
+`keyof` derives keys from a type. TypeScript's type-level `typeof` lets us derive a type from an existing value.
+
+## Two meanings of typeof
+
+### JavaScript runtime operator
 
 ```ts
-typeof "hello"; // "string"
-typeof 10;      // "number"
-typeof true;    // "boolean"
+console.log(typeof "hello"); // "string"
+console.log(typeof 10);      // "number"
 ```
 
-## TypeScript type-level typeof
+This executes at runtime.
 
-It can obtain the type of an existing value:
+### TypeScript type operator
 
 ```ts
 const config = {
@@ -23,7 +26,32 @@ const config = {
 type Config = typeof config;
 ```
 
-This is useful when one runtime object should be the source of truth for a type.
+This exists only for type checking.
+
+## Why derive types from values?
+
+It creates one source of truth:
+
+```ts
+const routes = {
+  home: "/",
+  users: "/users",
+} as const;
+
+type Routes = typeof routes;
+type RouteName = keyof typeof routes;
+```
+
+If the value changes, the derived types change with it.
+
+## Frontend use cases
+
+- route/config objects
+- feature flags
+- constant maps
+- design tokens
+- API configuration
+- event maps
 
 ## Interview trap
 
@@ -40,3 +68,13 @@ type T = typeof value;
 ```
 
 inside a type position.
+
+## Mini challenge
+
+Create a `permissions` object with `as const`, then derive its type and its key union without repeating the names manually.
+
+## What This Unlocks Next
+
+We can derive a whole type from a value. Next we select **specific property types** from a type:
+
+**typeof → Indexed Access Types**.
