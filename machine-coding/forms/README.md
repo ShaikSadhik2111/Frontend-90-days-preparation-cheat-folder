@@ -1,5 +1,4 @@
 # Forms
+Practice basic forms, multi-step forms, dependent fields, dynamic fields, validation, autosave and draft recovery.
 
-Problems: validation, multi-step form, dynamic form, file upload.
-
-Cover controlled/uncontrolled inputs, validation timing, touched/dirty state, server errors, submission/reset, accessibility, file constraints and cancellation.
+Separate field, cross-field and server validation. Model dirty/saving/saved/error/conflict states.

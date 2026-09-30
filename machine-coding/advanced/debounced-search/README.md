@@ -1,3 +1,6 @@
-# debounced search
+# Debounced Search
+Implement input → debounce → request → loading/results/error.
 
-Machine-coding preparation topic.
+Important: debounce reduces request frequency; it does not solve stale responses. Add cancellation and request identity protection.
+
+Follow-ups: cache, keyboard selection, minimum query length and ranking.

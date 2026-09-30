@@ -1,5 +1,2 @@
-# scalability
-
-This topic is part of the 90-day frontend interview preparation syllabus.
-
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+# Scalability
+Cover runtime scale and organizational scale: CDN, caching, pagination, virtualization, team ownership, feature flags, CI/CD and deployment boundaries.

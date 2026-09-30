@@ -1,5 +1,4 @@
-# micro frontends
+# Micro-Frontends
+Study organizational justification, module federation, shared dependencies, routing, auth, communication, deployment and failure isolation.
 
-This topic is part of the 90-day frontend interview preparation syllabus.
-
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+Compare against a modular monolith before choosing this complexity.

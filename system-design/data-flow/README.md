@@ -1,15 +1,4 @@
-# Frontend Data Flow
+# Data Flow
+Trace user intent → state transition → API/query → validation → cache/store → render.
 
-Model:
-user intent → component event → state transition → query/mutation → network → validation → cache/store → render.
-
-Distinguish:
-- UI state
-- server state
-- derived state
-- URL state
-- persisted state.
-
-Prevent duplicated sources of truth. Define ownership and update direction.
-
-Practice: trace a filter change from URL input through API request, cache update and table render.
+Define one source of truth for each important state and avoid duplicated update paths.

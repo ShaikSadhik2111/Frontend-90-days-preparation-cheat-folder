@@ -1,5 +1,4 @@
-# file processing systems
+# File Processing Systems
+Study resumable uploads, chunking, progress, cancellation, object storage, async processing, validation, scanning and secure downloads.
 
-This topic is part of the 90-day frontend interview preparation syllabus.
-
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+Separate binary transfer from long-running processing.

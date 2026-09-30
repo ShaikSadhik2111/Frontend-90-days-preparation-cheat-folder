@@ -1,5 +1,4 @@
-# api data
+# API and Data
+Model query lifecycle, pagination, cancellation, retries, optimistic mutations, stale data and request races.
 
-This topic is part of the 90-day frontend interview preparation syllabus.
-
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+Practice designing a query layer that owns server-state concerns instead of duplicating responses across components.

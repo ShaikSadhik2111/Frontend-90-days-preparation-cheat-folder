@@ -1,5 +1,2 @@
-# search filter systems
-
-This topic is part of the 90-day frontend interview preparation syllabus.
-
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+# Search and Filter Systems
+Study debounce, cancellation, stale-response protection, server-side filtering/ranking, cache keys, pagination and accessible autocomplete.

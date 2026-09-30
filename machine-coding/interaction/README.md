@@ -1,5 +1,4 @@
 # Interaction
+Practice autocomplete, debounce, keyboard navigation, drag/drop, outside-click behavior, context menus and undo/redo.
 
-Problems: drag-and-drop, Kanban board, infinite scroll, undo/redo and keyboard navigation.
-
-Focus on state transitions, persistence, optimistic updates, accessibility, boundaries and performance.
+Focus on event ordering, focus management, async races and accessibility rather than only visual behavior.

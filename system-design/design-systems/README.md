@@ -1,5 +1,4 @@
-# design systems
+# Design Systems
+Study tokens, component contracts, accessibility, theming, responsive behavior, versioning, documentation and governance.
 
-This topic is part of the 90-day frontend interview preparation syllabus.
-
-Detailed notes, examples, exercises, interview questions with direct answers, pitfalls, and revision notes will be added when this topic is studied.
+A design system is an engineering platform with APIs and ownership, not only a component library.
