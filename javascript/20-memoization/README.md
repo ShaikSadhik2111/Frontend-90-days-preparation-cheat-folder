@@ -1,31 +1,90 @@
-# Memoization
+# 20 — Memoization
 
-Memoization caches function results so repeated calls with equivalent inputs can avoid repeated expensive computation.
+Memoization caches a function's result so repeated calls with equivalent inputs can reuse previous work.
+
+## 1. Basic example
 
 ```js
 function memoize(fn) {
   const cache = new Map();
-  return (...args) => {
-    const key = JSON.stringify(args);
-    if (cache.has(key)) return cache.get(key);
-    const result = fn(...args);
-    cache.set(key, result);
+
+  return value => {
+    if (cache.has(value)) {
+      return cache.get(value);
+    }
+
+    const result = fn(value);
+    cache.set(value, result);
     return result;
   };
 }
+
+const square = memoize(n => n * n);
+
+square(10); // calculates
+square(10); // cached
 ```
 
-This example is educational, not universally safe: serialization can be expensive and does not uniquely represent every JavaScript value.
+The cache survives because of a closure.
 
-## Good candidates
-- Pure expensive functions
-- Stable repeated computations
+## 2. Good candidates
 
-## Risks
-- Unbounded cache growth
-- Incorrect cache keys
-- Stale results
-- Memory retention
+Memoization works well when:
 
-## Interview principle
-Memoization is a trade-off: computation time is exchanged for memory and cache-management complexity.
+- computation is expensive
+- function is pure or stable
+- same inputs repeat frequently
+- cache size can be controlled
+
+Examples:
+
+- expensive derived calculations
+- parsing/normalization
+- selectors
+- repeated domain computations
+
+## 3. Why naive JSON.stringify keys are risky
+
+This:
+
+```js
+JSON.stringify(args)
+```
+
+is convenient for teaching but is not a universal cache-key strategy.
+
+Problems include:
+
+- object property ordering considerations
+- unsupported values
+- circular references
+- serialization cost
+- reference identity semantics
+
+Choose a key strategy based on the input domain.
+
+## 4. React connection
+
+React has memoization tools such as:
+
+- `useMemo`
+- `useCallback`
+- `React.memo`
+
+These are not magic performance buttons. Memoization has its own comparison and memory costs and should be used where it reduces meaningful work.
+
+## 5. Cache risks
+
+- unbounded growth
+- stale values
+- incorrect keys
+- retained objects
+- memory overhead
+
+A cache may need eviction such as LRU depending on the workload.
+
+## Interview answer
+
+> Memoization trades computation time for memory and cache-management complexity.
+
+**Next:** Promises provide a composable model for asynchronous results.
