@@ -33,3 +33,52 @@ Reflect provides standard operations corresponding to many internal object opera
 Proxy can complicate debugging, identity assumptions and performance. Use it when interception genuinely improves the design.
 
 **Next:** polyfills turn language knowledge into implementation exercises.
+
+## Deeper learning standard
+
+### Proxy mental model
+
+```text
+application code
+      ↓
+Proxy trap
+      ↓
+target operation
+      ↓
+Reflect operation
+```
+
+A Proxy can intercept operations such as get, set, has, deleteProperty and more.
+
+### Why Reflect
+
+Reflect provides standard object-operation functions and is commonly used inside traps to preserve normal semantics.
+
+```js
+const state = new Proxy({ count: 0 }, {
+  get(target, property, receiver) {
+    return Reflect.get(target, property, receiver);
+  }
+});
+```
+
+### Real use cases
+
+- reactive state tracking
+- validation
+- instrumentation
+- access control
+- observable libraries
+
+### Pitfalls
+
+Proxy can complicate identity, debugging and performance. It should be used when interception is genuinely part of the design.
+
+### Interview questions
+
+- What does Proxy intercept?
+- Why use Reflect inside traps?
+- How can Proxy support reactivity?
+- What are identity/performance trade-offs?
+
+**What this unlocks:** polyfills turn JavaScript runtime knowledge into implementation exercises.
