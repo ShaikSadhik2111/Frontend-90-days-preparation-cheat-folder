@@ -1,36 +1,72 @@
-# Frontend System Design — Complete Interview Track
+# Frontend System Design — Interview-Ready Curriculum
 
-This is the senior frontend system-design curriculum. The folders are intentionally broad; each topic is a decision point in a real system.
+This is a **learning track**, not merely a topic catalog. The numbered stages progress from requirements and architecture into data, caching, realtime, reliability, security, observability and interview drills.
 
-## Learning order
+## Learning contract
 
-Requirements → Estimation → Constraints/Trade-offs → Architecture → Layering/Modularity → Feature Architecture → State → Data Flow → API Contracts → Caching → Performance → Security → Reliability → Offline → Real-time → Scalability → Deployment → Observability → Testing → Specialized Systems → Case Studies → Interview Drills.
+For every stage:
 
-## Coverage
+**Connection → What → Why → Mental model → Architecture → Data flow → Failure modes → Performance → Security/accessibility → Trade-offs → Interview reasoning → Practical challenge → Next connection**
+
+A topic is not complete because you can draw a diagram. You must be able to explain why each boundary exists, what happens when it fails, what data may be stale, how the browser behaves, how the system is observed, and what changes at 10× scale.
+
+## 26-stage progression
+
+1. Fundamentals
+2. Requirements & Constraints
+3. Estimation
+4. Frontend Architecture
+5. Component Architecture
+6. State Architecture
+7. Data Flow
+8. API Contracts
+9. Data Fetching
+10. Caching
+11. Pagination & Large Data
+12. Search & Autocomplete
+13. Optimistic Updates
+14. Real-Time
+15. Offline-First
+16. Performance
+17. Security
+18. Accessibility
+19. Reliability
+20. Observability
+21. Deployment & Scalability
+22. Micro-Frontends
+23. Design Systems
+24. Specialized Systems
+25. Case Studies
+26. Interview Drills
+
+## Deep study
+
+Each numbered folder now contains a `deep-study.md` companion where the chapter needs additional interview/production depth. Existing study guides, problem bank and case studies remain complementary resources.
+
+## Senior answer framework
+
+Use this order in interviews:
+
+1. Clarify requirements and non-goals.
+2. State assumptions and estimate scale.
+3. Define architecture and boundaries.
+4. Assign state ownership.
+5. Trace one critical data flow.
+6. Define API/data contracts.
+7. Explain caching and freshness.
+8. Model loading, error, offline and concurrency states.
+9. Address performance, security and accessibility.
+10. Add reliability and observability.
+11. Explain trade-offs.
+12. Handle changed constraints.
+
+## Interview practice
+
+Use 10/20/30/45-minute drills. Practice unknown systems instead of memorized diagrams. Revisit the same system with different constraints: 10× data, offline mode, strict consistency, realtime updates, partial dependency outage, slow devices or security-sensitive data.
+
+## Resources
 
 - [Complete topic catalog](./topic-catalog.md)
 - [60-problem design bank](./problem-bank.md)
-- [Requirements](./requirements/README.md)
-- [Estimation](./estimation/README.md)
-- [Architecture](./architecture/study-guide.md)
-- [State architecture](./state-management/study-guide.md)
-- [API/data](./api-data/study-guide.md)
-- [Caching](./caching/study-guide.md)
-- [Performance](./performance/study-guide.md)
-- [Security](./security/study-guide.md)
-- [Reliability](./reliability-failure-modes/study-guide.md)
-- [Real-time](./real-time-applications/study-guide.md)
-- [Micro-frontends](./micro-frontends/study-guide.md)
-- [Offline-first](./offline-first/README.md)
-- [File processing](./file-processing-systems/study-guide.md)
-- [Large forms](./large-form-design/study-guide.md)
-- [Search/filter](./search-filter-systems/study-guide.md)
-- [Observability](./observability/study-guide.md)
-- [Testing](./testing/README.md)
 - [Worked case studies](./real-world-designs/study-guide.md)
-
-## Senior answer contract
-
-For every design: clarify requirements; estimate scale; define architecture; assign state ownership; define API/data flow; explain caching; model loading/error/offline/conflict; address performance/security/accessibility; add observability; explain trade-offs and what changes at 10× scale.
-
-Do not treat a topic list as completion. The goal is to be able to reason through the design aloud.
+- [Real-world designs](./real-world-designs/)
