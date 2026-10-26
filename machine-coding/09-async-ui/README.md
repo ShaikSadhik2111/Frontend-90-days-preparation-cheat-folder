@@ -1,7 +1,33 @@
-# 09 Async UI
+# 09 — Async UI
 
-## Connection
-Connect UI to APIs with loading/error states, retries and cancellation. Next: Debounce & Throttle.
+## Patterns
+- **Status union** per request (idle/loading/success/error).
+- **Keep previous data** while refetching (no blank flashes).
+- **Disable** buttons while pending; **dedupe** double clicks.
+- **Timeouts** and **retry** buttons.
+- **Cancel** on unmount and when inputs change (AbortController).
+- **Sequential vs parallel**: `await Promise.all([...])` for independent requests.
+- **Polling** with cleanup and pause when tab hidden.
 
-## Study method
-Requirement → component tree → state model → implementation → loading/empty/error → edge cases → accessibility → performance → tests → interview follow-ups → next topic.
+## Polling hook
+```tsx
+function usePolling<T>(fn: (signal: AbortSignal) => Promise<T>, intervalMs: number) {
+  const [data, setData] = useState<T>();
+  const [error, setError] = useState<Error>();
+  useEffect(() => {
+    let stopped = false, timer: ReturnType<typeof setTimeout>;
+    const controller = new AbortController();
+    const tick = async () => {
+      try { const d = await fn(controller.signal); if (!stopped) { setData(d); setError(undefined); } }
+      catch (e) { if (!stopped && (e as Error).name !== "AbortError") setError(e as Error); }
+      finally { if (!stopped) timer = setTimeout(tick, document.hidden ? intervalMs * 5 : intervalMs); }
+    };
+    tick();
+    return () => { stopped = true; clearTimeout(timer); controller.abort(); };
+  }, [fn, intervalMs]);   // pass a stable fn (useCallback)
+  return { data, error };
+}
+```
+`setTimeout` chaining (not `setInterval`) avoids overlapping requests when the server is slow.
+
+Next → [10 Debounce & throttle](../10-debounce-throttle/README.md)

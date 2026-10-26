@@ -1,42 +1,33 @@
-# Caching Invalidation
+# Caching & invalidation
 
-## Connection
-This topic extends the React rendering model into production data and application architecture.
+> "There are only two hard things in computer science: cache invalidation and naming things." Know the **layers** of caching and how each is invalidated.
 
-## What it is
-Caching reuses server responses; invalidation marks affected cached data as potentially stale after mutations.
+## Layers (outer → inner)
+| Layer | What | Invalidate by |
+|---|---|---|
+| **CDN** | static assets, sometimes API | content-hashed filenames, purge, `s-maxage` |
+| **HTTP browser cache** | responses per `Cache-Control` | hashed URLs; `ETag`/`Last-Modified` revalidation (304) |
+| **Service Worker / Cache API** | offline assets & responses | versioned cache names, strategies |
+| **In-memory server-state cache** | TanStack Query/RTK Query/Apollo | `invalidateQueries`, tags, refetch on focus/interval |
+| **Component memo** | `useMemo`, `React.memo` | dependency changes |
+| **App-level caches** | `Map`/LRU for search results | TTL, size limit, explicit clear |
 
-## Why it exists
-Large applications fail when ownership, caching, permissions, or module boundaries are implicit. This topic makes those decisions explicit.
+## Frontend asset strategy (standard answer)
+- `app.[hash].js`, `styles.[hash].css` → `Cache-Control: public, max-age=31536000, immutable`.
+- `index.html` → `Cache-Control: no-cache` (always revalidate) so new deploys are picked up.
 
-## How it works
-Classify the concern first: local UI state, shared client state, server state, URL state, identity, or authorization. Then define the smallest boundary that owns it.
-
-## Example
-```tsx
-function FeatureView({ data, onSave }) {
-  return <button onClick={onSave}>{data ? "Save" : "Create"}</button>;
-}
-```
-
-## Real frontend use
-Use this for dashboards, multi-screen workflows, shopping carts, authentication flows, feature modules, and reusable application infrastructure.
+## Server-state invalidation strategies
+1. **Invalidate by key/tag after mutation** (`invalidateQueries({ queryKey: ["devices"] })` invalidates all keys starting with it).
+2. **Direct cache update** (`setQueryData`) when the mutation response contains the new entity.
+3. **Time-based** (`staleTime`, polling).
+4. **Event-based** — WebSocket message "device 42 updated" → invalidate/patch that entry.
+5. **Optimistic** update + reconcile.
 
 ## Pitfalls
-- Putting every value in global state.
-- Copying server state into local state without a reason.
-- Treating client permission checks as security.
-- Creating shared abstractions before real reuse exists.
-- Mixing domain logic and rendering responsibilities without a boundary.
+- Query keys missing a variable → wrong data shown for a different filter.
+- Over-invalidating (`invalidateQueries()` with no key) → refetch storm.
+- Caching personalised API responses at the CDN → data leak. Use `Cache-Control: private`/`no-store`.
 
-## Interview reasoning
-Explain ownership, dependency flow, caching or security implications, testability, and the trade-offs of the chosen architecture.
+**Interview:** *How do you make sure users get the new version after a deploy?* Hashed assets + `no-cache` HTML; for SPAs left open for days, detect a new version (poll `version.json`) and prompt reload.
 
-## Practical challenge
-Take one application feature and identify its data owner, API boundary, UI boundary, loading/error states, and test boundary.
-
-## Connection to next topic
-Next, connect these decisions to **forms, error handling, performance, and interview scenarios**.
-
-## Official reference
-https://react.dev/
+Next → [Error handling](../../08-error-handling/README.md)

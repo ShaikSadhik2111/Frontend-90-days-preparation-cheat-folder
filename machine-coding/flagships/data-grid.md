@@ -1,19 +1,19 @@
-# Flagship: Data Grid
+# Flagship: Data grid (75 min)
 
 ## Requirements
-Columns, rows, sorting, filtering, pagination, selection, loading/error/empty.
+Columns from config · sort (asc/desc/none) · global search · pagination (10/page) · row selection with select-all (page) and indeterminate checkbox · loading/empty/error · sticky header.
 
 ## State
-query model, selection model, column state and request lifecycle.
+`query`, `sort: { key, dir } | null`, `page`, `pageSize`, `selectedIds: Set<string>`. Derived: filtered → sorted → paged rows, totalPages, `allOnPageSelected`, `someSelected`.
 
-## Architecture
-Separate data/query logic from table presentation. Keep server-side filters/sort/pagination in one query state.
-
-## Advanced
-Virtualization, column resize, sticky headers, bulk actions, URL state, cache and export jobs.
-
-## Invariants
-Selection remains stable by row ID; obsolete requests cannot overwrite active query.
+## Implementation notes
+- Immutable sort (`[...rows].sort`), number vs string comparisons.
+- Reset page on search; clamp page when data shrinks.
+- Selection survives sorting/pagination because it's keyed by id.
+- Indeterminate: `ref={(el) => el && (el.indeterminate = some && !all)}`.
+- `aria-sort` on `<th>`, buttons in headers, `<caption>`.
 
 ## Follow-ups
-1M rows, variable row height, accessibility and real-time updates.
+Server-side sort/filter/pagination via URL params · virtualization for 100k rows · column resize/reorder/pin · inline edit with optimistic save · export CSV · keyboard grid navigation (ARIA grid).
+
+Reference: `code/machine-coding/src/components/DataTable`.

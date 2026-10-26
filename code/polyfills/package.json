@@ -1,0 +1,10 @@
+{
+  "name": "js-polyfills-practice",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Interview polyfills & utilities with tests. Run: npm test (no dependencies needed, Node 18+).",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  }
+}

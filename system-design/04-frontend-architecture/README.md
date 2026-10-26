@@ -1,25 +1,36 @@
-# Frontend Architecture
+# 04 — Frontend architecture & rendering strategy
 
-## Why this matters
-Choose boundaries that make change safe and understandable.
+## Rendering strategies
+| Strategy | How | Best for | Cost |
+|---|---|---|---|
+| **CSR** (SPA) | Empty HTML + JS renders in browser | Apps behind login, dashboards | Slower first load, SEO weak |
+| **SSR** | HTML per request on server, then hydrate | Personalised public pages, fast LCP | Server cost, hydration JS |
+| **SSG** | HTML at build time | Docs, marketing, blogs | Rebuild to update |
+| **ISR** | SSG + periodic/on-demand revalidation | Large catalogs | Framework-specific |
+| **Streaming SSR + RSC** | Server components, stream per Suspense boundary | Content + interactivity mix | Newer, framework (Next.js) |
+| **Islands** | Mostly static HTML + small interactive islands | Content sites (Astro) | Less suited to app-like UIs |
 
-## Core mental model
-Cover layers such as presentation, feature/application logic, domain models, data access, platform adapters and shared infrastructure. Compare feature-based, layer-based and hybrid structures.
+## Client architecture layers
+```
+UI components (design system)  ←  Feature modules (pages, flows)
+            ↑                              ↑
+     State: local / store / URL     Server-state cache (TanStack Query)
+                                           ↑
+                                 API client (auth, retries, errors, types)
+                                           ↑
+                     REST/GraphQL · WebSocket/SSE · Service Worker (offline)
+```
+Cross-cutting: routing, auth, i18n, feature flags, error boundaries, logging/monitoring, analytics.
 
-## Production reasoning
-Reason about dependency direction, public APIs between modules, state ownership, error boundaries and cross-cutting concerns. Avoid both giant components and premature micro-frontends.
+## Draw this in the interview
+Boxes for: **Router/Shell**, **Feature A/B**, **Shared UI kit**, **Store**, **Query cache**, **API client**, **Realtime client**, **Server/BFF**, **CDN**. Arrows for data flow. Mark where caching and error handling live.
 
-## Example / implementation focus
-Example: search feature owns query state and request lifecycle; shared UI owns visual primitives but not business state.
+## BFF (Backend for Frontend)
+A thin server layer per client that aggregates/shapes backend APIs for the UI → fewer round trips, hides internal services, handles auth tokens server-side. Mention it when backends are many or chatty.
 
-## Interview drill
-Interview drill: explain why a chosen architecture supports independent feature development.
+## Interview questions
+1. CSR vs SSR vs SSG — choose for an internal IoT dashboard vs a public product catalog.
+2. Where do you put API error handling and retries?
+3. What is a BFF and why use one?
 
-## Practical challenge
-Production challenge: map the flagship project into boundaries and identify two coupling risks.
-
-## Completion contract
-You are not finished when you can repeat the definition. You are finished when you can **explain the decision, implement the core behavior, identify failure modes, debug a broken version, discuss accessibility/security/performance implications, and handle a changed constraint**.
-
-## Connection to next stage
-Use what you learned here as an input to the next numbered stage rather than treating this chapter as an isolated topic.
+Next → [05 Component architecture](../05-component-architecture/README.md)

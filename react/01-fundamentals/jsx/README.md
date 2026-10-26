@@ -1,42 +1,55 @@
-# Jsx
+# JSX
 
-## Connection
-This topic builds the React data-flow mental model and prepares you for the Hooks and state-management layers.
+> JSX is **syntax sugar for creating React elements**. It is compiled to JavaScript function calls, so everything inside `{ }` is a JavaScript **expression**.
 
-## What it is
-JSX is JavaScript syntax for describing React elements; it is transformed by the build tool and is not HTML.
+## What it compiles to
+```jsx
+const el = <h1 className="title">Hello, {name}</h1>;
+// React 17+ automatic runtime compiles to:
+import { jsx as _jsx } from "react/jsx-runtime";
+const el = _jsx("h1", { className: "title", children: ["Hello, ", name] });
+// older classic runtime: React.createElement("h1", { className: "title" }, "Hello, ", name)
+```
+The result is a plain object: `{ type: "h1", props: { className: "title", children: [...] }, key: null }`.
+That's why the old rule "import React in every file" disappeared with the automatic runtime.
 
-## Why it exists
-Predictable React starts with a clear answer to **who owns the value, who can change it, and what causes the UI to update?**
+## Rules
+- One root element per return → wrap siblings in `<>…</>` (Fragment) or `<Fragment key={id}>` when you need a key.
+- `className` not `class`, `htmlFor` not `for`, camelCase events (`onClick`), `style={{ marginTop: 8 }}` (object, camelCase, numbers → px).
+- All tags must close: `<img />`, `<br />`.
+- Only **expressions** in `{ }` — no `if`, `for`, `switch` statements. Use ternary, `&&`, `map`, or compute before `return`.
+- Comments: `{/* comment */}`.
 
-## How it works
-Use **parent ownership → props down → events/callbacks up → render from current inputs**. Avoid duplicating derived data or mutating snapshots.
-
-## Example
-```tsx
-function SearchBox({ value, onChange }) {
-  return <input value={value} onChange={e => onChange(e.target.value)} />;
-}
+## Rendering values
+```jsx
+{"text"} {42}            // rendered
+{true} {false} {null} {undefined}   // render nothing
+{0}                      // renders "0" ⚠️  → {count > 0 && <Badge/>}
+{[<li key="a">a</li>, <li key="b">b</li>]}  // arrays render (need keys)
+{{ a: 1 }}               // ❌ error: objects are not valid as a React child
 ```
 
-## Real frontend use
-Use this for search, filters, forms, reusable controls, parent/child synchronization, and shared component APIs.
+## Escaping & XSS
+JSX **escapes** strings automatically: `<p>{userInput}</p>` is safe even if `userInput` contains `<script>`.
+Dangerous cases you must control:
+- `dangerouslySetInnerHTML={{ __html: html }}` → sanitize with DOMPurify first.
+- `<a href={userUrl}>` → a `javascript:` URL can run code; validate the protocol.
 
-## Pitfalls
-- Duplicating derived state.
-- Mutating props/state.
-- Lifting every local value to the app root.
-- Switching controlled and uncontrolled inputs.
-- Extracting a custom Hook that accidentally relies on hidden global state.
+## Common bugs → fixes
+| Bug | Fix |
+|---|---|
+| `{items.length && <List/>}` shows `0` | `{items.length > 0 && <List/>}` |
+| "Adjacent JSX elements must be wrapped" | Use a Fragment |
+| Rendering an object/Date directly | Format it: `{date.toLocaleDateString()}` |
+| `if` inside JSX | Use ternary or compute a variable before `return` |
 
-## Interview reasoning
-Explain ownership, update direction, render timing, and why the chosen state location is appropriate.
+## Interview questions
+1. **What is JSX? Is it required?** Syntax sugar for `jsx()`/`createElement()` calls; not required, but standard.
+2. **Why `className`?** JSX maps to DOM properties; `class` is a reserved word in JS.
+3. **How does React prevent XSS?** It escapes text content; only `dangerouslySetInnerHTML` (and URL attributes) bypass that.
+4. **What does `<></>` do?** Groups children without adding a DOM node.
 
-## Practical challenge
-Build a parent-controlled filter with a child input and preview. Add validation and explain exactly which component owns each value.
+## Practice
+Without running it, predict what renders: `{0 && "a"}`, `{"" || "b"}`, `{[1,2].map(n => n * 2)}`, `{null ?? "c"}`. Then verify.
 
-## Connection to next topic
-Next, connect this model to **rendering and Hooks**, where React's snapshot and scheduling behavior becomes important.
-
-## Official reference
-https://react.dev/
+Next → [Props](../props/README.md)

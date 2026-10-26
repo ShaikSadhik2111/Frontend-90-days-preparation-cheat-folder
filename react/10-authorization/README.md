@@ -1,42 +1,29 @@
-# Authorization
+# Authorization in the UI
 
-## Connection
-This topic extends the React rendering model into production data and application architecture.
+> Authorization = **what are you allowed to do?** The UI should **reflect** permissions (hide/disable), but the **server must enforce** them on every request.
 
-## What it is
-Authorization determines what an identity may do. Frontend checks improve UX, but backend enforcement is the security boundary.
-
-## Why it exists
-Large applications fail when ownership, caching, permissions, or module boundaries are implicit. This topic makes those decisions explicit.
-
-## How it works
-Classify the concern first: local UI state, shared client state, server state, URL state, identity, or authorization. Then define the smallest boundary that owns it.
-
-## Example
+## Permission-based (not role-string) checks
 ```tsx
-function FeatureView({ data, onSave }) {
-  return <button onClick={onSave}>{data ? "Save" : "Create"}</button>;
+type Permission = "device:read" | "device:write" | "alarm:ack" | "admin:users";
+
+function usePermission(p: Permission) {
+  const { user } = useAuth();
+  return !!user?.permissions.includes(p);
 }
+
+function Can({ permission, children, fallback = null }: { permission: Permission; children: React.ReactNode; fallback?: React.ReactNode }) {
+  return usePermission(permission) ? <>{children}</> : <>{fallback}</>;
+}
+
+<Can permission="alarm:ack"><button onClick={ack}>Acknowledge</button></Can>
 ```
+- Check **permissions**, not `role === "admin"` everywhere — roles map to permissions on the server, so new roles don't need UI changes.
+- **RBAC** (role-based) vs **ABAC** (attribute-based: "can edit devices in *their own* plant") — ABAC needs resource context: `can("device:write", device)`.
+- Route-level guard → page; component-level → buttons/fields; API → final authority (403 handling in UI).
+- Disabled vs hidden: hide what the user should never know about; disable with a tooltip when it explains *why* ("Requires supervisor role").
 
-## Real frontend use
-Use this for dashboards, multi-screen workflows, shopping carts, authentication flows, feature modules, and reusable application infrastructure.
+## Interview questions
+1. **Is hiding a button enough?** No — the API must reject unauthorised requests.
+2. **How do you structure permissions in a large app?** Server sends a permission list/claims; UI uses a `can()` helper and `<Can>` component; route guards; handle 403.
 
-## Pitfalls
-- Putting every value in global state.
-- Copying server state into local state without a reason.
-- Treating client permission checks as security.
-- Creating shared abstractions before real reuse exists.
-- Mixing domain logic and rendering responsibilities without a boundary.
-
-## Interview reasoning
-Explain ownership, dependency flow, caching or security implications, testability, and the trade-offs of the chosen architecture.
-
-## Practical challenge
-Take one application feature and identify its data owner, API boundary, UI boundary, loading/error states, and test boundary.
-
-## Connection to next topic
-Next, connect these decisions to **forms, error handling, performance, and interview scenarios**.
-
-## Official reference
-https://react.dev/
+Next → [Performance](../11-performance/memoization/README.md)

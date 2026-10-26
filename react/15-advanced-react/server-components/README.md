@@ -1,42 +1,46 @@
-# Server Components
+# React Server Components (RSC)
 
-## Connection
-This topic builds on React rendering and Hooks and leads toward scalable **architecture and interview reasoning**.
+> **Server Components** run only on the server (at build or request time). They can read databases/files directly and **send zero JavaScript** to the browser. **Client Components** (`"use client"`) are the interactive parts that hydrate in the browser.
 
-## What it is
-Server Components render on the server and keep their implementation out of the client bundle; framework support defines the boundary.
-
-## Why it exists
-As React applications grow, the difficult part is controlling boundaries: what runs where, who owns data, how UI loads, and how users recover from failure.
-
-## How it works
-Reason through **inputs → render → scheduling/reconciliation → commit → browser**. Keep render logic pure and isolate external effects.
-
-## Example
 ```tsx
-function Example() {
-  return <section aria-label="example">React feature</section>;
+// app/devices/page.tsx — Server Component (default in Next.js App Router)
+import { db } from "@/lib/db";
+import { DeviceFilter } from "./DeviceFilter";
+
+export default async function DevicesPage() {
+  const devices = await db.device.findMany();          // runs on server, no API layer needed
+  return (
+    <main>
+      <h1>Devices</h1>
+      <DeviceFilter devices={devices} />               {/* client component receives serialisable props */}
+    </main>
+  );
+}
+
+// app/devices/DeviceFilter.tsx
+"use client";
+export function DeviceFilter({ devices }: { devices: Device[] }) {
+  const [q, setQ] = useState("");                      // hooks/events only in client components
+  return <>{/* ... */}</>;
 }
 ```
 
-## Real frontend use
-Apply this to SSR applications, dashboards, design systems, feature modules, and interaction-heavy screens.
+## Rules
+| Server Component | Client Component |
+|---|---|
+| Can be `async`, access DB/secrets/files | Can use state, effects, event handlers, browser APIs |
+| No hooks like `useState`/`useEffect`, no event handlers | Shipped as JS and hydrated |
+| Can import client components | Cannot import server components (but can receive them as `children`) |
+- Props passed from server → client must be **serialisable** (no functions except Server Functions, no class instances).
+- `"use client"` marks a **boundary**: that file and everything it imports become client code.
+- **Server Functions** (`"use server"`) — functions the client can call (e.g. form actions); they run on the server. Always validate input and check auth inside them.
 
-## Pitfalls
-- Assuming concurrent rendering means parallel JavaScript execution.
-- Using browser-only APIs during server rendering.
-- Treating Suspense as a generic promise wrapper.
-- Treating frontend authorization as security.
-- Adding abstraction without a real boundary.
+## RSC vs SSR
+SSR renders **client components** to HTML for the first load and then hydrates all of them. RSC components **never hydrate** and can refetch/re-render on the server during navigation. They're complementary (Next.js uses both).
 
-## Interview reasoning
-Explain the problem, runtime behavior, ownership boundary, browser impact, and production trade-off.
+## Interview questions
+1. **What are Server Components?** Components rendered on the server only, no client JS, direct data access.
+2. **How do they differ from SSR?** SSR = HTML for initial load + hydrate everything; RSC = server-only component tree, no hydration for those parts.
+3. **When would you use `"use client"`?** Interactivity, state, effects, browser APIs — push it as deep (leafy) as possible.
 
-## Practical challenge
-Build a small feature using this concept, then explain the render-to-commit lifecycle and one realistic failure mode.
-
-## Connection to next topic
-Use this understanding when moving into **architecture**, where individual React techniques become system-level decisions.
-
-## Official reference
-https://react.dev/
+Next → [Architecture](../../16-architecture/component-architecture/README.md)

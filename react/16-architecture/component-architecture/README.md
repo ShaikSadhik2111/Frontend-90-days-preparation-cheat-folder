@@ -1,42 +1,28 @@
-# Component Architecture
+# Component architecture
 
-## Connection
-This topic builds on React rendering and Hooks and leads toward scalable **architecture and interview reasoning**.
+> Good component architecture makes ownership obvious: **who owns the data, who owns the state, who renders the UI**.
 
-## What it is
-Component architecture defines responsibilities, contracts, composition boundaries, and ownership so components stay understandable as the product grows.
-
-## Why it exists
-As React applications grow, the difficult part is controlling boundaries: what runs where, who owns data, how UI loads, and how users recover from failure.
-
-## How it works
-Reason through **inputs → render → scheduling/reconciliation → commit → browser**. Keep render logic pure and isolate external effects.
-
-## Example
-```tsx
-function Example() {
-  return <section aria-label="example">React feature</section>;
-}
+## Layers
+```
+Route/Page            → reads URL params, composes features, sets error/suspense boundaries
+  Feature components  → own feature state, call hooks for data (useDevices), handle events
+    UI components     → presentational, reusable, props in / events out (Table, Button, Modal)
+Hooks                 → reusable logic (useDevices, usePermissions, useDebounce)
+API layer             → typed client, endpoints, DTO → domain mapping, validation
 ```
 
-## Real frontend use
-Apply this to SSR applications, dashboards, design systems, feature modules, and interaction-heavy screens.
+## Guidelines
+- **Single responsibility**: a component that fetches, transforms, manages forms *and* renders a table is doing four jobs — extract hooks and subcomponents.
+- **Props API design**: small and explicit; booleans that conflict (`primary` + `secondary`) → one `variant` union; support `className`/`...rest` on wrappers; controlled + uncontrolled where useful.
+- **Push state down, lift content up** (performance + clarity).
+- **Keep business logic out of UI components** → pure functions/hooks you can unit test.
+- **Boundaries**: error boundary + Suspense per route and per independent widget.
+- **Avoid deep prop drilling** → composition, context for cross-cutting concerns.
+- **Consistency** beats cleverness: same patterns for data fetching, forms, errors across the app.
 
-## Pitfalls
-- Assuming concurrent rendering means parallel JavaScript execution.
-- Using browser-only APIs during server rendering.
-- Treating Suspense as a generic promise wrapper.
-- Treating frontend authorization as security.
-- Adding abstraction without a real boundary.
+## Smells to mention in interviews
+Components > ~300 lines with many `useState`s; `useEffect` chains; copying props into state; boolean prop explosion; components reaching into other features' internals; utility files that import React state.
 
-## Interview reasoning
-Explain the problem, runtime behavior, ownership boundary, browser impact, and production trade-off.
+**Interview drill:** "Design the component tree for a device-management page with filters, table, details drawer and bulk actions — where does each piece of state live?"
 
-## Practical challenge
-Build a small feature using this concept, then explain the render-to-commit lifecycle and one realistic failure mode.
-
-## Connection to next topic
-Use this understanding when moving into **architecture**, where individual React techniques become system-level decisions.
-
-## Official reference
-https://react.dev/
+Next → [Feature-based architecture](../feature-based-architecture/README.md)

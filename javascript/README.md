@@ -176,3 +176,6 @@ Reliable API-driven UI
 ```
 
 This is the standard for the JavaScript section going forward.
+
+## Interview revision
+When you finish the topics, use the **[interview revision sheet + output-prediction drill](39-interview-revision-sheet/README.md)** and write the polyfills in [`code/polyfills`](../code/polyfills) from memory.

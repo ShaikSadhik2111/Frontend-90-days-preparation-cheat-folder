@@ -1,42 +1,35 @@
-# Accessibility
+# Accessibility (a11y) in React
 
-## Connection
-This topic builds on React rendering and Hooks and leads toward scalable **architecture and interview reasoning**.
+> Accessible apps work with **keyboard, screen readers, zoom and high contrast**. Many enterprise and public-sector customers (and EU law — European Accessibility Act, from June 2025) require **WCAG 2.1/2.2 AA**.
 
-## What it is
-Accessible React UI combines semantic HTML, keyboard interaction, focus management, labels, and correct ARIA when native semantics are insufficient.
+## Rules that solve 80% of issues
+1. **Use semantic HTML**: `<button>` for actions, `<a href>` for navigation, `<label>` for inputs, headings in order, `<nav>`, `<main>`, lists, tables with `<th scope>`.
+   ```tsx
+   <div onClick={save}>Save</div>          // ❌ not focusable, no role, no keyboard
+   <button type="button" onClick={save}>Save</button>   // ✅
+   ```
+2. **Everything works with the keyboard**: Tab order follows DOM order, visible focus (`:focus-visible`), Enter/Space activate, Escape closes, arrow keys inside composite widgets (tabs, menus, listboxes).
+3. **Names for everything**: icon buttons need `aria-label="Close"`; images need `alt` (`alt=""` for decorative).
+4. **Manage focus** in dynamic UI: move focus into modals, trap it, return it on close; move focus to the page heading after route change; focus the first error after failed submit.
+5. **Announce async changes**: `aria-live="polite"` region for "3 results", toasts; `role="alert"` for errors.
+6. **Don't rely on colour alone** (status: icon + text + colour); contrast ≥ 4.5:1 for text.
+7. **Respect user settings**: `prefers-reduced-motion`, zoom to 200% without breaking, `rem` units.
 
-## Why it exists
-As React applications grow, the difficult part is controlling boundaries: what runs where, who owns data, how UI loads, and how users recover from failure.
+## ARIA essentials
+- First rule of ARIA: **don't use ARIA if a native element does the job**.
+- State attributes: `aria-expanded`, `aria-selected`, `aria-checked`, `aria-pressed`, `aria-disabled`, `aria-invalid`, `aria-current="page"`.
+- Relationships: `aria-labelledby`, `aria-describedby`, `aria-controls`, `aria-activedescendant`.
+- Follow the **WAI-ARIA Authoring Practices (APG)** patterns for combobox, dialog, tabs, menu, tree.
+- Generate ids with `useId`.
 
-## How it works
-Reason through **inputs → render → scheduling/reconciliation → commit → browser**. Keep render logic pure and isolate external effects.
+## Testing
+axe DevTools / Lighthouse (automated catches ~30–40%), keyboard-only walkthrough, screen reader (NVDA on Windows, VoiceOver on Mac), `eslint-plugin-jsx-a11y`, RTL `getByRole` queries (fail if roles/names are wrong).
 
-## Example
-```tsx
-function Example() {
-  return <section aria-label="example">React feature</section>;
-}
-```
+**Accessible components to study:** `code/machine-coding` → Modal (focus trap), Tabs (roving tabindex), Autocomplete (combobox), Accordion, StarRating (radiogroup).
 
-## Real frontend use
-Apply this to SSR applications, dashboards, design systems, feature modules, and interaction-heavy screens.
+## Interview questions
+1. **How do you make a custom dropdown accessible?** Combobox/listbox pattern: roles, `aria-expanded`, `aria-activedescendant`, keyboard (↑↓ Enter Esc), focus management.
+2. **What does `aria-live` do?** Announces content changes to screen readers.
+3. **How do you test accessibility?** Automated (axe) + manual keyboard + screen reader.
 
-## Pitfalls
-- Assuming concurrent rendering means parallel JavaScript execution.
-- Using browser-only APIs during server rendering.
-- Treating Suspense as a generic promise wrapper.
-- Treating frontend authorization as security.
-- Adding abstraction without a real boundary.
-
-## Interview reasoning
-Explain the problem, runtime behavior, ownership boundary, browser impact, and production trade-off.
-
-## Practical challenge
-Build a small feature using this concept, then explain the render-to-commit lifecycle and one realistic failure mode.
-
-## Connection to next topic
-Use this understanding when moving into **architecture**, where individual React techniques become system-level decisions.
-
-## Official reference
-https://react.dev/
+Next → [Modern React — Actions](../14-modern-react/react-19-actions/README.md)

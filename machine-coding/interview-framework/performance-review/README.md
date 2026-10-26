@@ -1,2 +1,0 @@
-# Performance Review Drill
-Inspect render count, DOM size, duplicate requests, expensive computation and asset cost. Measure first; then choose virtualization, caching, memoization or workers based on evidence.

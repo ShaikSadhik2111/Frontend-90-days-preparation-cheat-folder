@@ -1,44 +1,80 @@
-# Children And Composition
+# Children and composition
 
-## Connection
-This topic connects React fundamentals to production forms and asynchronous application behavior.
+> React favours **composition over inheritance**: build complex UI by passing components/elements into other components (`children`, slot props), not by extending classes.
 
-## What it is
-Composition uses children or named JSX slots to build reusable components without hard-coding every child.
-
-## Why it exists
-Real interfaces need predictable loading, success, empty, error, validation, and recovery states. The right boundary prevents those states from becoming scattered flags.
-
-## How it works
-Start with explicit inputs and state ownership. Then model the UI states and transitions before choosing an API or library.
-
-## Example
+## `children`
 ```tsx
-function Example({ loading, error, data }) {
-  if (loading) return <Spinner />;
-  if (error) return <ErrorMessage />;
-  return <Result data={data} />;
+function Card({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="card">
+      <h2>{title}</h2>
+      <div className="card__body">{children}</div>
+    </section>
+  );
+}
+
+<Card title="Device status">
+  <StatusBadge status="online" />
+  <p>Last seen 2 min ago</p>
+</Card>
+```
+`React.ReactNode` = anything renderable (elements, strings, numbers, arrays, null, fragments).
+
+## Slots — multiple "holes"
+```tsx
+function Layout({ header, sidebar, children }: { header: React.ReactNode; sidebar: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <div className="layout">
+      <header>{header}</header>
+      <aside>{sidebar}</aside>
+      <main>{children}</main>
+    </div>
+  );
+}
+<Layout header={<TopBar />} sidebar={<Nav />}>…</Layout>
+```
+
+## Composition solves prop drilling
+```tsx
+// ❌ App → Page → Sidebar → UserMenu all receive `user`
+// ✅ App builds UserMenu and passes the element down
+function App() {
+  const user = useUser();
+  return <Page sidebar={<Sidebar menu={<UserMenu user={user} />} />} />;
 }
 ```
 
-## Real frontend use
-Use this for forms, search, checkout, dashboards, route-level data, and reusable application components.
+## Composition and performance
+Elements passed as `children` are created by the **parent**. If the wrapper re-renders because of its *own* state, the `children` element is the same object → React can skip re-rendering it.
+```tsx
+function ScrollTracker({ children }: { children: React.ReactNode }) {
+  const [y, setY] = useState(0);          // changes often
+  useEffect(() => { const f = () => setY(window.scrollY); window.addEventListener("scroll", f); return () => window.removeEventListener("scroll", f); }, []);
+  return <div><Progress y={y} />{children}</div>;   // `children` does NOT re-render on scroll
+}
+```
+This "move state down / lift content up" trick often beats `React.memo`.
 
-## Pitfalls
-- Mixing server state with local UI state.
-- Hiding async errors in generic catch blocks.
-- Using an Error Boundary for event-handler errors.
-- Using Effects for data transformation that belongs in render.
-- Building one giant form state object without clear ownership.
+## Other composition patterns
+- **Compound components** — `<Tabs><Tabs.List/><Tabs.Panel/></Tabs>` share state via context (see the Tabs machine-coding problem).
+- **Render props** — `<DataLoader render={(data) => <Chart data={data} />} />`; mostly replaced by hooks, still used for headless components.
+- **HOC** — `withAuth(Component)` returns a new component; legacy, but asked in interviews (downsides: wrapper hell, prop collisions, hidden props).
+- **`React.Children` / `cloneElement`** — manipulate children; considered fragile, prefer context or explicit props.
 
-## Interview reasoning
-Explain the state machine, ownership, failure boundary, retry/recovery strategy, and what React is doing during render and commit.
+## Common bugs → fixes
+| Bug | Fix |
+|---|---|
+| Deep prop drilling | Pass elements/children instead of data |
+| Wrapper re-render re-renders everything | Pass expensive parts as `children` |
+| Using `cloneElement` to inject props | Use context or a render prop |
 
-## Practical challenge
-Build a form or data-driven screen with loading, success, empty, validation, and failure states. Add a recovery action.
+## Interview questions
+1. **Composition vs inheritance in React?** React recommends composition; inheritance between components is practically never needed.
+2. **What is `children`?** A normal prop holding whatever is between the tags.
+3. **HOC vs render props vs hooks?** All reuse logic; hooks are simplest (no extra tree nesting), HOCs/render props still appear in older code and libraries.
+4. **How can composition improve performance?** Content passed as children isn't re-created when the wrapper's own state changes.
 
-## Connection to next topic
-Continue toward **Hooks, state management, and modern React Actions**.
+## Practice
+Build a `Modal` that accepts `title`, `footer` and `children` slots, and a `Page` layout with `header`/`sidebar` slots. Then remove one level of prop drilling in your project with composition.
 
-## Official reference
-https://react.dev/
+Next → [Lifting state](../lifting-state/README.md)

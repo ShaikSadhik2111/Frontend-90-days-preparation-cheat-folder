@@ -1,25 +1,33 @@
-# API Contracts
+# 08 — API contracts (the "I" in RADIO)
 
-## Why this matters
-Treat frontend/backend boundaries as contracts, not fetch calls.
+> Define the endpoints/events the UI needs, with request/response shapes, pagination, errors and versioning.
 
-## Core mental model
-Define resource shapes, error envelopes, pagination, filtering, sorting, idempotency, retries, authentication and versioning. Runtime validation is necessary because TypeScript types disappear at runtime.
+## Example: devices
+```http
+GET  /api/devices?plantId=PNQ&status=online&cursor=eyJpZCI6...&limit=50
+200  { "items": [{ "id": "d1", "name": "Pump A", "status": "online", "updatedAt": "2026-10-27T10:00:00Z", "version": 7 }],
+       "nextCursor": "eyJpZCI6ImQ1MCJ9", "total": 1243 }
 
-## Production reasoning
-Discuss REST-style resources, RPC-like operations, GraphQL trade-offs and BFFs. Define compatibility rules for partial rollouts.
+PATCH /api/devices/d1          If-Match: "7"
+      { "name": "Pump A1" }
+200   { ...updated device, "version": 8 }      409 Conflict if version changed (someone else edited)
 
-## Example / implementation focus
-Example: cursor pagination with stable sort keys is safer for changing datasets than page numbers alone.
+WS   /ws  → { "type": "subscribe", "topics": ["plant:PNQ"] }
+     ←  { "type": "device.updated", "id": "d1", "patch": { "status": "offline" }, "seq": 1043 }
+```
 
-## Interview drill
-Interview drill: design an API for searchable activity events and explain error semantics.
+## Decisions to discuss
+- **Pagination**: cursor (feeds, real-time lists) vs offset (admin tables with page numbers).
+- **Filtering/sorting** server-side for big data; client-side only when the full set is small.
+- **Errors**: consistent shape `{ code, message, fieldErrors? }`; status codes (400/401/403/404/409/422/429/5xx).
+- **Concurrency**: `version`/`ETag` + `If-Match` → 409 → UI shows "changed by someone else".
+- **Idempotency key** for POSTs that may be retried (payments, uploads).
+- **Partial responses**: `fields=` or GraphQL to avoid over-fetching on mobile.
+- **Versioning**: `/v2/` or additive changes only; contract tests (OpenAPI → generated TS types).
+- **Real-time events**: event names, payload, sequence numbers for ordering/gap detection, resync endpoint.
+- **Timestamps** in ISO-8601 UTC; format on client with `Intl`.
 
-## Practical challenge
-Production challenge: write TypeScript domain types plus runtime validation assumptions.
+## Types
+Generate TypeScript types from OpenAPI/GraphQL schema; validate at runtime at the boundary (Zod) for critical data.
 
-## Completion contract
-You are not finished when you can repeat the definition. You are finished when you can **explain the decision, implement the core behavior, identify failure modes, debug a broken version, discuss accessibility/security/performance implications, and handle a changed constraint**.
-
-## Connection to next stage
-Use what you learned here as an input to the next numbered stage rather than treating this chapter as an isolated topic.
+Next → [09 Data fetching](../09-data-fetching/README.md)

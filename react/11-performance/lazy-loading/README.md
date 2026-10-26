@@ -1,43 +1,35 @@
-# Lazy Loading
+# Lazy loading (components, images, data)
 
-## Connection
-This topic extends React rendering into production performance and modern async UI.
+> Load things **when they're needed**, not up front: components (code splitting), images/iframes (native lazy loading), and data (on scroll/visibility).
 
-## What it is
-lazy() defers component code until it is needed and is typically paired with Suspense.
+## Images
+```html
+<img src="plant.webp" alt="Pune plant" width="800" height="450" loading="lazy" decoding="async" />
+<!-- hero image: DON'T lazy load it; prioritise it -->
+<img src="hero.avif" alt="" fetchpriority="high" width="1200" height="600" />
+```
+- Always set `width`/`height` (or `aspect-ratio`) → prevents layout shift (CLS).
+- Responsive images: `srcset` + `sizes`, modern formats (WebP/AVIF).
 
-## Why it exists
-Performance work should reduce user-visible cost. The correct technique depends on whether the bottleneck is network, JavaScript, rendering, DOM size, or interaction scheduling.
-
-## How it works
-Trace **user input → scheduled work → render → reconciliation → commit → browser paint/interaction** and measure before and after.
-
-## Example
+## Components on visibility
 ```tsx
-const Chart = lazy(() => import('./Chart'));
-function Dashboard() {
-  return <Suspense fallback={<Spinner />}><Chart /></Suspense>;
+function LazyOnVisible({ children, minHeight = 300 }: { children: React.ReactNode; minHeight?: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current; if (!el) return;
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); io.disconnect(); } }, { rootMargin: "200px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return <div ref={ref} style={{ minHeight }}>{visible ? children : null}</div>;
 }
+// <LazyOnVisible><Suspense fallback={<Skeleton/>}><HeavyChart/></Suspense></LazyOnVisible>
 ```
 
-## Real frontend use
-Use this for large dashboards, charts, admin modules, route-level code, long lists, and interaction-heavy screens.
+## Data
+Infinite scroll / "load more" with IntersectionObserver (see `code/machine-coding/src/components/InfiniteList`), fetch tab content only when the tab is opened, prefetch on hover.
 
-## Pitfalls
-- Optimizing without profiling.
-- Memoizing when props are always new.
-- Creating too many network chunks.
-- Ignoring accessibility with virtualization.
-- Optimizing development measurements instead of production behavior.
+**Interview:** *Lazy loading vs code splitting?* Code splitting = splitting JS into chunks; lazy loading = deferring any resource (chunk, image, data) until needed.
 
-## Interview reasoning
-Explain the bottleneck, measurement, optimization, trade-off, and verification method.
-
-## Practical challenge
-Profile a slow list or dashboard, apply one targeted optimization, and compare before/after behavior.
-
-## Connection to next topic
-Connect performance to **testing and architecture** so optimizations remain maintainable.
-
-## Official reference
-https://react.dev/
+Next → [Virtualization](../virtualization/README.md)

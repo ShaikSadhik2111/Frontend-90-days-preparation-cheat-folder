@@ -1,43 +1,36 @@
-# use Optimistic
+# useOptimistic (React 19)
 
-## Connection
-This topic completes the core Hooks layer and connects directly to state management, performance, modern React, and interview reasoning.
+> `const [optimistic, addOptimistic] = useOptimistic(state, updateFn)` shows a **temporary optimistic value** while an async action is in progress, and automatically falls back to the real state when it finishes (or fails).
 
-## What it is
-useOptimistic shows temporary UI state while an Action is pending and converges to the real value when the Action completes.
-
-## Why it exists
-React needs deliberate mechanisms for local memory, complex transitions, optimistic async UI, DOM escape hatches, external stores, and rendering priority.
-
-## How it works
-Reason in terms of snapshots, queued updates, dependencies, subscriptions, and render priority. A Hook is part of React's render model, not an ordinary utility function.
-
-## Example
 ```tsx
-function Example() {
-  const [count, setCount] = useState(0);
-  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+function Comments({ comments, sendComment }: { comments: Comment[]; sendComment: (text: string) => Promise<void> }) {
+  const [optimisticComments, addOptimistic] = useOptimistic(
+    comments,
+    (current, text: string) => [...current, { id: "temp-" + Date.now(), text, pending: true }]
+  );
+
+  async function action(formData: FormData) {
+    const text = String(formData.get("text"));
+    addOptimistic(text);          // shows immediately
+    await sendComment(text);      // parent updates `comments` when the server confirms
+  }                                // if it throws, optimistic item disappears (handle the error/toast)
+
+  return (
+    <>
+      <ul>{optimisticComments.map((c) => <li key={c.id} style={{ opacity: c.pending ? 0.5 : 1 }}>{c.text}</li>)}</ul>
+      <form action={action}><input name="text" /><button>Send</button></form>
+    </>
+  );
 }
 ```
+- Must be called inside an Action / transition.
+- Without React 19 (or with TanStack Query): `onMutate` → update cache optimistically, keep snapshot, `onError` → rollback, `onSettled` → invalidate.
 
-## Real frontend use
-Use this for local state, complex forms, optimistic mutations, expensive calculations, external stores, DOM access, and responsive non-urgent updates.
+## Optimistic UI checklist (interview)
+1. Update UI immediately with a temporary id/`pending` flag.
+2. Send request.
+3. On success, replace temp with server data.
+4. On failure, **roll back** and show an error with retry.
+5. Handle concurrent edits/ordering (server version wins).
 
-## Pitfalls
-- Adding memoization everywhere.
-- Mutating refs when the UI should update.
-- Hiding state transitions inside unrelated Effects.
-- Assuming optimistic state is permanent.
-- Confusing transitions with background JavaScript execution.
-
-## Interview reasoning
-Explain what persists across renders, what schedules work, what React can prioritize, and which component should own the state.
-
-## Practical challenge
-Build a searchable list using local state, a reducer for filter transitions, one expensive derived calculation, and a non-urgent result update. Profile it before optimizing.
-
-## Connection to next topic
-Move into **state management and modern React** and decide when local state is enough versus shared or server state.
-
-## Official reference
-https://react.dev/reference/react/hooks
+Next → [State management](../../04-state-management/local-state/README.md)

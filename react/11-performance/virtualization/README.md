@@ -1,43 +1,41 @@
-# Virtualization
+# List virtualization (windowing)
 
-## Connection
-This topic extends React rendering into production performance and modern async UI.
+> Render **only the rows visible in the viewport** (+ a small buffer) instead of all N rows. 10,000 rows → ~30 DOM nodes.
 
-## What it is
-Virtualization renders only visible portions of large collections, reducing DOM and rendering work.
-
-## Why it exists
-Performance work should reduce user-visible cost. The correct technique depends on whether the bottleneck is network, JavaScript, rendering, DOM size, or interaction scheduling.
-
-## How it works
-Trace **user input → scheduled work → render → reconciliation → commit → browser paint/interaction** and measure before and after.
-
-## Example
+## How it works (fixed row height)
 ```tsx
-const Chart = lazy(() => import('./Chart'));
-function Dashboard() {
-  return <Suspense fallback={<Spinner />}><Chart /></Suspense>;
+function VirtualList<T>({ items, rowHeight, height, renderRow }: {
+  items: T[]; rowHeight: number; height: number; renderRow: (item: T, index: number) => React.ReactNode;
+}) {
+  const [scrollTop, setScrollTop] = useState(0);
+  const overscan = 5;
+  const start = Math.max(0, Math.floor(scrollTop / rowHeight) - overscan);
+  const end = Math.min(items.length, Math.ceil((scrollTop + height) / rowHeight) + overscan);
+
+  return (
+    <div style={{ height, overflowY: "auto" }} onScroll={(e) => setScrollTop(e.currentTarget.scrollTop)}>
+      <div style={{ height: items.length * rowHeight, position: "relative" }}>   {/* full scroll height */}
+        {items.slice(start, end).map((item, i) => (
+          <div key={start + i} style={{ position: "absolute", top: (start + i) * rowHeight, height: rowHeight, left: 0, right: 0 }}>
+            {renderRow(item, start + i)}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 ```
+Use a stable id for `key` in real code. Being able to explain/write this is a strong signal in interviews.
 
-## Real frontend use
-Use this for large dashboards, charts, admin modules, route-level code, long lists, and interaction-heavy screens.
+## Libraries
+`@tanstack/react-virtual` (headless, variable sizes), `react-window` (simple, fixed/variable), `react-virtuoso` (auto-measured variable heights, chat-style lists). Data grids (AG Grid, MUI X) virtualize rows and columns.
 
-## Pitfalls
-- Optimizing without profiling.
-- Memoizing when props are always new.
-- Creating too many network chunks.
-- Ignoring accessibility with virtualization.
-- Optimizing development measurements instead of production behavior.
+## Trade-offs
+- Ctrl+F browser search can't find unrendered rows.
+- Variable heights need measurement (ResizeObserver) → more complex.
+- Screen readers: use `aria-rowcount`/`aria-rowindex` for grids.
+- Keep scroll position when data updates; sticky headers need care.
 
-## Interview reasoning
-Explain the bottleneck, measurement, optimization, trade-off, and verification method.
+**Interview:** *When do you virtualize?* Hundreds+ of complex rows, or when profiling shows DOM size/commit time is the bottleneck.
 
-## Practical challenge
-Profile a slow list or dashboard, apply one targeted optimization, and compare before/after behavior.
-
-## Connection to next topic
-Connect performance to **testing and architecture** so optimizations remain maintainable.
-
-## Official reference
-https://react.dev/
+Next → [Web Vitals](../web-vitals/README.md)

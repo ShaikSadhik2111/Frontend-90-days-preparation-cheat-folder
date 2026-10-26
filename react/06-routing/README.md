@@ -1,39 +1,50 @@
-# Routing
+# Routing (React Router)
 
-## Connection
-This topic explains how React turns inputs into UI and how state ownership drives application behavior.
+> Client-side routing maps URLs to components **without full page reloads** using the History API. React Router (v6/v7) is the standard in non-framework apps.
 
-## What it is
-Routing maps URLs to UI and establishes navigation, route parameters, nested layouts, and access boundaries.
-
-## Why it exists
-A predictable rendering and ownership model lets you reason about re-renders, state preservation, remounts, navigation, and DOM changes.
-
-## How it works
-Reason through **update → render → element tree → reconciliation → commit → browser**. Component type and keys determine identity; route state is another explicit source of application state.
-
-## Example
+## Data router setup (v6.4+ / v7)
 ```tsx
-items.map(item => <Row key={item.id} item={item} />);
+import { createBrowserRouter, RouterProvider, Outlet, Link, NavLink, useParams, useSearchParams } from "react-router-dom";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <AppLayout />,               // header + sidebar + <Outlet/>
+    errorElement: <RouteError />,
+    children: [
+      { index: true, element: <Dashboard /> },
+      { path: "devices", element: <DeviceList /> },
+      { path: "devices/:deviceId", element: <DeviceDetail />, loader: ({ params }) => getDevice(params.deviceId!) },
+      { path: "reports", lazy: () => import("./routes/reports") },  // code-split route
+      { path: "*", element: <NotFound /> },
+    ],
+  },
+]);
+export default function App() { return <RouterProvider router={router} />; }
+
+function AppLayout() { return (<><nav><NavLink to="/devices">Devices</NavLink></nav><main><Outlet /></main></>); }
+
+function DeviceList() {
+  const [params, setParams] = useSearchParams();       // ?status=online&page=2
+  const status = params.get("status") ?? "all";
+  return <select value={status} onChange={(e) => setParams({ status: e.target.value })}>…</select>;
+}
 ```
+Key hooks: `useNavigate`, `useParams`, `useSearchParams`, `useLocation`, `useLoaderData`, `useNavigation` (pending state).
 
-## Real frontend use
-Use this model to debug remounts, stale UI, list bugs, route transitions, and unnecessary rendering.
+## Concepts to explain
+- **Nested routes + `<Outlet/>`** — layouts persist while child routes change.
+- **URL as state** — filters/sort/page in search params → shareable, survives refresh, back button works.
+- **Loaders** fetch data before rendering the route (avoid fetch waterfalls); **actions** handle form mutations.
+- **Lazy routes** → route-level code splitting.
+- **Scroll restoration**, `<Link>` vs `<a>` (no reload), `replace` navigation for redirects.
+- Hosting an SPA: server must return `index.html` for unknown paths (history fallback), otherwise refresh on `/devices/1` gives 404.
+- `HashRouter` (`/#/devices`) only when you can't configure the server.
 
-## Pitfalls
-- Assuming every render means a DOM update.
-- Using indexes as keys for reorderable lists.
-- Treating route guards as backend security.
-- Putting all state in global stores.
+## Interview questions
+1. **How does client-side routing work?** History API (`pushState`, `popstate`) + router matching URL to components.
+2. **Why do deep links 404 on refresh?** Server doesn't fall back to `index.html`.
+3. **Where would you keep filter state?** URL search params.
+4. **How do you code-split by route?** `lazy` routes or `React.lazy` + Suspense.
 
-## Interview reasoning
-Explain what changed, why React re-renders, which component identity is preserved, and when the browser DOM actually changes.
-
-## Practical challenge
-Build a list with insertion, deletion, sorting, and navigation. Predict which items preserve local state and verify your prediction.
-
-## Connection to next topic
-Continue to **Hooks and State Management**, where this rendering model explains Hook state and ownership.
-
-## Official reference
-https://react.dev/
+Next → [Protected routes](protected-routes/README.md)

@@ -1,44 +1,35 @@
-# Error Handling
+# Error handling in React apps
 
-## Connection
-This topic connects React fundamentals to production forms and asynchronous application behavior.
+> Plan for failure at every level: **render errors** (error boundaries), **async/event errors** (try/catch + state), **network errors** (status handling, retries), **validation errors** (forms), and **reporting** (Sentry).
 
-## What it is
-React error handling separates render failures, event-handler failures, async request failures, and validation errors.
+## Where errors happen and who catches them
+| Error source | Caught by |
+|---|---|
+| Render / lifecycle / constructor of children | **Error boundary** |
+| Event handlers (`onClick`) | `try/catch` in the handler → set error state / toast |
+| Async code (promises, `setTimeout`) | `try/catch` around `await`, `.catch`, query library `isError` |
+| React 19 Actions / Suspense `use()` | thrown into the nearest error boundary |
+| Unhandled anywhere | `window.onerror`, `unhandledrejection`, monitoring SDK |
 
-## Why it exists
-Real interfaces need predictable loading, success, empty, error, validation, and recovery states. The right boundary prevents those states from becoming scattered flags.
-
-## How it works
-Start with explicit inputs and state ownership. Then model the UI states and transitions before choosing an API or library.
-
-## Example
-```tsx
-function Example({ loading, error, data }) {
-  if (loading) return <Spinner />;
-  if (error) return <ErrorMessage />;
-  return <Result data={data} />;
+## Network error handling pattern
+```ts
+try {
+  await api("/devices", { method: "POST", body: JSON.stringify(device) });
+  toast.success("Device added");
+} catch (e) {
+  if (e instanceof ApiError && e.status === 422) setFieldErrors(parseErrors(e));   // validation
+  else if (e instanceof ApiError && e.status === 401) redirectToLogin();
+  else if (e instanceof ApiError && e.status === 409) toast.error("Someone else changed this device. Reload?");
+  else toast.error("Something went wrong. Please retry.");
+  reportError(e);
 }
 ```
+- Retry **idempotent** requests (GET) with exponential backoff; be careful retrying POSTs.
+- Show **useful** messages with a recovery action (retry, reload, contact support) — never raw stack traces.
+- Keep the rest of the page usable — isolate failures per widget.
 
-## Real frontend use
-Use this for forms, search, checkout, dashboards, route-level data, and reusable application components.
+## Interview questions
+1. **What doesn't an error boundary catch?** Event handlers, async code, SSR errors, errors in the boundary itself.
+2. **How do you design error UX for a dashboard?** Per-widget boundaries + retry, stale-data banner, global fallback for fatal errors, reporting.
 
-## Pitfalls
-- Mixing server state with local UI state.
-- Hiding async errors in generic catch blocks.
-- Using an Error Boundary for event-handler errors.
-- Using Effects for data transformation that belongs in render.
-- Building one giant form state object without clear ownership.
-
-## Interview reasoning
-Explain the state machine, ownership, failure boundary, retry/recovery strategy, and what React is doing during render and commit.
-
-## Practical challenge
-Build a form or data-driven screen with loading, success, empty, validation, and failure states. Add a recovery action.
-
-## Connection to next topic
-Continue toward **Hooks, state management, and modern React Actions**.
-
-## Official reference
-https://react.dev/
+Next → [Error boundaries](error-boundaries/README.md)

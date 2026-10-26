@@ -1,53 +1,40 @@
-# use Memo
+# useMemo
 
-## Connection
-This topic completes the core Hooks layer and connects directly to state management, performance, modern React, and interview reasoning.
+> `useMemo(() => compute(a, b), [a, b])` **caches a calculated value** between renders and recomputes only when dependencies change. It's a performance tool — your code must still work without it.
 
-## What it is
-useMemo caches a calculation between renders. It should be used for measured performance problems, not correctness.
-
-## Why it exists
-React needs deliberate mechanisms for local memory, complex transitions, optimistic async UI, DOM escape hatches, external stores, and rendering priority.
-
-## How it works
-Reason in terms of snapshots, queued updates, dependencies, subscriptions, and render priority. A Hook is part of React's render model, not an ordinary utility function.
-
-## Example
+## When it's worth it
 ```tsx
-function Example() {
-  const [count, setCount] = useState(0);
-  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
-}
+// 1. expensive calculation (measure first: console.time / Profiler)
+const visibleRows = useMemo(() => filterAndSort(rows, query, sort), [rows, query, sort]);
+
+// 2. keep a stable reference for a memoized child or an effect dependency
+const chartOptions = useMemo(() => ({ unit, threshold }), [unit, threshold]);
+<MemoChart options={chartOptions} />;
+
+// 3. stable context value
+const value = useMemo(() => ({ user, login, logout }), [user, login, logout]);
+<AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 ```
 
-## Real frontend use
-Use this for local state, complex forms, optimistic mutations, expensive calculations, external stores, DOM access, and responsive non-urgent updates.
+## When it's useless
+- Cheap calculations (`a + b`, mapping 20 items) — the memo bookkeeping costs more.
+- When the result is passed to a child that isn't memoized — the child re-renders anyway.
+- When deps change every render (e.g. an inline object in deps) — it recomputes every time.
 
 ## Pitfalls
-- Adding memoization everywhere.
-- Mutating refs when the UI should update.
-- Hiding state transitions inside unrelated Effects.
-- Assuming optimistic state is permanent.
-- Confusing transitions with background JavaScript execution.
+- Deps compare with `Object.is` → objects/arrays created in render break caching.
+- Not a semantic guarantee — React may discard the cache (e.g. hot reload). Never put side effects inside.
+- `useMemo` for a function = `useCallback`.
 
-## Interview reasoning
-Explain what persists across renders, what schedules work, what React can prioritize, and which component should own the state.
+## React Compiler
+The React Compiler (opt-in build plugin) automatically memoizes components and values, reducing the need for manual `useMemo`/`useCallback`. Understand the manual version for interviews and legacy code.
 
-## Practical challenge
-Build a searchable list using local state, a reducer for filter transitions, one expensive derived calculation, and a non-urgent result update. Profile it before optimizing.
+## Interview questions
+1. **useMemo vs useCallback?** Cache a value vs cache a function (`useCallback(fn, d) === useMemo(() => fn, d)`).
+2. **When should you not use useMemo?** Cheap work, unmemoized consumers, unstable deps.
+3. **useMemo vs React.memo?** Hook that caches a value inside a component vs HOC that skips re-rendering a component when props are shallow-equal.
 
-## Connection to next topic
-Move into **state management and modern React** and decide when local state is enough versus shared or server state.
+## Practice
+Render 10,000 rows filtered by a search input. Measure typing lag, add `useMemo`, measure again. Then try `useDeferredValue` instead and compare.
 
-## Official reference
-https://react.dev/reference/react/hooks
-
-
-## Deep reasoning
-useMemo caches a calculation result between renders until dependencies change. It is a performance optimization, not a correctness mechanism.
-
-### Production reasoning
-Profile before adding memoization. A large table filter may justify it; a trivial calculation usually does not. Also inspect component boundaries and state ownership before optimizing one calculation.
-
-### Interview drill
-Measure a slow table, identify the expensive calculation, add memoization, and verify the actual render or commit improvement.
+Next → [useCallback](../useCallback/README.md)

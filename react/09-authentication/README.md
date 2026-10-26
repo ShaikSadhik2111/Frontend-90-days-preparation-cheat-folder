@@ -1,42 +1,39 @@
-# Authentication
+# Authentication in a React SPA
 
-## Connection
-This topic extends the React rendering model into production data and application architecture.
+> Authentication = **who are you?** In SPAs the questions are: where do tokens live, how do you refresh them, and how does the UI know the session state?
 
-## What it is
-Authentication establishes identity and session state; the frontend consumes a trusted identity/session contract.
+## Token storage — the classic interview question
+| Option | XSS risk | CSRF risk | Notes |
+|---|---|---|---|
+| **httpOnly + Secure + SameSite cookie** (recommended) | JS can't read it ✅ | Mitigated by `SameSite=Lax/Strict` + CSRF token | Server sets it; `fetch(..., { credentials: "include" })` |
+| `localStorage` / `sessionStorage` | Any injected script can steal it ❌ | None | Simple, but a single XSS = account takeover |
+| In-memory (JS variable) | Lost on refresh; still readable by XSS while running | None | Often combined with a refresh-token cookie |
 
-## Why it exists
-Large applications fail when ownership, caching, permissions, or module boundaries are implicit. This topic makes those decisions explicit.
+Common setup: **short-lived access token** (5–15 min) + **refresh token in httpOnly cookie** with rotation. Enterprise apps (Bosch/Siemens style) often use **OIDC/OAuth 2.0 with PKCE** via an identity provider (Azure AD/Entra ID, Keycloak, Okta) using libraries like MSAL or oidc-client.
 
-## How it works
-Classify the concern first: local UI state, shared client state, server state, URL state, identity, or authorization. Then define the smallest boundary that owns it.
-
-## Example
+## Session state in React
 ```tsx
-function FeatureView({ data, onSave }) {
-  return <button onClick={onSave}>{data ? "Save" : "Create"}</button>;
+type AuthState = { status: "loading" } | { status: "anonymous" } | { status: "authenticated"; user: User };
+
+function AuthProvider({ children }: { children: React.ReactNode }) {
+  const { data, isPending } = useQuery({ queryKey: ["me"], queryFn: () => api<User>("/me"), retry: false });
+  const state: AuthState = isPending ? { status: "loading" } : data ? { status: "authenticated", user: data } : { status: "anonymous" };
+  return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
 }
 ```
 
-## Real frontend use
-Use this for dashboards, multi-screen workflows, shopping carts, authentication flows, feature modules, and reusable application infrastructure.
+## Refresh on 401 (interceptor idea)
+1. Request returns 401 → call `/auth/refresh` **once** (share one in-flight refresh promise across concurrent failing requests).
+2. Retry the original requests.
+3. If refresh fails → clear cache, redirect to login.
 
-## Pitfalls
-- Putting every value in global state.
-- Copying server state into local state without a reason.
-- Treating client permission checks as security.
-- Creating shared abstractions before real reuse exists.
-- Mixing domain logic and rendering responsibilities without a boundary.
+## Logout
+Call the server to invalidate the session/refresh token, clear query cache and stores (`queryClient.clear()`), broadcast to other tabs (`BroadcastChannel` / `storage` event).
 
-## Interview reasoning
-Explain ownership, dependency flow, caching or security implications, testability, and the trade-offs of the chosen architecture.
+## Interview questions
+1. **Where would you store a JWT?** Prefer httpOnly cookie; explain trade-offs.
+2. **How do you handle token expiry?** Refresh flow with single-flight refresh and retry.
+3. **What is OAuth/OIDC + PKCE?** Delegated login via an identity provider; PKCE protects the code exchange in public clients (SPAs).
+4. **How do you keep tabs in sync on logout?** BroadcastChannel/storage events.
 
-## Practical challenge
-Take one application feature and identify its data owner, API boundary, UI boundary, loading/error states, and test boundary.
-
-## Connection to next topic
-Next, connect these decisions to **forms, error handling, performance, and interview scenarios**.
-
-## Official reference
-https://react.dev/
+Next → [Authorization](../10-authorization/README.md)

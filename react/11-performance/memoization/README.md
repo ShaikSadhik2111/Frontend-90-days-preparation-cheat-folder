@@ -1,43 +1,35 @@
-# Memoization
+# Memoization: React.memo, useMemo, useCallback
 
-## Connection
-This topic extends React rendering into production performance and modern async UI.
+> Memoization skips work when inputs haven't changed. In React it's about **skipping re-renders** (`React.memo`) and **keeping values/functions stable** (`useMemo`, `useCallback`). Measure first.
 
-## What it is
-Memoization caches calculations or component work to avoid repeated cost. React Compiler can automate many memoization cases, so measure before adding manual memoization.
-
-## Why it exists
-Performance work should reduce user-visible cost. The correct technique depends on whether the bottleneck is network, JavaScript, rendering, DOM size, or interaction scheduling.
-
-## How it works
-Trace **user input → scheduled work → render → reconciliation → commit → browser paint/interaction** and measure before and after.
-
-## Example
+## React.memo
 ```tsx
-const Chart = lazy(() => import('./Chart'));
-function Dashboard() {
-  return <Suspense fallback={<Spinner />}><Chart /></Suspense>;
-}
+const DeviceRow = React.memo(function DeviceRow({ device, onSelect }: { device: Device; onSelect: (id: string) => void }) {
+  return <tr onClick={() => onSelect(device.id)}><td>{device.name}</td><td>{device.status}</td></tr>;
+});
 ```
+- Skips re-render if every prop is `Object.is`-equal to last time (shallow compare). Optional 2nd arg: custom `arePropsEqual`.
+- Still re-renders when **its own state** or a **context it reads** changes.
 
-## Real frontend use
-Use this for large dashboards, charts, admin modules, route-level code, long lists, and interaction-heavy screens.
+## What breaks memo (and fixes)
+| Breaks memo | Fix |
+|---|---|
+| Inline object `options={{ a: 1 }}` | Hoist constant outside component or `useMemo` |
+| Inline function `onSelect={(id) => …}` | `useCallback` |
+| Inline JSX `icon={<Icon/>}` / `children` | `useMemo` the element or restructure |
+| New array from `filter()` each render | `useMemo` |
+| Spreading a big object of props | Pass only what's needed |
 
-## Pitfalls
-- Optimizing without profiling.
-- Memoizing when props are always new.
-- Creating too many network chunks.
-- Ignoring accessibility with virtualization.
-- Optimizing development measurements instead of production behavior.
+## Alternatives that are often better
+1. **Move state down** to the component that needs it.
+2. **Lift content up** — pass heavy subtrees as `children` so a wrapper's state changes don't re-create them.
+3. **Split contexts / use selectors** in stores.
+4. **Virtualize** long lists instead of memoizing 5,000 rows.
+5. **React Compiler** — automatic memoization at build time (opt-in).
 
-## Interview reasoning
-Explain the bottleneck, measurement, optimization, trade-off, and verification method.
+## Interview questions
+1. **When does React.memo help?** Expensive component, re-rendered often by a parent with the same props.
+2. **Why didn't React.memo stop the re-render?** New prop references, context change, own state change.
+3. **Is it bad to memo everything?** Adds comparison cost and complexity; prefer structural fixes first.
 
-## Practical challenge
-Profile a slow list or dashboard, apply one targeted optimization, and compare before/after behavior.
-
-## Connection to next topic
-Connect performance to **testing and architecture** so optimizations remain maintainable.
-
-## Official reference
-https://react.dev/
+Next → [Profiling](../profiling/README.md)

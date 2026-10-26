@@ -1,16 +1,13 @@
-# Flagship: Chat UI
+# Flagship: Chat UI (75 min)
 
 ## Requirements
-History, send, optimistic message, live receive, unread and pagination.
+Conversation list + message pane · send message (Enter, Shift+Enter newline) · optimistic send with status (sending → sent → failed + retry) · incoming messages from a mock real-time source · auto-scroll to bottom only if user is already at bottom · "new messages" indicator otherwise · load older messages on scroll up.
 
 ## State
-messages, pending IDs, connection status, draft and unread count.
+`messagesByConversation: Record<id, Message[]>`, `draftByConversation`, `activeConversationId`. Message: `{ id | tempId, text, author, createdAt, status }`.
 
-## Correctness
-Temporary IDs reconcile to server IDs; echoed live events are deduplicated; ordering follows server sequence.
-
-## Advanced
-Reconnect, typing indicator, presence, media, offline queue and virtualization.
+## Edge cases
+Ordering by server time/sequence · duplicate on retry (dedupe by tempId/idempotency key) · keeping scroll position when prepending older messages · switching conversations keeps drafts · long messages/links (escape HTML) · offline queue.
 
 ## Follow-ups
-What if send succeeds but acknowledgement is delayed? What if the same event arrives twice?
+WebSocket with reconnect · typing indicators (throttled) · read receipts · virtualization for long histories · attachments · accessibility (`role="log"`, `aria-live="polite"`).

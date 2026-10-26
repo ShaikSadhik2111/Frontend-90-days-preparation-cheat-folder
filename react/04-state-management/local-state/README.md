@@ -1,39 +1,39 @@
-# Local State
+# Local state & colocation
 
-## Connection
-This topic explains how React turns inputs into UI and how state ownership drives application behavior.
+> Start every piece of state **as local as possible** (`useState`/`useReducer` inside the component that uses it). Move it up only when another component needs it.
 
-## What it is
-Local state should live close to the components that own the interaction, such as modal visibility, input text, or selected tabs.
+## Why local first
+- Fewer components re-render when it changes.
+- Easier to delete/refactor the feature.
+- No global store boilerplate for things like `isOpen`, `hoveredRow`, `draftText`.
 
-## Why it exists
-A predictable rendering and ownership model lets you reason about re-renders, state preservation, remounts, navigation, and DOM changes.
+## The escalation ladder
+```
+useState in the component
+   ↓ siblings need it
+lift to common parent
+   ↓ many distant components need it, changes rarely
+Context
+   ↓ shared, changes often, many writers / need selectors, devtools
+Zustand / Redux Toolkit
+```
+Separate ladders for other kinds of state:
+- **Server data** → TanStack Query / RTK Query (not useState copies).
+- **URL state** (filters, page, selected tab) → router search params.
+- **Form state** → React Hook Form for large forms.
 
-## How it works
-Reason through **update → render → element tree → reconciliation → commit → browser**. Component type and keys determine identity; route state is another explicit source of application state.
-
-## Example
+## Example of colocation
 ```tsx
-items.map(item => <Row key={item.id} item={item} />);
+// ❌ App owns `isMenuOpen` → whole app re-renders when menu toggles
+// ✅ Header owns it
+function Header() {
+  const [isMenuOpen, setMenuOpen] = useState(false);
+  return <><button onClick={() => setMenuOpen((o) => !o)}>Menu</button>{isMenuOpen && <Menu />}</>;
+}
 ```
 
-## Real frontend use
-Use this model to debug remounts, stale UI, list bugs, route transitions, and unnecessary rendering.
+## Interview questions
+1. **How do you decide where state lives?** Closest common owner of readers; separate server/URL/form state.
+2. **When would you introduce a global store?** Many unrelated components read/write the same client state frequently, or you need middleware/devtools/time-travel.
 
-## Pitfalls
-- Assuming every render means a DOM update.
-- Using indexes as keys for reorderable lists.
-- Treating route guards as backend security.
-- Putting all state in global stores.
-
-## Interview reasoning
-Explain what changed, why React re-renders, which component identity is preserved, and when the browser DOM actually changes.
-
-## Practical challenge
-Build a list with insertion, deletion, sorting, and navigation. Predict which items preserve local state and verify your prediction.
-
-## Connection to next topic
-Continue to **Hooks and State Management**, where this rendering model explains Hook state and ownership.
-
-## Official reference
-https://react.dev/
+Next → [Context](../context/README.md)

@@ -1,43 +1,41 @@
 # Keys
 
-## Connection
-This topic extends React rendering into production performance and modern async UI.
+> A `key` tells React **which item is which** across renders in a list. Keys must be **stable, unique among siblings, and not derived from index** when the list can change order.
 
-## What it is
-Keys provide stable identity for collection items so React can preserve the correct component instance.
-
-## Why it exists
-Performance work should reduce user-visible cost. The correct technique depends on whether the bottleneck is network, JavaScript, rendering, DOM size, or interaction scheduling.
-
-## How it works
-Trace **user input → scheduled work → render → reconciliation → commit → browser paint/interaction** and measure before and after.
-
-## Example
+## Why keys matter
 ```tsx
-const Chart = lazy(() => import('./Chart'));
-function Dashboard() {
-  return <Suspense fallback={<Spinner />}><Chart /></Suspense>;
-}
+const [todos, setTodos] = useState([{ id: "a", text: "A" }, { id: "b", text: "B" }]);
+
+// ❌ index as key + inputs inside rows
+{todos.map((t, i) => <Row key={i} todo={t} />)}
+// Add a todo at the TOP → React thinks row 0 is still "the same" row,
+// so the uncontrolled <input> text / checkbox / focus stays on the wrong item.
+
+// ✅ stable id
+{todos.map((t) => <Row key={t.id} todo={t} />)}
 ```
+Index keys are OK only if the list is static (never reordered, filtered or inserted into) **and** rows have no state.
 
-## Real frontend use
-Use this for large dashboards, charts, admin modules, route-level code, long lists, and interaction-heavy screens.
+## Rules
+- Unique among **siblings** only (not globally).
+- Generate ids when data is created (`crypto.randomUUID()`), **never** in render: `key={Math.random()}` remounts every row on every render (slow, loses state).
+- Put the key on the outermost element returned in `map` (or `<Fragment key={id}>`).
+- `key` is not passed as a prop to the child.
 
-## Pitfalls
-- Optimizing without profiling.
-- Memoizing when props are always new.
-- Creating too many network chunks.
-- Ignoring accessibility with virtualization.
-- Optimizing development measurements instead of production behavior.
+## Using key to reset state on purpose
+```tsx
+// When the selected user changes, throw away the old form state completely
+<EditUserForm key={user.id} user={user} />
+```
+Cleaner than an effect that resets many fields.
 
-## Interview reasoning
-Explain the bottleneck, measurement, optimization, trade-off, and verification method.
+## Interview questions
+1. **Why do lists need keys?** So reconciliation can match items between renders and preserve the right state/DOM.
+2. **Why not use index?** Breaks when items are inserted/removed/reordered — state attaches to the wrong item.
+3. **What happens with random keys?** Every render remounts every item.
+4. **Other use of key?** Force remount/reset of a component.
 
-## Practical challenge
-Profile a slow list or dashboard, apply one targeted optimization, and compare before/after behavior.
+## Practice
+Reproduce the index-key bug with a list of inputs and a "prepend" button. Fix it with ids. Then use `key` to reset a form when switching between users.
 
-## Connection to next topic
-Connect performance to **testing and architecture** so optimizations remain maintainable.
-
-## Official reference
-https://react.dev/
+Next → [Hooks overview](../../03-hooks/hook-rules/README.md)

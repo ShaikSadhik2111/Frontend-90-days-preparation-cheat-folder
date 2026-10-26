@@ -1,25 +1,32 @@
-# Requirements and Constraints
+# 02 — Requirements & constraints
 
-## Why this matters
-Prevent overengineering by turning vague prompts into measurable requirements.
+> The first 5–8 minutes decide the interview. Ask, write down, prioritise, and confirm scope.
 
-## Core mental model
-Separate functional requirements from non-functional requirements, constraints and explicit non-goals. Clarify users, platforms, data freshness, offline needs, accessibility, security and expected scale.
+## Functional requirements (what users do)
+"Users can search devices by name, see live status, filter by plant, acknowledge alarms." Keep to 3–5 core flows; park the rest as "out of scope / later".
 
-## Production reasoning
-Use a requirements table: capability, priority, latency target, consistency need, failure behavior, security sensitivity. Identify assumptions and ask only questions that change architecture.
+## Non-functional requirements — question checklist
+| Area | Ask |
+|---|---|
+| Users & scale | How many users? Concurrent? How much data per screen (rows, points, items)? |
+| Devices | Desktop only? Mobile/tablet? Factory-floor PCs (low CPU)? Touch? |
+| Network | Slow/unstable connections? Offline needed? |
+| Freshness | Real-time? How stale can data be (seconds/minutes)? |
+| Performance | Targets (LCP < 2.5 s, interaction < 200 ms)? |
+| SEO | Public pages (needs SSR/SSG) or behind login? |
+| Accessibility | WCAG AA required? Keyboard-only users? |
+| i18n | Languages, RTL, time zones, units (metric/imperial)? |
+| Security | Auth method, roles/permissions, sensitive data, audit logs? |
+| Browsers | Evergreen only? Any legacy (old Edge/IE)? |
+| Team | One team or many (micro-frontends?), existing stack/design system? |
 
-## Example / implementation focus
-Example: autocomplete needs prefix search, keyboard navigation, debounce, cancellation, stale-response protection and a defined freshness policy.
+## Turning answers into decisions
+- "Behind login, desktop, 8-hour sessions" → CSR SPA is fine; focus on memory, real-time, resilience.
+- "Public, SEO matters" → SSR/SSG (Next.js), image optimisation, Core Web Vitals.
+- "Unstable network on shop floor" → caching, retries, offline queue, clear stale indicators.
+- "10 teams" → module boundaries, design system, maybe micro-frontends.
 
-## Interview drill
-Interview drill: given 'design a collaborative dashboard', ask five questions before drawing anything.
+## Interview phrasing
+"Before I design, let me confirm scope: … I'll assume X and Y — tell me if that's wrong. I'll focus on flows A and B and mention C at the end."
 
-## Practical challenge
-Production challenge: create acceptance criteria and non-goals for the project.
-
-## Completion contract
-You are not finished when you can repeat the definition. You are finished when you can **explain the decision, implement the core behavior, identify failure modes, debug a broken version, discuss accessibility/security/performance implications, and handle a changed constraint**.
-
-## Connection to next stage
-Use what you learned here as an input to the next numbered stage rather than treating this chapter as an isolated topic.
+Next → [03 Estimation](../03-estimation/README.md)

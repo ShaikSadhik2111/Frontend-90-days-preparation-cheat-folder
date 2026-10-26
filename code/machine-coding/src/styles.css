@@ -1,0 +1,36 @@
+:root { font-family: system-ui, sans-serif; color: #1f2937; background: #f8fafc; }
+body { margin: 0; }
+.app { max-width: 960px; margin: 0 auto; padding: 24px 16px; }
+.muted { color: #6b7280; }
+button { cursor: pointer; padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; }
+button:focus-visible, input:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
+input { padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 6px; }
+.tabs__list { display: flex; flex-wrap: wrap; gap: 4px; margin: 16px 0; }
+[role="tab"][aria-selected="true"] { background: #2563eb; color: #fff; border-color: #2563eb; }
+.autocomplete { position: relative; display: grid; gap: 4px; max-width: 360px; }
+.autocomplete__list { position: absolute; top: 100%; left: 0; right: 0; margin: 4px 0 0; padding: 0; list-style: none; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; max-height: 260px; overflow: auto; z-index: 10; }
+.autocomplete__list li { padding: 8px; }
+.autocomplete__list li.active { background: #dbeafe; }
+table { width: 100%; border-collapse: collapse; margin: 8px 0; background: #fff; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #e5e7eb; }
+th button { border: none; background: none; font-weight: 600; padding: 0; }
+.pagination { display: flex; gap: 12px; align-items: center; }
+.modal__backdrop { position: fixed; inset: 0; background: rgb(0 0 0 / 0.45); display: grid; place-items: center; }
+.modal { background: #fff; border-radius: 10px; padding: 16px 20px; width: min(480px, calc(100% - 32px)); }
+.modal__header { display: flex; justify-content: space-between; align-items: center; }
+.stars .star { border: none; background: none; font-size: 28px; color: #d1d5db; padding: 0 2px; }
+.stars .star.filled { color: #f59e0b; }
+.otp { border: none; padding: 0; display: flex; gap: 8px; flex-wrap: wrap; }
+.otp legend { margin-bottom: 8px; }
+.otp input { width: 40px; height: 44px; text-align: center; font-size: 20px; }
+.todo ul { list-style: none; padding: 0; }
+.todo li { display: flex; gap: 8px; align-items: center; padding: 4px 0; }
+.todo .done { text-decoration: line-through; color: #9ca3af; }
+[aria-pressed="true"] { background: #e0e7ff; }
+.infinite ul { max-height: 400px; overflow: auto; background: #fff; border: 1px solid #e5e7eb; padding: 8px 16px; }
+.accordion h3 { margin: 4px 0; }
+.accordion h3 button { width: 100%; display: flex; justify-content: space-between; }
+.kanban { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.kanban__col { background: #eef2f7; border-radius: 8px; padding: 8px; min-height: 200px; }
+.kanban__col.over { outline: 2px dashed #2563eb; }
+.kanban__card { background: #fff; border-radius: 6px; padding: 8px; margin: 8px 0; cursor: grab; display: flex; justify-content: space-between; gap: 8px; }

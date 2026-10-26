@@ -1,41 +1,47 @@
-# Integration Testing
+# Integration & E2E testing
 
-## Connection
-This topic connects React's rendering model to scalable state ownership or reliable verification.
+> **Integration tests** render several components together (page + router + query client + mocked network). **E2E tests** run the real app in a real browser (Playwright/Cypress).
 
-## What it is
-Integration tests exercise several components or boundaries together to validate realistic user workflows.
-
-## Why it exists
-State libraries should solve a real sharing problem, while tests should verify behavior that matters to users and system boundaries.
-
-## How it works
-Classify the state or test boundary first, then choose the smallest mechanism. For tests, prefer user inputs and observable outputs over implementation details.
-
-## Example
+## Integration test setup
 ```tsx
-render(<Checkout />);
-await user.click(screen.getByRole('button', { name: /pay/i }));
+function renderWithProviders(ui: React.ReactElement, { route = "/" } = {}) {
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return render(
+    <QueryClientProvider client={client}>
+      <MemoryRouter initialEntries={[route]}>{ui}</MemoryRouter>
+    </QueryClientProvider>
+  );
+}
+
+// MSW
+const server = setupServer(http.get("/api/devices", () => HttpResponse.json([{ id: "1", name: "Pump A" }])));
+beforeAll(() => server.listen()); afterEach(() => server.resetHandlers()); afterAll(() => server.close());
+
+test("devices page lists devices and handles server error", async () => {
+  renderWithProviders(<DevicesPage />);
+  expect(await screen.findByText("Pump A")).toBeInTheDocument();
+
+  server.use(http.get("/api/devices", () => new HttpResponse(null, { status: 500 })));
+  // ...trigger refetch and assert error UI
+});
 ```
 
-## Real frontend use
-Apply this to shared filters, shopping carts, editors, critical workflows, and regression-prone components.
+## E2E (Playwright)
+```ts
+test("user can acknowledge an alarm", async ({ page }) => {
+  await page.goto("/alarms");
+  await page.getByRole("button", { name: "Acknowledge Pump A overheating" }).click();
+  await expect(page.getByText("Acknowledged")).toBeVisible();
+});
+```
+Keep E2E for **critical journeys** (login, main workflow, payment) — they're slower and flakier.
 
-## Pitfalls
-- Putting every value into global state.
-- Mixing server cache with client state.
-- Testing implementation details.
-- Mocking so much that the test no longer resembles the workflow.
-- Choosing a library before identifying the ownership problem.
+## Testing pyramid / trophy
+Many unit + component tests, a solid layer of integration tests (most confidence per cost), few E2E. Add static checks (TypeScript, ESLint) at the base.
 
-## Interview reasoning
-Explain why the state/test belongs in this boundary, how updates propagate, what causes consumers to render, and what the test proves.
+## Migration angle
+Before migrating an AngularJS screen, write **E2E characterization tests** against the old screen; run the same tests against the React version → proves feature parity.
 
-## Practical challenge
-Build a small feature, test its critical user flow, then change an internal implementation and verify that the behavior test still passes.
+**Interview:** *What's your testing strategy?* Static types + lint → unit for logic → RTL component/integration with MSW → a few Playwright E2E in CI on every PR.
 
-## Connection to next topic
-Continue toward **Accessibility → Modern React → Advanced React → Architecture → Interview Questions**.
-
-## Official reference
-https://react.dev/
+Next → [Accessibility](../../13-accessibility/README.md)

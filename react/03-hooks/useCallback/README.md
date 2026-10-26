@@ -1,53 +1,38 @@
-# use Callback
+# useCallback
 
-## Connection
-Hooks extend the component/rendering model. Learn the Rules of Hooks first, then understand each Hook's ownership and timing.
+> `useCallback(fn, deps)` returns the **same function reference** between renders until deps change. Useful only when something **depends on the function's identity**.
 
-## What it is
-useCallback caches a function identity between renders when dependencies are unchanged.
-
-## Why it exists
-Hooks let function components participate in state, effects, context, refs, external stores, and rendering priorities.
-
-## How it works
-A Hook participates in React's render model. Call order must stay stable, and dependencies determine when related work can be reused or must run again.
-
-## Example
+## When it matters
 ```tsx
-function Example() {
-  const value = useState(0);
-  return null;
+const Row = React.memo(function Row({ item, onSelect }: { item: Item; onSelect: (id: string) => void }) {
+  return <li onClick={() => onSelect(item.id)}>{item.name}</li>;
+});
+
+function List({ items }: { items: Item[] }) {
+  const [selected, setSelected] = useState<string | null>(null);
+  // without useCallback: new function each render → every memoized Row re-renders
+  const handleSelect = useCallback((id: string) => setSelected(id), []);
+  return <ul>{items.map((i) => <Row key={i.id} item={i} onSelect={handleSelect} />)}</ul>;
 }
 ```
+Other cases: a function used in a `useEffect` dependency list; a function returned from a custom hook (consumers may use it in their deps); a function in a context value.
 
-## Real frontend use
-Use this for reusable interaction logic, subscriptions, async UI, accessibility, shared configuration, and responsive rendering.
+## When it's useless
+- The child isn't wrapped in `React.memo` → it re-renders anyway.
+- Handlers on native elements (`<button onClick>`) — DOM elements don't care about identity.
 
-## Pitfalls
-- Calling Hooks conditionally or in loops.
-- Using Effects for calculations that belong in render.
-- Omitting real dependencies.
-- Treating memoization as correctness.
-- Using refs when rendered state is required.
+## Stale closures inside useCallback
+```tsx
+const save = useCallback(() => api.save(form), []);   // ❌ form is always the initial value
+const save = useCallback(() => api.save(form), [form]); // ✅ (or read the latest from a ref)
+```
 
-## Interview reasoning
-Explain what persists across renders, what triggers the Hook's work, why the Rules of Hooks exist, and what cleanup or dependency behavior matters.
+## Interview questions
+1. **What does useCallback do?** Memoizes a function reference.
+2. **Does useCallback make code faster by itself?** No — only when combined with a consumer that relies on identity (memo child, effect deps).
+3. **Why might a memoized child still re-render?** Some prop (object, array, inline function, children) is new each render, or it consumes a context that changed.
 
-## Practical challenge
-Implement a small custom Hook using this concept and explain its behavior across two renders and an unmount.
+## Practice
+Use React DevTools Profiler on a list with a memoized `Row`. Show re-renders with and without `useCallback`, then explain the result.
 
-## Connection to next topic
-Continue into **state management, forms, and data fetching**, where Hook choices become application architecture.
-
-## Official reference
-https://react.dev/reference/react/hooks
-
-
-## Deep reasoning
-useCallback preserves a function reference while its dependencies remain unchanged. Its value is reference stability when a memoized child or dependency-sensitive Hook benefits from it.
-
-### Pitfalls
-Incorrect dependencies create stale closures. Wrapping every callback adds complexity without necessarily improving performance. State colocation can sometimes be a better optimization than callback memoization.
-
-### Interview drill
-Compare a plain callback, useCallback, React.memo, and moving state closer to the child. Explain when each changes observable work.
+Next → [useReducer](../useReducer/README.md)

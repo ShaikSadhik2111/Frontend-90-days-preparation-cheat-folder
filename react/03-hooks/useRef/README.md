@@ -1,53 +1,62 @@
-# use Ref
+# useRef
 
-## Connection
-This topic completes the core Hooks layer and connects directly to state management, performance, modern React, and interview reasoning.
+> `useRef(initial)` returns a mutable object `{ current }` that **persists across renders** and **doesn't trigger a re-render** when changed.
 
-## What it is
-useRef stores a persistent mutable value without causing a re-render when current changes.
-
-## Why it exists
-React needs deliberate mechanisms for local memory, complex transitions, optimistic async UI, DOM escape hatches, external stores, and rendering priority.
-
-## How it works
-Reason in terms of snapshots, queued updates, dependencies, subscriptions, and render priority. A Hook is part of React's render model, not an ordinary utility function.
-
-## Example
+## Two main uses
+### 1. Access a DOM node
 ```tsx
-function Example() {
-  const [count, setCount] = useState(0);
-  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+function SearchInput() {
+  const inputRef = useRef<HTMLInputElement>(null);
+  return (
+    <>
+      <input ref={inputRef} />
+      <button onClick={() => inputRef.current?.focus()}>Focus</button>
+    </>
+  );
+}
+```
+`ref.current` is `null` during the first render and set during commit — read it in effects or event handlers.
+
+### 2. Keep a mutable value that's not part of the UI
+```tsx
+const intervalId = useRef<number | null>(null);
+function start() { intervalId.current = window.setInterval(tick, 1000); }
+function stop() { if (intervalId.current) clearInterval(intervalId.current); }
+
+// latest value for a long-lived callback (avoid stale closures)
+const latestOnMessage = useRef(onMessage);
+latestOnMessage.current = onMessage;           // update each render
+useEffect(() => socket.on("msg", (m) => latestOnMessage.current(m)), [socket]);
+
+// previous value
+function usePrevious<T>(value: T) {
+  const ref = useRef<T | undefined>(undefined);
+  useEffect(() => { ref.current = value; }, [value]);
+  return ref.current;
 }
 ```
 
-## Real frontend use
-Use this for local state, complex forms, optimistic mutations, expensive calculations, external stores, DOM access, and responsive non-urgent updates.
+## ref vs state
+| `useRef` | `useState` |
+|---|---|
+| Change doesn't re-render | Change re-renders |
+| Mutable (`ref.current = x`) | Immutable snapshot + setter |
+| For timers, DOM, latest callbacks, instance variables | For anything shown on screen |
+Don't read or write `ref.current` **during render** for values that affect output — the UI won't update and it breaks purity.
 
-## Pitfalls
-- Adding memoization everywhere.
-- Mutating refs when the UI should update.
-- Hiding state transitions inside unrelated Effects.
-- Assuming optimistic state is permanent.
-- Confusing transitions with background JavaScript execution.
+## Passing refs to child components
+- React 18: wrap the child in `forwardRef`.
+- React 19: `ref` is a normal prop for function components.
+- `useImperativeHandle(ref, () => ({ focus, scrollToTop }))` exposes a limited API instead of the raw DOM node.
+- Callback refs `ref={(el) => { ... }}` run when the node attaches/detaches — useful for measuring or lists of refs (`refs.current[i] = el`).
 
-## Interview reasoning
-Explain what persists across renders, what schedules work, what React can prioritize, and which component should own the state.
+## Interview questions
+1. **useRef vs useState?** Ref = persistent mutable box without re-render; state = UI data with re-render.
+2. **Why is `ref.current` null on first render?** Refs are attached during commit.
+3. **How do you avoid stale closures in event listeners?** Keep the latest callback in a ref.
+4. **What is forwardRef / useImperativeHandle?** Pass refs through components / expose a custom handle.
 
-## Practical challenge
-Build a searchable list using local state, a reducer for filter transitions, one expensive derived calculation, and a non-urgent result update. Profile it before optimizing.
+## Practice
+Build an OTP input with an array of refs (auto-advance, backspace back). Compare with `code/machine-coding/src/components/OtpInput`.
 
-## Connection to next topic
-Move into **state management and modern React** and decide when local state is enough versus shared or server state.
-
-## Official reference
-https://react.dev/reference/react/hooks
-
-
-## Deep reasoning
-A ref is a stable mutable cell that persists across renders without scheduling a render when current changes. Use state for visual data and refs for imperative handles or persistent values that should not themselves trigger rendering.
-
-### Production examples
-DOM focus, timer IDs, third-party widget instances, previous-value bookkeeping, and the latest value needed by an asynchronous callback.
-
-### Interview trap
-A ref is not a replacement for state. Hiding visual state in a ref produces UI that does not update when the value changes.
+Next → [useMemo](../useMemo/README.md)

@@ -1,16 +1,15 @@
-# Flagship: Virtualized Feed
+# Flagship: Virtualized infinite feed (75 min)
 
 ## Requirements
-Large feed, scroll, pagination and item interaction.
+Cursor-paginated feed of posts · loads more near the bottom · renders smoothly with 10,000 items · loading/error/end states · preserves scroll position when returning.
 
-## Architecture
-Cursor API + cache + virtualization window + overscan.
+## Plan
+1. Infinite loading with IntersectionObserver sentinel + in-flight guard (ref) + `nextCursor`.
+2. Virtualization: fixed height first (`start = floor(scrollTop / h)`), then discuss variable heights (measure + cache).
+3. Memoized `PostRow`; stable keys.
+4. Scroll restoration: save `scrollTop` + loaded pages in memory/session storage on navigation.
 
-## Correctness
-Stable keys, deduplicated pages and correct scroll restoration.
+## Edge cases
+First page shorter than viewport (observer won't re-fire → re-observe after each page) · duplicate items across pages (dedupe by id) · new posts arriving at top ("N new posts" banner instead of shifting content) · error mid-list with retry · images changing row height.
 
-## Advanced
-Variable heights, image loading, live inserts, reverse scrolling and accessibility.
-
-## Follow-ups
-What happens when a new item arrives above the user’s current position?
+References: `code/machine-coding/src/components/InfiniteList`, [react/11-performance/virtualization](../../react/11-performance/virtualization/README.md).

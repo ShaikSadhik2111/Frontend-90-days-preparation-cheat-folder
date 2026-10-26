@@ -1,44 +1,47 @@
-# Error Boundaries
+# Error boundaries
 
-## Connection
-This topic connects React fundamentals to production forms and asynchronous application behavior.
+> An error boundary is a component that **catches errors thrown while rendering its children**, shows a fallback UI, and lets the rest of the app keep working. Without one, a render error **unmounts the whole React tree** (blank page).
 
-## What it is
-Error Boundaries isolate rendering failures in a subtree and show fallback UI; they do not catch every async failure.
-
-## Why it exists
-Real interfaces need predictable loading, success, empty, error, validation, and recovery states. The right boundary prevents those states from becoming scattered flags.
-
-## How it works
-Start with explicit inputs and state ownership. Then model the UI states and transitions before choosing an API or library.
-
-## Example
+## Class implementation (the only built-in way)
 ```tsx
-function Example({ loading, error, data }) {
-  if (loading) return <Spinner />;
-  if (error) return <ErrorMessage />;
-  return <Result data={data} />;
+type Props = { fallback: React.ReactNode; children: React.ReactNode; onError?: (e: Error) => void };
+type State = { hasError: boolean };
+
+class ErrorBoundary extends React.Component<Props, State> {
+  state: State = { hasError: false };
+  static getDerivedStateFromError(): State { return { hasError: true }; }     // render fallback
+  componentDidCatch(error: Error, info: React.ErrorInfo) {                    // side effects: logging
+    this.props.onError?.(error);
+    console.error(error, info.componentStack);
+  }
+  render() { return this.state.hasError ? this.props.fallback : this.props.children; }
 }
 ```
+In practice use **`react-error-boundary`**:
+```tsx
+<ErrorBoundary
+  FallbackComponent={({ error, resetErrorBoundary }) => (
+    <div role="alert"><p>Widget failed: {error.message}</p><button onClick={resetErrorBoundary}>Retry</button></div>
+  )}
+  onReset={() => queryClient.resetQueries({ queryKey: ["telemetry"] })}
+  resetKeys={[deviceId]}                          // auto-reset when deviceId changes
+>
+  <TelemetryChart deviceId={deviceId} />
+</ErrorBoundary>
+```
+Inside event handlers/async code, `const { showBoundary } = useErrorBoundary()` lets you forward an error to the boundary.
 
-## Real frontend use
-Use this for forms, search, checkout, dashboards, route-level data, and reusable application components.
+## Placement strategy
+- **Root** boundary: "Something went wrong — reload" + report.
+- **Route** boundary: one per page (router `errorElement`).
+- **Widget** boundary: each dashboard card/chart so one bad dataset doesn't kill the page.
 
-## Pitfalls
-- Mixing server state with local UI state.
-- Hiding async errors in generic catch blocks.
-- Using an Error Boundary for event-handler errors.
-- Using Effects for data transformation that belongs in render.
-- Building one giant form state object without clear ownership.
+## Doesn't catch
+Event handlers, async code (`setTimeout`, promises), server-side rendering, errors thrown in the boundary itself.
 
-## Interview reasoning
-Explain the state machine, ownership, failure boundary, retry/recovery strategy, and what React is doing during render and commit.
+## Interview questions
+1. **What is an error boundary and why a class?** Catches render errors in children; hooks have no equivalent of `getDerivedStateFromError`/`componentDidCatch`.
+2. **getDerivedStateFromError vs componentDidCatch?** Render fallback (render phase) vs side effects like logging (commit phase).
+3. **How do you recover?** Reset state (retry button, `resetKeys`), refetch data.
 
-## Practical challenge
-Build a form or data-driven screen with loading, success, empty, validation, and failure states. Add a recovery action.
-
-## Connection to next topic
-Continue toward **Hooks, state management, and modern React Actions**.
-
-## Official reference
-https://react.dev/
+Next → [Authentication](../../09-authentication/README.md)

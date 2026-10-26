@@ -1,25 +1,21 @@
-# Data Flow and Unidirectional Architecture
+# 07 — Data flow
 
-## Why this matters
-Make information movement predictable and debuggable.
+> Describe how data moves: **user action → state change → request → cache update → re-render**, and the real-time path.
 
-## Core mental model
-Trace user intent → event → state transition → request → response → cache update → render. Identify ownership at every arrow and prevent accidental feedback loops.
+## Typical flows to narrate
+**Read**: route loads → read URL params → `useQuery(["devices", filters])` → cache hit? show instantly, revalidate in background : show skeleton → response → normalise → render.
+**Write**: user edits → optimistic cache update → mutation request → success: replace with server data / invalidate related queries; error: rollback + toast with retry.
+**Real-time**: socket message → validate → batch → patch cache/store entries → throttled re-render of subscribed components.
+**Cross-tab**: BroadcastChannel / `storage` event → sync logout/theme.
 
-## Production reasoning
-Cover derived data, selectors, normalization when justified, optimistic updates, invalidation and stale data. Distinguish command paths from data-display paths.
+## Principles
+- **Unidirectional** flow (props down, events up; actions → reducers → state).
+- Single source of truth per entity; derive the rest.
+- Separate **commands** (mutations) from **queries** (reads).
+- Event bus only for decoupled cross-module notifications (micro-frontends, legacy bridge) — not as the main state mechanism.
+- Make async flows **cancelable** and **idempotent**.
 
-## Example / implementation focus
-Example: editing a task should produce one mutation command, then reconcile cache/state with the server response.
+## Avoid
+Request waterfalls (parent fetch → child fetch → grandchild fetch) → parallelise, prefetch in route loaders, or aggregate via BFF/GraphQL.
 
-## Interview drill
-Interview drill: trace a stale UI bug from click to rendered state.
-
-## Practical challenge
-Production challenge: draw one complete request/data lifecycle.
-
-## Completion contract
-You are not finished when you can repeat the definition. You are finished when you can **explain the decision, implement the core behavior, identify failure modes, debug a broken version, discuss accessibility/security/performance implications, and handle a changed constraint**.
-
-## Connection to next stage
-Use what you learned here as an input to the next numbered stage rather than treating this chapter as an isolated topic.
+Next → [08 API contracts](../08-api-contracts/README.md)

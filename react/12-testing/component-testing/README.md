@@ -1,41 +1,50 @@
-# Component Testing
+# Component testing (React Testing Library)
 
-## Connection
-This topic connects React's rendering model to scalable state ownership or reliable verification.
+> "The more your tests resemble the way your software is used, the more confidence they give you." Render the component, interact like a user, assert on what the user sees.
 
-## What it is
-Component tests render a component and interact with it like a user to verify behavior and accessibility-oriented contracts.
-
-## Why it exists
-State libraries should solve a real sharing problem, while tests should verify behavior that matters to users and system boundaries.
-
-## How it works
-Classify the state or test boundary first, then choose the smallest mechanism. For tests, prefer user inputs and observable outputs over implementation details.
-
-## Example
 ```tsx
-render(<Checkout />);
-await user.click(screen.getByRole('button', { name: /pay/i }));
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+
+test("shows an error when email is invalid and submits when valid", async () => {
+  const user = userEvent.setup();
+  const onSubmit = vi.fn();
+  render(<SignupForm onSubmit={onSubmit} />);
+
+  await user.type(screen.getByLabelText(/email/i), "wrong");
+  await user.click(screen.getByRole("button", { name: /sign up/i }));
+  expect(await screen.findByRole("alert")).toHaveTextContent(/valid email/i);
+  expect(onSubmit).not.toHaveBeenCalled();
+
+  await user.clear(screen.getByLabelText(/email/i));
+  await user.type(screen.getByLabelText(/email/i), "a@b.com");
+  await user.click(screen.getByRole("button", { name: /sign up/i }));
+  expect(onSubmit).toHaveBeenCalledWith({ email: "a@b.com" });
+});
 ```
 
-## Real frontend use
-Apply this to shared filters, shopping carts, editors, critical workflows, and regression-prone components.
+## Queries — priority order
+1. `getByRole` (with `name`) — also verifies accessibility
+2. `getByLabelText`, `getByPlaceholderText`, `getByText`, `getByDisplayValue`
+3. `getByAltText`, `getByTitle`
+4. `getByTestId` — last resort
 
-## Pitfalls
-- Putting every value into global state.
-- Mixing server cache with client state.
-- Testing implementation details.
-- Mocking so much that the test no longer resembles the workflow.
-- Choosing a library before identifying the ownership problem.
+| Variant | When not found | Use for |
+|---|---|---|
+| `getBy` | throws | element must exist now |
+| `queryBy` | returns `null` | asserting **absence** |
+| `findBy` | waits (async, default 1s) | element appears after async work |
+`*AllBy*` variants return arrays.
 
-## Interview reasoning
-Explain why the state/test belongs in this boundary, how updates propagate, what causes consumers to render, and what the test proves.
+## Do / don't
+- ✅ `userEvent` over `fireEvent` (realistic sequences: focus, keydown, input, keyup).
+- ✅ `jest-dom` matchers: `toBeInTheDocument`, `toHaveTextContent`, `toBeDisabled`, `toHaveAttribute`, `toBeVisible`.
+- ❌ Testing state variables, CSS classes, or component internals.
+- ❌ Wrapping everything in `act` manually — RTL does it; warnings usually mean an un-awaited async update.
+- Mock network with **MSW** (Mock Service Worker) instead of mocking `fetch` per test.
 
-## Practical challenge
-Build a small feature, test its critical user flow, then change an internal implementation and verify that the behavior test still passes.
+Real examples: every component in `code/machine-coding/src/components/*/*.test.tsx`.
 
-## Connection to next topic
-Continue toward **Accessibility → Modern React → Advanced React → Architecture → Interview Questions**.
+**Interview:** *How do you test a component that fetches data?* MSW handler → render → `findBy` loading-then-data; error handler → assert error UI + retry.
 
-## Official reference
-https://react.dev/
+Next → [Integration testing](../integration-testing/README.md)

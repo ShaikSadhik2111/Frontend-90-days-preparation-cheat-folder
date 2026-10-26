@@ -1,33 +1,20 @@
-# Web Platform — Connected Frontend Engineering Learning Path
+# Web platform
 
-The browser is a runtime and platform, not a list of API names.
+Start with the **[interview revision sheet](00-interview-revision-sheet/README.md)**, then go deeper topic by topic.
 
-## 01 → 20 progression
-01 Fundamentals → 02 HTML/Semantics → 03 CSS/Layout → 04 DOM/CSSOM → 05 Events → 06 Rendering → 07 Storage → 08 HTTP → 09 Fetch → 10 Caching → 11 Workers → 12 Service Workers/PWA → 13 WebSockets/SSE → 14 Security → 15 Accessibility → 16 Performance → 17 DevTools → 18 Web Components → 19 Modern Browser APIs → 20 Interview Drills.
+| # | Topic | # | Topic |
+|---|---|---|---|
+| 01 | [URL → page, fundamentals](01-web-platform-fundamentals/README.md) | 11 | [Web Workers](11-web-workers/README.md) |
+| 02 | [HTML & semantics](02-html-and-semantics/README.md) | 12 | [Service workers & PWA](12-service-workers-pwa/README.md) |
+| 03 | [CSS foundations & layout](03-css-foundations-layout/README.md) | 13 | [Real-time: SSE & WebSockets](13-realtime-websockets-sse/README.md) |
+| 04 | [DOM & CSSOM](04-dom-and-cssom/README.md) | 14 | [Browser security](14-browser-security/README.md) |
+| 05 | [Events & delegation](05-events-and-delegation/README.md) | 15 | [Accessibility](15-accessibility/README.md) |
+| 06 | [Rendering pipeline](06-rendering-pipeline/README.md) | 16 | [Web performance](16-web-performance/README.md) |
+| 07 | [Browser storage](07-browser-storage/README.md) | 17 | [DevTools & debugging](17-devtools-debugging/README.md) |
+| 08 | [HTTP & networking](08-http-networking/README.md) | 18 | [Web Components](18-web-components/README.md) |
+| 09 | [Fetch, Request & Response](09-fetch-request-response/README.md) | 19 | [Modern browser APIs](19-modern-browser-apis/README.md) |
+| 10 | [Caching](10-caching/README.md) | 20 | [Interview drills](20-interview-drills/README.md) |
 
-## Core chain
-HTML/CSS → DOM/CSSOM → events → rendering → networking → storage/cache → background execution → real-time → security → accessibility → performance → debugging → reusable platform components → interview reasoning.
+**Chain:** HTML/CSS → DOM/CSSOM → events → rendering → network → storage/cache → background work → real-time → security → accessibility → performance → debugging.
 
-## Learning standard
-Every numbered folder contains the connection from the previous concept, what/why, runtime model, example, production use, pitfalls, debugging/interview reasoning and a practical challenge.
-
-For fast-changing APIs, learn the durable browser concept first and verify current behavior against MDN and browser compatibility data.
-
-## Framework connection
-React render → DOM commit → browser rendering.
-React events → browser events.
-fetch → HTTP → caching → server state.
-local persistence → Web Storage/IndexedDB.
-CPU-heavy work → Worker.
-offline UI → Service Worker + IndexedDB.
-real-time UI → WebSocket/SSE.
-accessible component → semantic HTML + keyboard + ARIA.
-slow UI → Performance API + DevTools.
-
-## Completion rule
-Do not move on because you read the README. Implement the challenge, predict runtime behavior, break the implementation intentionally, debug it, and explain three interview follow-ups.
-
-## Official references
-https://developer.mozilla.org/en-US/docs/Web/API
-https://developer.mozilla.org/en-US/docs/Learn_web_development
-https://web.dev/
+For fast-changing APIs, check MDN and caniuse.com for current browser support.

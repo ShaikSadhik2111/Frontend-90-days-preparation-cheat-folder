@@ -1,39 +1,34 @@
-# Virtual Dom
+# Virtual DOM
 
-## Connection
-This topic explains how React turns inputs into UI and how state ownership drives application behavior.
+> The "virtual DOM" is the **tree of plain JS objects (React elements)** your components return. React diffs the new tree against the previous one and applies only the needed changes to the real DOM.
 
 ## What it is
-Virtual DOM is an informal term for React's in-memory element representation; interviews should focus on render, reconciliation, scheduling, and commit.
+```js
+// <button className="primary">Save</button> becomes:
+{ type: "button", props: { className: "primary", children: "Save" }, key: null }
+```
+Creating and comparing these objects is cheap compared with touching the real DOM (layout/paint).
 
 ## Why it exists
-A predictable rendering and ownership model lets you reason about re-renders, state preservation, remounts, navigation, and DOM changes.
+- Lets you write UI **declaratively** ("this is what the screen should look like for this state") instead of imperative DOM updates.
+- React batches and minimises DOM writes.
+- Same model works for other renderers: React Native, react-three-fiber, PDF renderers.
 
-## How it works
-Reason through **update → render → element tree → reconciliation → commit → browser**. Component type and keys determine identity; route state is another explicit source of application state.
+## Common misconceptions (good interview points)
+- **"The virtual DOM is always faster than the DOM."** No — hand-written targeted DOM updates can be faster. VDOM gives *good-enough performance with a simpler programming model*.
+- **"React re-renders the whole page on every change."** It re-runs component functions from the updated component down, but only changes DOM nodes that differ.
+- Frameworks like Svelte and SolidJS skip the VDOM with compile-time or fine-grained reactivity; Angular uses change detection (Zone.js / Signals); AngularJS used dirty checking (digest cycle).
 
-## Example
-```tsx
-items.map(item => <Row key={item.id} item={item} />);
-```
+## AngularJS vs React (your migration angle)
+| AngularJS | React |
+|---|---|
+| Two-way binding + watchers | One-way data flow |
+| Digest loop checks every watcher until stable | Re-render from the changed component + VDOM diff |
+| Cost grows with number of watchers | Cost grows with size of re-rendered subtree |
 
-## Real frontend use
-Use this model to debug remounts, stale UI, list bugs, route transitions, and unnecessary rendering.
+## Interview questions
+1. **What is the virtual DOM?** An in-memory tree of element objects used to compute minimal DOM updates.
+2. **Is it faster than direct DOM manipulation?** Not inherently; it's a trade-off for declarative code.
+3. **How is it different from the shadow DOM?** Shadow DOM is a browser feature for style/DOM encapsulation in Web Components; VDOM is a React concept.
 
-## Pitfalls
-- Assuming every render means a DOM update.
-- Using indexes as keys for reorderable lists.
-- Treating route guards as backend security.
-- Putting all state in global stores.
-
-## Interview reasoning
-Explain what changed, why React re-renders, which component identity is preserved, and when the browser DOM actually changes.
-
-## Practical challenge
-Build a list with insertion, deletion, sorting, and navigation. Predict which items preserve local state and verify your prediction.
-
-## Connection to next topic
-Continue to **Hooks and State Management**, where this rendering model explains Hook state and ownership.
-
-## Official reference
-https://react.dev/
+Next → [Keys](../keys/README.md)

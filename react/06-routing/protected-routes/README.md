@@ -1,39 +1,33 @@
-# Protected Routes
+# Protected routes
 
-## Connection
-This topic explains how React turns inputs into UI and how state ownership drives application behavior.
+> Protect pages in the UI by checking authentication/permissions before rendering, and redirect when not allowed. **This is UX only — the server must enforce access on every API call.**
 
-## What it is
-Protected routes provide client-side navigation UX for authenticated or authorized areas but are not a security boundary.
-
-## Why it exists
-A predictable rendering and ownership model lets you reason about re-renders, state preservation, remounts, navigation, and DOM changes.
-
-## How it works
-Reason through **update → render → element tree → reconciliation → commit → browser**. Component type and keys determine identity; route state is another explicit source of application state.
-
-## Example
 ```tsx
-items.map(item => <Row key={item.id} item={item} />);
+function RequireAuth({ children, permission }: { children: React.ReactNode; permission?: Permission }) {
+  const { user, status } = useAuth();
+  const location = useLocation();
+
+  if (status === "loading") return <FullPageSpinner />;          // avoid flashing the login page
+  if (!user) return <Navigate to="/login" replace state={{ from: location }} />;
+  if (permission && !user.permissions.includes(permission)) return <Forbidden />;
+  return <>{children}</>;
+}
+
+// routes
+{ path: "admin", element: <RequireAuth permission="admin:read"><AdminPage /></RequireAuth> }
+
+// after login, go back where the user came from
+const from = (location.state as { from?: Location })?.from?.pathname ?? "/";
+navigate(from, { replace: true });
 ```
+With data routers, you can also check auth in a **loader** and `throw redirect("/login")` — this prevents the protected route's data from even being fetched.
 
-## Real frontend use
-Use this model to debug remounts, stale UI, list bugs, route transitions, and unnecessary rendering.
+## Things to mention
+- Handle the **loading** state of the session check (refresh with a valid cookie shouldn't bounce to /login).
+- `replace` so the back button doesn't return to the redirect.
+- Hide links/buttons the user can't use, but still enforce on the server.
+- Don't ship secrets or admin-only data in the bundle — anything in JS is readable.
 
-## Pitfalls
-- Assuming every render means a DOM update.
-- Using indexes as keys for reorderable lists.
-- Treating route guards as backend security.
-- Putting all state in global stores.
+**Interview:** *Is a protected route secure?* No — it's navigation UX. Security = server-side authorization of every request.
 
-## Interview reasoning
-Explain what changed, why React re-renders, which component identity is preserved, and when the browser DOM actually changes.
-
-## Practical challenge
-Build a list with insertion, deletion, sorting, and navigation. Predict which items preserve local state and verify your prediction.
-
-## Connection to next topic
-Continue to **Hooks and State Management**, where this rendering model explains Hook state and ownership.
-
-## Official reference
-https://react.dev/
+Next → [Data fetching](../../07-data-fetching/README.md)

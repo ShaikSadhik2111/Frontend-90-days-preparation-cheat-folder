@@ -1,52 +1,43 @@
 # Frontend 90 Days Preparation Cheat Folder
 
-A connected, interview-focused learning repository for senior frontend/product-engineering preparation.
+Interview preparation for a **senior frontend / product engineering** switch (target: engineering MNCs like Siemens, Schneider, Honeywell, Continental and Qualcomm, plus product companies like Walmart, Target, Atlassian and Adobe).
 
-## Core tracks
+> **Start here → [PLAN.md](PLAN.md)** — a dated, day-by-day plan (27 Oct → 15 Dec 2026) that continues from where I am: JavaScript ✅ · TypeScript ✅ · React 🔄.
+> Track progress in [tracker.md](tracker.md). See [CHANGES.md](CHANGES.md) for what was updated.
 
-- JavaScript
-- TypeScript
-- React
-- DSA
-- AI Engineering
-- Web Platform
-- Frontend System Design
-- Machine Coding
-- Backend fundamentals (project-driven)
-- Projects
+## Tracks
+
+| Track | What's inside | Status |
+|---|---|---|
+| [javascript/](javascript) | 38 topics + [interview revision sheet & output drill](javascript/39-interview-revision-sheet/README.md) | ✅ done → revise |
+| [typescript/](typescript) | 34 topics + [interview revision sheet](typescript/35-interview-revision-sheet/README.md) | ✅ done → revise |
+| [react/](react/README.md) | 18 sections, 73 topic files (rewritten), [50 Q&A](react/17-interview-questions/README.md), [debugging case studies](react/18-depth-and-interview-engineering/case-studies.md) | 🔄 in progress |
+| [angularjs-to-react-migration/](angularjs-to-react-migration/README.md) | AngularJS & Angular concepts, migration strategies, bridge code, STAR story template | ⭐ my differentiator |
+| [web-platform/](web-platform) | [Interview revision sheet](web-platform/00-interview-revision-sheet/README.md) (URL → page, rendering, storage, HTTP/caching, CORS, security, Web Vitals, CSS) + topic folders | |
+| [system-design/](system-design) | Topic folders + [RADIO framework & 8 worked designs](system-design/27-worked-designs/README.md) | |
+| [machine-coding/](machine-coding) | Interview framework & problem notes | |
+| [code/machine-coding](code/machine-coding/README.md) | **Runnable** React + TS practice app: 10 problems with tests | practise timed |
+| [code/polyfills](code/polyfills) | **Runnable** JS utilities (debounce, throttle, Promise.all/any, MyPromise, bind, deepClone, EventEmitter, LRU, promisePool …) with tests | write from memory |
+| [dsa/](dsa) | Pattern notes + [templates & 120-problem list](dsa/problem-list/README.md) | 2 problems/day |
+| [tooling/](tooling/README.md) | Vite/webpack, testing, Git, CI/CD | |
+| [interview/](interview) | [Resume & job search](interview/01-resume-and-job-search.md) · [behavioral, HR & negotiation](interview/02-behavioral-hr-negotiation.md) · [rounds, mocks & final 100 questions](interview/03-rounds-mocks-final-revision.md) · my stories & interview log | |
+| [ai/](ai), [backend/](backend) | Optional — after the core interview prep | later |
+
+## Run the code
+```bash
+# polyfills (Node 18+, no install)
+cd code/polyfills && npm test
+
+# machine-coding app (React 18 + Vite + Vitest)
+cd code/machine-coding && npm install
+npm run dev     # demo app with all problems
+npm test        # tests
+```
 
 ## Learning standard
+A topic is done when I can **explain it without notes, code it from memory, and answer follow-up questions** — not when I've read it.
 
-A topic is not complete because it has a definition or a list of interview questions. Important topics must support:
+For DSA: **understand → constraints → brute force → bottleneck → pattern → implementation → dry run → complexity → edge cases.**
 
-**Connection → What → Why → Mental model → Runtime behavior → Implementation → Real frontend use → Pitfalls → Debugging → Interview reasoning → Practical challenge → Next connection**
-
-For DSA, use:
-
-**Understand → constraints → brute force → bottleneck → observation → pattern → invariant/state → implementation → dry run → complexity → edge cases → trade-offs**
-
-For major DSA patterns, use at least 2–3 complete coding problems and add mixed problems where the pattern is not revealed.
-
-## Final preparation progression
-
-`JavaScript → TypeScript → DSA → React → Web Platform → AI Engineering → Frontend System Design → Machine Coding → Projects → Backend where projects require it → Interview preparation`
-
-The repository should remain a single source of truth: add depth to the existing structure instead of creating duplicate parallel curricula.
-
-## Current expansion phase
-
-The next content pass explicitly includes:
-
-- Browser/DOM, Fetch, HTTP Request/Response, Web Storage, IndexedDB
-- Web Workers, Service Workers, WebSockets, SSE
-- CORS, XSS, CSRF, CSP, Trusted Types
-- TypeScript declaration merging, module augmentation, `.d.ts`, ambient declarations and third-party library typing
-- Generic React components, advanced event/ref typing and runtime-validation boundaries
-- Type-safe state machines
-- DSA depth for trees, graphs, DP, backtracking, binary search, heap, monotonic stack, greedy and trie
-- Mixed/unknown-pattern DSA interview sets
-- React Compiler, Server Components architecture, Actions, optimistic UI, hydration debugging, Suspense architecture, caching/invalidation, state ownership, large-scale architecture, profiling and React+TypeScript interview coding
-- Production AI engineering: streaming UI, tool-call state machines, agent memory/termination, human-in-the-loop, production RAG, evaluation datasets, prompt regression tests, rate limits, caching, token/cost budgets, observability, PII isolation, prompt-injection defense, model fallback, testing and AI UX
-- Frontend system-design case studies
-- Machine-coding interview practice
-- Backend only to the depth required by projects and frontend/product interviews
+## Daily commit habit
+Commit practice code, tracker updates and notes every day. A consistent contribution graph is visible to recruiters.

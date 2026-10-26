@@ -1,43 +1,39 @@
-# use SyncExternalStore
+# useSyncExternalStore
 
-## Connection
-This topic completes the core Hooks layer and connects directly to state management, performance, modern React, and interview reasoning.
+> `useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot?)` subscribes a component to a store **outside React** (browser APIs, Redux/Zustand stores, your own store) safely under concurrent rendering — no "tearing".
 
-## What it is
-useSyncExternalStore provides a React-safe subscription model for data stored outside React state.
-
-## Why it exists
-React needs deliberate mechanisms for local memory, complex transitions, optimistic async UI, DOM escape hatches, external stores, and rendering priority.
-
-## How it works
-Reason in terms of snapshots, queued updates, dependencies, subscriptions, and render priority. A Hook is part of React's render model, not an ordinary utility function.
-
-## Example
+## Example — online status
 ```tsx
-function Example() {
-  const [count, setCount] = useState(0);
-  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+function subscribe(callback: () => void) {
+  window.addEventListener("online", callback);
+  window.addEventListener("offline", callback);
+  return () => { window.removeEventListener("online", callback); window.removeEventListener("offline", callback); };
+}
+export function useOnlineStatus() {
+  return useSyncExternalStore(subscribe, () => navigator.onLine, () => true);
 }
 ```
 
-## Real frontend use
-Use this for local state, complex forms, optimistic mutations, expensive calculations, external stores, DOM access, and responsive non-urgent updates.
+## Example — tiny store (how Zustand works conceptually)
+```tsx
+function createStore<T>(initial: T) {
+  let state = initial;
+  const listeners = new Set<() => void>();
+  return {
+    get: () => state,
+    set: (next: T) => { state = next; listeners.forEach((l) => l()); },
+    subscribe: (l: () => void) => { listeners.add(l); return () => listeners.delete(l); },
+  };
+}
+const counter = createStore(0);
+function useCounter() { return useSyncExternalStore(counter.subscribe, counter.get); }
+```
 
-## Pitfalls
-- Adding memoization everywhere.
-- Mutating refs when the UI should update.
-- Hiding state transitions inside unrelated Effects.
-- Assuming optimistic state is permanent.
-- Confusing transitions with background JavaScript execution.
+## Rules
+- `getSnapshot` must return the **same value** (same reference) if nothing changed — returning a new object every call causes an infinite loop.
+- Define `subscribe` outside the component (or memoize) so React doesn't resubscribe every render.
+- **Tearing** = different parts of the UI showing different versions of the same store during a concurrent render. This hook prevents it.
 
-## Interview reasoning
-Explain what persists across renders, what schedules work, what React can prioritize, and which component should own the state.
+**Interview:** *Why not useEffect + useState for a store?* Works, but can tear in concurrent rendering and causes an extra render; this hook is the official integration point used by react-redux and Zustand.
 
-## Practical challenge
-Build a searchable list using local state, a reducer for filter transitions, one expensive derived calculation, and a non-urgent result update. Profile it before optimizing.
-
-## Connection to next topic
-Move into **state management and modern React** and decide when local state is enough versus shared or server state.
-
-## Official reference
-https://react.dev/reference/react/hooks
+Next → [useDebugValue](../useDebugValue/README.md)

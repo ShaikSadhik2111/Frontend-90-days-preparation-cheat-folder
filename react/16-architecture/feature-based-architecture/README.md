@@ -1,42 +1,38 @@
-# Feature Based Architecture
+# Feature-based folder structure
 
-## Connection
-This topic extends the React rendering model into production data and application architecture.
+> Organise by **feature/domain**, not by file type. Everything for "devices" lives together; shared code is explicitly shared.
 
-## What it is
-Feature-based architecture groups code around business capabilities instead of only technical file types.
-
-## Why it exists
-Large applications fail when ownership, caching, permissions, or module boundaries are implicit. This topic makes those decisions explicit.
-
-## How it works
-Classify the concern first: local UI state, shared client state, server state, URL state, identity, or authorization. Then define the smallest boundary that owns it.
-
-## Example
-```tsx
-function FeatureView({ data, onSave }) {
-  return <button onClick={onSave}>{data ? "Save" : "Create"}</button>;
-}
+```
+src/
+  app/                 # app shell: providers, router, layout, global styles
+  features/
+    devices/
+      api/             # devicesApi.ts (endpoints, DTO types, zod schemas)
+      components/      # DeviceTable.tsx, DeviceDrawer.tsx
+      hooks/           # useDevices.ts, useDeviceMutations.ts
+      utils/           # formatStatus.ts
+      routes.tsx       # feature routes (lazy loaded)
+      index.ts         # PUBLIC API of the feature — other features import only from here
+    alarms/
+    reports/
+  shared/
+    ui/                # Button, Modal, Table — design-system components
+    hooks/             # useDebounce, useMediaQuery
+    lib/               # api client, date utils, logger
+    types/
+  tests/               # test utils (renderWithProviders), MSW handlers
 ```
 
-## Real frontend use
-Use this for dashboards, multi-screen workflows, shopping carts, authentication flows, feature modules, and reusable application infrastructure.
+## Rules
+- Features **don't import each other's internals** — only through `index.ts` (enforce with ESLint `no-restricted-imports` or boundaries plugin).
+- `shared/` never imports from `features/`.
+- Colocate tests and styles with the component (`DeviceTable.test.tsx`).
+- Lazy-load each feature's routes → natural code-splitting boundary.
+- Scales to monorepo packages (Nx/Turborepo) or micro-frontends later.
 
-## Pitfalls
-- Putting every value in global state.
-- Copying server state into local state without a reason.
-- Treating client permission checks as security.
-- Creating shared abstractions before real reuse exists.
-- Mixing domain logic and rendering responsibilities without a boundary.
+## Versus layer-based (`components/`, `hooks/`, `services/`)
+Layer-based is fine for small apps; in big apps, a feature change touches 5 folders and ownership is unclear.
 
-## Interview reasoning
-Explain ownership, dependency flow, caching or security implications, testability, and the trade-offs of the chosen architecture.
+**Interview:** *How would you structure a large React app?* Feature folders + shared UI kit + API layer + clear public APIs + lint-enforced boundaries.
 
-## Practical challenge
-Take one application feature and identify its data owner, API boundary, UI boundary, loading/error states, and test boundary.
-
-## Connection to next topic
-Next, connect these decisions to **forms, error handling, performance, and interview scenarios**.
-
-## Official reference
-https://react.dev/
+Next → [Design systems](../design-systems/README.md)

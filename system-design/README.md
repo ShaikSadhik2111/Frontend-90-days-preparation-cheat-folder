@@ -1,72 +1,24 @@
-# Frontend System Design — Interview-Ready Curriculum
+# Frontend system design
 
-This is a **learning track**, not merely a topic catalog. The numbered stages progress from requirements and architecture into data, caching, realtime, reliability, security, observability and interview drills.
+Work through the numbered topics, then practise the worked designs under time pressure.
 
-## Learning contract
+| # | Topic | # | Topic |
+|---|---|---|---|
+| 01 | [Fundamentals & RADIO](01-fundamentals/README.md) | 14 | [Real-time](14-real-time/README.md) |
+| 02 | [Requirements & constraints](02-requirements-constraints/README.md) | 15 | [Offline-first](15-offline-first/README.md) |
+| 03 | [Estimation](03-estimation/README.md) | 16 | [Performance](16-performance/README.md) |
+| 04 | [Frontend architecture & rendering](04-frontend-architecture/README.md) | 17 | [Security](17-security/README.md) |
+| 05 | [Component architecture](05-component-architecture/README.md) | 18 | [Accessibility](18-accessibility/README.md) |
+| 06 | [State architecture](06-state-architecture/README.md) | 19 | [Reliability & failure modes](19-reliability/README.md) |
+| 07 | [Data flow](07-data-flow/README.md) | 20 | [Observability](20-observability/README.md) |
+| 08 | [API contracts](08-api-contracts/README.md) | 21 | [Deployment & scalability](21-deployment-scalability/README.md) |
+| 09 | [Data fetching](09-data-fetching/README.md) | 22 | [Micro-frontends](22-micro-frontends/README.md) |
+| 10 | [Caching](10-caching/README.md) | 23 | [Design systems](23-design-systems/README.md) |
+| 11 | [Pagination & large data](11-pagination-large-data/README.md) | 24 | [Specialized systems](24-specialized-systems/README.md) |
+| 12 | [Search & autocomplete](12-search-autocomplete/README.md) | 25 | [Case studies](25-case-studies/README.md) |
+| 13 | [Optimistic updates](13-optimistic-updates/README.md) | 26 | [Interview drills](26-interview-drills/README.md) |
+| **27** | **[Worked designs — 8 full answers](27-worked-designs/README.md)** | | |
 
-For every stage:
+Also here: [problem bank](problem-bank.md) · [interview questions](interview-questions.md) · [topic catalog](topic-catalog.md).
 
-**Connection → What → Why → Mental model → Architecture → Data flow → Failure modes → Performance → Security/accessibility → Trade-offs → Interview reasoning → Practical challenge → Next connection**
-
-A topic is not complete because you can draw a diagram. You must be able to explain why each boundary exists, what happens when it fails, what data may be stale, how the browser behaves, how the system is observed, and what changes at 10× scale.
-
-## 26-stage progression
-
-1. Fundamentals
-2. Requirements & Constraints
-3. Estimation
-4. Frontend Architecture
-5. Component Architecture
-6. State Architecture
-7. Data Flow
-8. API Contracts
-9. Data Fetching
-10. Caching
-11. Pagination & Large Data
-12. Search & Autocomplete
-13. Optimistic Updates
-14. Real-Time
-15. Offline-First
-16. Performance
-17. Security
-18. Accessibility
-19. Reliability
-20. Observability
-21. Deployment & Scalability
-22. Micro-Frontends
-23. Design Systems
-24. Specialized Systems
-25. Case Studies
-26. Interview Drills
-
-## Deep study
-
-Each numbered folder now contains a `deep-study.md` companion where the chapter needs additional interview/production depth. Existing study guides, problem bank and case studies remain complementary resources.
-
-## Senior answer framework
-
-Use this order in interviews:
-
-1. Clarify requirements and non-goals.
-2. State assumptions and estimate scale.
-3. Define architecture and boundaries.
-4. Assign state ownership.
-5. Trace one critical data flow.
-6. Define API/data contracts.
-7. Explain caching and freshness.
-8. Model loading, error, offline and concurrency states.
-9. Address performance, security and accessibility.
-10. Add reliability and observability.
-11. Explain trade-offs.
-12. Handle changed constraints.
-
-## Interview practice
-
-Use 10/20/30/45-minute drills. Practice unknown systems instead of memorized diagrams. Revisit the same system with different constraints: 10× data, offline mode, strict consistency, realtime updates, partial dependency outage, slow devices or security-sensitive data.
-
-## Resources
-
-- [Complete topic catalog](./topic-catalog.md)
-- [60-problem design bank](./problem-bank.md)
-- [Worked case studies](./real-world-designs/study-guide.md)
-- [Real-world designs](./real-world-designs/)
+**Method for every design:** Requirements → Architecture → Data model → Interface (API) → Optimisations → trade-offs.

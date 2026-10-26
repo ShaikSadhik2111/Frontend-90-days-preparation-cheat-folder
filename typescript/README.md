@@ -138,3 +138,6 @@ Before marking TypeScript complete, you should be able to explain:
 **What problem does the next topic solve that this topic cannot?**
 
 Official Handbook: https://www.typescriptlang.org/docs/handbook/
+
+## Interview revision
+Quick revision before interviews: **[TypeScript interview revision sheet](35-interview-revision-sheet/README.md)**.

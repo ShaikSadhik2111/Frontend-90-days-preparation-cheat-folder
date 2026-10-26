@@ -1,42 +1,32 @@
-# Frontend Patterns
+# Frontend patterns in React
 
-## Connection
-This topic extends the React rendering model into production data and application architecture.
+| Pattern | What | Today |
+|---|---|---|
+| **Container / Presentational** | Container fetches & holds state; presentational renders | Mostly replaced by custom hooks + plain components |
+| **Higher-Order Component** | `withAuth(Component)` returns an enhanced component | Legacy; still in libraries (`connect`, `withRouter`). Downsides: wrapper hell, prop collisions |
+| **Render props** | `<Mouse render={(pos) => …}/>` | Headless libraries; mostly replaced by hooks |
+| **Custom hooks** | Reusable stateful logic | Default way to share logic |
+| **Compound components** | `<Tabs><Tabs.Tab/></Tabs>` via context | Flexible component APIs |
+| **Controlled / uncontrolled** | Who owns the state | Support both in reusable components |
+| **Provider pattern** | Context for DI (theme, auth, API client) | Cross-cutting concerns |
+| **State reducer** | Let consumers customise internal transitions | Advanced library pattern |
+| **Observer / pub-sub** | Event emitter, stores, WebSocket listeners | Stores built on subscribe + `useSyncExternalStore` |
+| **Strangler fig** | Replace a legacy system piece by piece | AngularJS → React migrations |
+| **Micro-frontends** | Independently deployed apps composed in a shell | Many teams; Module Federation / single-spa |
+| **Optimistic UI** | Update UI before server confirms, rollback on error | `useOptimistic`, query `onMutate` |
+| **Feature flags** | Ship code dark, enable per user/env | Safer migrations and releases |
 
-## What it is
-Frontend patterns are repeatable solutions for state flow, composition, data loading, and UI boundaries.
-
-## Why it exists
-Large applications fail when ownership, caching, permissions, or module boundaries are implicit. This topic makes those decisions explicit.
-
-## How it works
-Classify the concern first: local UI state, shared client state, server state, URL state, identity, or authorization. Then define the smallest boundary that owns it.
-
-## Example
+## HOC example (asked to write sometimes)
 ```tsx
-function FeatureView({ data, onSave }) {
-  return <button onClick={onSave}>{data ? "Save" : "Create"}</button>;
+function withPermission<P extends object>(Component: React.ComponentType<P>, permission: Permission) {
+  return function Guarded(props: P) {
+    const allowed = usePermission(permission);
+    return allowed ? <Component {...props} /> : <Forbidden />;
+  };
 }
+const AdminUsers = withPermission(UsersPage, "admin:users");
 ```
 
-## Real frontend use
-Use this for dashboards, multi-screen workflows, shopping carts, authentication flows, feature modules, and reusable application infrastructure.
+**Interview:** *HOC vs render props vs hooks — which and why?* Hooks for logic reuse (no extra components, easy typing); HOC/render props when you must wrap rendering or work with class components.
 
-## Pitfalls
-- Putting every value in global state.
-- Copying server state into local state without a reason.
-- Treating client permission checks as security.
-- Creating shared abstractions before real reuse exists.
-- Mixing domain logic and rendering responsibilities without a boundary.
-
-## Interview reasoning
-Explain ownership, dependency flow, caching or security implications, testability, and the trade-offs of the chosen architecture.
-
-## Practical challenge
-Take one application feature and identify its data owner, API boundary, UI boundary, loading/error states, and test boundary.
-
-## Connection to next topic
-Next, connect these decisions to **forms, error handling, performance, and interview scenarios**.
-
-## Official reference
-https://react.dev/
+Next → [Interview questions](../../17-interview-questions/README.md)

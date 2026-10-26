@@ -1,3 +1,5 @@
+> **Superseded:** the current day-by-day plan is [PLAN.md](PLAN.md) (continues from JS ✅, TS ✅, React in progress). This file is kept for history.
+
 # 60-Day Frontend Interview Preparation Roadmap
 
 This is the current execution roadmap for the October–November sprint. The repository is broader than the sprint; this file defines what to study first.

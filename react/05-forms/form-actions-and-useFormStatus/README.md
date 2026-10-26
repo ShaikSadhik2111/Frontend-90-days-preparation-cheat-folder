@@ -1,44 +1,34 @@
-# Form Actions And UseFormStatus
+# Form Actions & useFormStatus (React 19)
 
-## Connection
-This topic connects React fundamentals to production forms and asynchronous application behavior.
+> In React 19, `<form action={fn}>` accepts a **function**. React calls it with `FormData`, tracks pending state, resets uncontrolled fields after success, and integrates with `useActionState`, `useFormStatus` and `useOptimistic`.
 
-## What it is
-useFormStatus reads a parent form's status and is useful for reusable submit controls with pending UI.
-
-## Why it exists
-Real interfaces need predictable loading, success, empty, error, validation, and recovery states. The right boundary prevents those states from becoming scattered flags.
-
-## How it works
-Start with explicit inputs and state ownership. Then model the UI states and transitions before choosing an API or library.
-
-## Example
 ```tsx
-function Example({ loading, error, data }) {
-  if (loading) return <Spinner />;
-  if (error) return <ErrorMessage />;
-  return <Result data={data} />;
+import { useFormStatus } from "react-dom";
+
+function SubmitButton() {
+  const { pending } = useFormStatus();          // reads the status of the PARENT <form>
+  return <button disabled={pending}>{pending ? "Saving…" : "Save"}</button>;
+}
+
+function NewsletterForm() {
+  async function subscribe(formData: FormData) {
+    await fetch("/api/subscribe", { method: "POST", body: formData });
+  }
+  return (
+    <form action={subscribe}>
+      <input name="email" type="email" required />
+      <SubmitButton />
+    </form>
+  );
 }
 ```
+- `useFormStatus` must be called in a component **rendered inside** the `<form>` — not in the component that renders the form.
+- Returns `{ pending, data, method, action }`.
+- Errors thrown from the action go to the nearest Error Boundary; for validation errors, return them via `useActionState` instead.
+- With Server Functions (`"use server"`, Next.js), forms work before JavaScript hydrates (progressive enhancement).
 
-## Real frontend use
-Use this for forms, search, checkout, dashboards, route-level data, and reusable application components.
+**Compared with classic forms:** `onSubmit` + `preventDefault` + manual `isSubmitting` state still works and is what most existing codebases (and React 18) use.
 
-## Pitfalls
-- Mixing server state with local UI state.
-- Hiding async errors in generic catch blocks.
-- Using an Error Boundary for event-handler errors.
-- Using Effects for data transformation that belongs in render.
-- Building one giant form state object without clear ownership.
+**Interview:** *What does useFormStatus solve?* A reusable submit button that knows its form is pending without prop drilling.
 
-## Interview reasoning
-Explain the state machine, ownership, failure boundary, retry/recovery strategy, and what React is doing during render and commit.
-
-## Practical challenge
-Build a form or data-driven screen with loading, success, empty, validation, and failure states. Add a recovery action.
-
-## Connection to next topic
-Continue toward **Hooks, state management, and modern React Actions**.
-
-## Official reference
-https://react.dev/
+Next → [Routing](../../06-routing/README.md)

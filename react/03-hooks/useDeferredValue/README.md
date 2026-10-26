@@ -1,43 +1,24 @@
-# use DeferredValue
+# useDeferredValue
 
-## Connection
-Hooks extend the component/rendering model. Learn the Rules of Hooks first, then understand each Hook's ownership and timing.
+> `const deferred = useDeferredValue(value)` returns a **lagging copy** of a value. React first re-renders with the old deferred value (fast), then re-renders in the background with the new one.
 
-## What it is
-useDeferredValue lets a non-critical value lag behind an urgent value; it changes rendering priority rather than request frequency.
-
-## Why it exists
-Hooks let function components participate in state, effects, context, refs, external stores, and rendering priorities.
-
-## How it works
-A Hook participates in React's render model. Call order must stay stable, and dependencies determine when related work can be reused or must run again.
-
-## Example
 ```tsx
-function Example() {
-  const value = useState(0);
-  return null;
+function SearchResults({ query }: { query: string }) {
+  const deferredQuery = useDeferredValue(query);
+  const isStale = query !== deferredQuery;
+  return (
+    <div style={{ opacity: isStale ? 0.6 : 1 }}>
+      <SlowList query={deferredQuery} />   {/* wrap SlowList in React.memo so it skips the urgent render */}
+    </div>
+  );
 }
 ```
+- The heavy child must be **memoized** (`React.memo`), otherwise it re-renders on the urgent pass too.
+- With Suspense: shows old results while new ones load instead of flashing the fallback.
+- React 19: `useDeferredValue(value, initialValue)` for an initial render value.
 
-## Real frontend use
-Use this for reusable interaction logic, subscriptions, async UI, accessibility, shared configuration, and responsive rendering.
+**When to use:** you receive a fast-changing value from props/parent and can't wrap its setter in `startTransition`.
 
-## Pitfalls
-- Calling Hooks conditionally or in loops.
-- Using Effects for calculations that belong in render.
-- Omitting real dependencies.
-- Treating memoization as correctness.
-- Using refs when rendered state is required.
+**Interview:** *Difference from debounce?* No fixed delay, interruptible, works with rendering; debounce delays work like network calls.
 
-## Interview reasoning
-Explain what persists across renders, what triggers the Hook's work, why the Rules of Hooks exist, and what cleanup or dependency behavior matters.
-
-## Practical challenge
-Implement a small custom Hook using this concept and explain its behavior across two renders and an unmount.
-
-## Connection to next topic
-Continue into **state management, forms, and data fetching**, where Hook choices become application architecture.
-
-## Official reference
-https://react.dev/reference/react/hooks
+Next → [useSyncExternalStore](../useSyncExternalStore/README.md)

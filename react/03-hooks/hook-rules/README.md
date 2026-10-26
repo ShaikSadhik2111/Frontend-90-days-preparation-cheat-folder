@@ -1,43 +1,39 @@
-# hook rules
+# Rules of Hooks
 
-## Connection
-Hooks extend the component/rendering model. Learn the Rules of Hooks first, then understand each Hook's ownership and timing.
+> 1. Call Hooks **only at the top level** — never inside conditions, loops, nested functions or after an early return.
+> 2. Call Hooks **only from React function components or custom Hooks**.
 
-## What it is
-Hooks must be called at the top level of React components or custom Hooks so Hook identity remains consistent across renders.
-
-## Why it exists
-Hooks let function components participate in state, effects, context, refs, external stores, and rendering priorities.
-
-## How it works
-A Hook participates in React's render model. Call order must stay stable, and dependencies determine when related work can be reused or must run again.
-
-## Example
+## Why: Hooks are matched by call order
+React stores each component's hook state in a **linked list on its fiber**. On every render it walks the list in order: 1st `useState` call → slot 1, 2nd → slot 2…
 ```tsx
-function Example() {
-  const value = useState(0);
-  return null;
+function Profile({ user }) {
+  if (!user) return null;                 // ❌ early return before hooks
+  const [tab, setTab] = useState("info"); // on renders where user is null, this hook isn't called
+  useEffect(() => { /* ... */ }, []);     // → order changes → React reads the wrong slot → crash/bugs
 }
 ```
+✅ Fix: call all hooks first, then return early.
+```tsx
+function Profile({ user }) {
+  const [tab, setTab] = useState("info");
+  useEffect(() => { /* ... */ }, [user]);
+  if (!user) return null;
+  return <Tabs value={tab} onChange={setTab} />;
+}
+```
+Conditional *logic* goes **inside** the hook: `useEffect(() => { if (!enabled) return; ... }, [enabled])`.
 
-## Real frontend use
-Use this for reusable interaction logic, subscriptions, async UI, accessibility, shared configuration, and responsive rendering.
+## Tooling
+Use `eslint-plugin-react-hooks`:
+- `rules-of-hooks` — catches conditional calls.
+- `exhaustive-deps` — warns about missing effect/memo dependencies. Treat its warnings as bugs, not noise.
 
-## Pitfalls
-- Calling Hooks conditionally or in loops.
-- Using Effects for calculations that belong in render.
-- Omitting real dependencies.
-- Treating memoization as correctness.
-- Using refs when rendered state is required.
+## Exception
+`use()` (React 19) can be called conditionally — it's not stored by order like other hooks.
 
-## Interview reasoning
-Explain what persists across renders, what triggers the Hook's work, why the Rules of Hooks exist, and what cleanup or dependency behavior matters.
+## Interview questions
+1. **Why can't hooks be conditional?** State is matched by call order; skipping a call shifts all later hooks.
+2. **Can you call hooks in a regular function?** Only if it's a custom hook (named `useX`) called from a component/hook.
+3. **How do you run an effect conditionally?** Put the condition inside the effect.
 
-## Practical challenge
-Implement a small custom Hook using this concept and explain its behavior across two renders and an unmount.
-
-## Connection to next topic
-Continue into **state management, forms, and data fetching**, where Hook choices become application architecture.
-
-## Official reference
-https://react.dev/reference/react/hooks
+Next → [useState](../useState/README.md)

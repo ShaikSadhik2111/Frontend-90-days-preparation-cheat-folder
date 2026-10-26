@@ -1,63 +1,76 @@
 # Components
 
-## Connection
-This topic connects React fundamentals to production forms and asynchronous application behavior.
+> A component is a **function that takes props and returns UI** (React elements). React decides *when* to call it, so the function must be **pure** during render.
 
-## What it is
-Components are JavaScript functions that return React nodes. React controls when they render, so rendering should be pure.
-
-## Why it exists
-Real interfaces need predictable loading, success, empty, error, validation, and recovery states. The right boundary prevents those states from becoming scattered flags.
+## Mental model
+```
+props + state + context  ──►  Component()  ──►  React elements (a description of UI)
+```
+- Calling a component does not touch the DOM. It only returns a description. React compares descriptions and commits the minimal DOM changes later.
+- Same inputs should give the same output. No side effects during render (no fetch, no `localStorage.setItem`, no mutating props, no `Math.random()` that affects output).
 
 ## How it works
-Start with explicit inputs and state ownership. Then model the UI states and transitions before choosing an API or library.
-
-## Example
 ```tsx
-function Example({ loading, error, data }) {
-  if (loading) return <Spinner />;
-  if (error) return <ErrorMessage />;
-  return <Result data={data} />;
+type UserCardProps = { name: string; role: "Admin" | "Viewer"; onSelect: (name: string) => void };
+
+export function UserCard({ name, role, onSelect }: UserCardProps) {
+  // render = pure calculation from inputs
+  const label = role === "Admin" ? `${name} (admin)` : name;
+  return (
+    <button className="card" onClick={() => onSelect(name)}>
+      {label}
+    </button>
+  );
 }
+
+// usage
+<UserCard name="Priya" role="Admin" onSelect={(n) => console.log(n)} />
+```
+Rules:
+- Name starts with a **capital letter** (`<userCard/>` is treated as an HTML tag).
+- Return one root (use `<>...</>` Fragment for siblings).
+- **Never define a component inside another component.** A new function is created every render → React sees a *different component type* → unmounts and remounts it → state and focus are lost.
+
+```tsx
+// ❌ Bug: input loses focus on every keystroke
+function Form() {
+  const [text, setText] = useState("");
+  function Input() { return <input value={text} onChange={(e) => setText(e.target.value)} />; }
+  return <Input />;
+}
+// ✅ Move Input outside Form and pass props
 ```
 
-## Real frontend use
-Use this for forms, search, checkout, dashboards, route-level data, and reusable application components.
+## Class vs function components (still asked)
+| Class | Function + Hooks |
+|---|---|
+| `this.state`, `this.setState` | `useState` / `useReducer` |
+| `componentDidMount/DidUpdate/WillUnmount` | `useEffect` (setup + cleanup) |
+| `shouldComponentUpdate` / `PureComponent` | `React.memo` |
+| Error boundaries **only** possible as classes | — |
+Function components are the default; you'll still meet classes in older code and in error boundaries.
 
-## Pitfalls
-- Mixing server state with local UI state.
-- Hiding async errors in generic catch blocks.
-- Using an Error Boundary for event-handler errors.
-- Using Effects for data transformation that belongs in render.
-- Building one giant form state object without clear ownership.
+## How to split components
+Split by **responsibility and state ownership**, not line count:
+- Page/container: fetches data, owns server state, wires callbacks.
+- Feature components: own their local UI state (open/closed, selected tab).
+- Presentational components: props in → UI out (Button, Badge, Table row).
 
-## Interview reasoning
-Explain the state machine, ownership, failure boundary, retry/recovery strategy, and what React is doing during render and commit.
+## Common bugs → fixes
+| Bug | Fix |
+|---|---|
+| Component defined inside component → remounts, loses state | Define at module level |
+| Side effect in render (fetch, subscribe) | Move to event handler or `useEffect` |
+| Mutating props (`props.items.push(x)`) | Treat props as read-only; ask the parent to change state |
+| Huge "god component" | Split by ownership; extract custom hooks for logic |
 
-## Practical challenge
-Build a form or data-driven screen with loading, success, empty, validation, and failure states. Add a recovery action.
+## Interview questions
+1. **What is a component?** A pure function of props/state/context that returns React elements.
+2. **Why must rendering be pure?** React may render many times, pause, or discard renders (Strict Mode, concurrent rendering). Side effects during render would run unpredictably.
+3. **Element vs component?** A component is the function; an element is the plain object it returns (`{ type, props, key }`) — `<UserCard/>` creates an element.
+4. **Why is defining a component inside another bad?** New type each render → remount → state lost + slower.
 
-## Connection to next topic
-Continue toward **Hooks, state management, and modern React Actions**.
+## Practice
+Build `OrderTable` with filters, selection, pagination, loading, empty and error states. Decide which state belongs to the page, the table, the filter bar and each row — and write your reasoning as comments.
 
-## Official reference
-https://react.dev/
-
-
-## Deep reasoning
-A component maps props, state, and context to a React element tree. Keep rendering pure and make ownership explicit: the component that owns changing data should usually own that state, while children receive the minimum inputs and callbacks they need.
-
-### Production reasoning
-Split components around responsibility and state ownership, not arbitrary line counts. Avoid components that simultaneously own data fetching, complex business rules, layout, and low-level UI when separate boundaries make changes safer.
-
-### Interview drill
-Design an OrderTable with filters, selection, pagination, loading, empty, and error states. Explain which state belongs to the page, table, filter controls, and row components.
-
-## Deep reasoning
-A component maps props, state, and context to a React element tree. Keep rendering pure and make ownership explicit: the component that owns changing data should usually own that state, while children receive the minimum inputs and callbacks they need.
-
-### Production reasoning
-Split components around responsibility and state ownership, not arbitrary line counts. Avoid components that simultaneously own data fetching, complex business rules, layout, and low-level UI when separate boundaries make changes safer.
-
-### Interview drill
-Design an OrderTable with filters, selection, pagination, loading, empty, and error states. Explain which state belongs to the page, table, filter controls, and row components.
+Next → [JSX](../jsx/README.md)

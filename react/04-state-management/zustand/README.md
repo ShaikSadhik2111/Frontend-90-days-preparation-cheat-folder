@@ -1,41 +1,47 @@
 # Zustand
 
-## Connection
-This topic connects React's rendering model to scalable state ownership or reliable verification.
+> Zustand is a **small hook-based store**: create a store with state + actions, read slices with a selector. No provider, little boilerplate.
 
-## What it is
-Zustand is a small external store where components subscribe to selected slices of shared client state.
+```ts
+import { create } from "zustand";
 
-## Why it exists
-State libraries should solve a real sharing problem, while tests should verify behavior that matters to users and system boundaries.
+type CartState = {
+  items: { id: string; qty: number }[];
+  add: (id: string) => void;
+  remove: (id: string) => void;
+  clear: () => void;
+};
 
-## How it works
-Classify the state or test boundary first, then choose the smallest mechanism. For tests, prefer user inputs and observable outputs over implementation details.
+export const useCart = create<CartState>()((set) => ({
+  items: [],
+  add: (id) => set((s) => {
+    const existing = s.items.find((i) => i.id === id);
+    return existing
+      ? { items: s.items.map((i) => (i.id === id ? { ...i, qty: i.qty + 1 } : i)) }
+      : { items: [...s.items, { id, qty: 1 }] };
+  }),
+  remove: (id) => set((s) => ({ items: s.items.filter((i) => i.id !== id) })),
+  clear: () => set({ items: [] }),
+}));
 
-## Example
-```tsx
-render(<Checkout />);
-await user.click(screen.getByRole('button', { name: /pay/i }));
+// components subscribe to slices → re-render only when that slice changes
+const count = useCart((s) => s.items.length);
+const add = useCart((s) => s.add);
 ```
+- `set` merges at the top level (shallow); nested updates still need immutable copies.
+- Selecting an object/array literal creates a new reference → use `useShallow` (v4.5+/v5) or select separate values.
+- Middleware: `persist` (localStorage), `devtools`, `immer`.
+- Read/write outside React: `useCart.getState().clear()` (e.g. after logout in an API interceptor).
+- Built on `useSyncExternalStore`.
 
-## Real frontend use
-Apply this to shared filters, shopping carts, editors, critical workflows, and regression-prone components.
+## Zustand vs Redux Toolkit vs Context
+| | Zustand | Redux Toolkit | Context |
+|---|---|---|---|
+| Boilerplate | Very low | Medium | Low |
+| Selectors | ✅ | ✅ | ❌ |
+| Devtools/middleware | via middleware | ✅ built in | ❌ |
+| Best for | Small–mid apps, feature stores | Large apps/teams, strict conventions | Low-frequency values |
 
-## Pitfalls
-- Putting every value into global state.
-- Mixing server cache with client state.
-- Testing implementation details.
-- Mocking so much that the test no longer resembles the workflow.
-- Choosing a library before identifying the ownership problem.
+**Interview:** *Why choose Zustand?* Minimal API, selector-based re-renders, no providers; choose RTK when you want enforced structure and the Redux ecosystem.
 
-## Interview reasoning
-Explain why the state/test belongs in this boundary, how updates propagate, what causes consumers to render, and what the test proves.
-
-## Practical challenge
-Build a small feature, test its critical user flow, then change an internal implementation and verify that the behavior test still passes.
-
-## Connection to next topic
-Continue toward **Accessibility → Modern React → Advanced React → Architecture → Interview Questions**.
-
-## Official reference
-https://react.dev/
+Next → [State architecture](../state-architecture/README.md)

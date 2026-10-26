@@ -1,42 +1,43 @@
-# Reusable Components
+# Reusable components
 
-## Connection
-This topic extends the React rendering model into production data and application architecture.
+> A reusable component is easy to use correctly and hard to use wrongly: **clear props, sensible defaults, composition-friendly, accessible, typed**.
 
-## What it is
-Reusable components expose stable behavior-oriented APIs and hide implementation details.
-
-## Why it exists
-Large applications fail when ownership, caching, permissions, or module boundaries are implicit. This topic makes those decisions explicit.
-
-## How it works
-Classify the concern first: local UI state, shared client state, server state, URL state, identity, or authorization. Then define the smallest boundary that owns it.
-
-## Example
+## Example: a reusable Button
 ```tsx
-function FeatureView({ data, onSave }) {
-  return <button onClick={onSave}>{data ? "Save" : "Create"}</button>;
+type ButtonProps = React.ComponentPropsWithoutRef<"button"> & {
+  variant?: "primary" | "secondary" | "danger";
+  size?: "sm" | "md";
+  loading?: boolean;
+  leftIcon?: React.ReactNode;
+};
+
+export function Button({ variant = "primary", size = "md", loading = false, leftIcon, disabled, children, className = "", type = "button", ...rest }: ButtonProps) {
+  return (
+    <button
+      type={type}                                   // avoid accidental form submit
+      className={`btn btn--${variant} btn--${size} ${className}`}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
+      {...rest}
+    >
+      {loading ? <Spinner aria-hidden /> : leftIcon}
+      <span>{children}</span>
+    </button>
+  );
 }
 ```
 
-## Real frontend use
-Use this for dashboards, multi-screen workflows, shopping carts, authentication flows, feature modules, and reusable application infrastructure.
+## Techniques
+- **Generic components** (`<Select<T>>`, `<Table<Row>>`) with `getKey`/`getLabel`/`renderCell` props.
+- **Compound components** (Tabs, Accordion, Menu) share state via context.
+- **Controlled + uncontrolled** support (`value`/`defaultValue`/`onChange`).
+- **Slots** (`header`, `footer`, `children`) instead of 20 config props.
+- **Polymorphic `as` prop** (`<Text as="h2">`) — powerful but complex to type; use sparingly.
+- **Headless hooks** (`useCombobox`) when teams need different visuals.
 
-## Pitfalls
-- Putting every value in global state.
-- Copying server state into local state without a reason.
-- Treating client permission checks as security.
-- Creating shared abstractions before real reuse exists.
-- Mixing domain logic and rendering responsibilities without a boundary.
+## Avoid
+Boolean prop explosion · leaking internal state · hard-coded data fetching inside UI components · `any` props · swallowing `className`/`ref`.
 
-## Interview reasoning
-Explain ownership, dependency flow, caching or security implications, testability, and the trade-offs of the chosen architecture.
+**Practice:** build a generic `Select<T>` that supports keyboard navigation and `getLabel`. Compare with the generic `Autocomplete<T>` in `code/machine-coding`.
 
-## Practical challenge
-Take one application feature and identify its data owner, API boundary, UI boundary, loading/error states, and test boundary.
-
-## Connection to next topic
-Next, connect these decisions to **forms, error handling, performance, and interview scenarios**.
-
-## Official reference
-https://react.dev/
+Next → [Frontend patterns](../frontend-patterns/README.md)

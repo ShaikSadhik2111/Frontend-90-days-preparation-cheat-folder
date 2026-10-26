@@ -1,43 +1,49 @@
-# use Context
+# useContext
 
-## Connection
-Hooks extend the component/rendering model. Learn the Rules of Hooks first, then understand each Hook's ownership and timing.
+> Context lets a parent provide a value to **any descendant** without passing props through every level. `useContext(Ctx)` reads the nearest `<Ctx.Provider value>` above.
 
-## What it is
-useContext reads the nearest provider value and subscribes the consumer to changes.
-
-## Why it exists
-Hooks let function components participate in state, effects, context, refs, external stores, and rendering priorities.
-
-## How it works
-A Hook participates in React's render model. Call order must stay stable, and dependencies determine when related work can be reused or must run again.
-
-## Example
+## Pattern with a safe custom hook
 ```tsx
-function Example() {
-  const value = useState(0);
-  return null;
+type Auth = { user: User | null; login: (u: User) => void; logout: () => void };
+const AuthContext = createContext<Auth | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const login = useCallback((u: User) => setUser(u), []);
+  const logout = useCallback(() => setUser(null), []);
+  const value = useMemo(() => ({ user, login, logout }), [user, login, logout]); // stable object
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used inside <AuthProvider>");
+  return ctx;
 }
 ```
+(React 19 also allows `<AuthContext value={value}>` without `.Provider`.)
 
-## Real frontend use
-Use this for reusable interaction logic, subscriptions, async UI, accessibility, shared configuration, and responsive rendering.
+## Re-render behaviour (most-asked)
+- When the provider's `value` changes (by `Object.is`), **every component that reads that context re-renders** — `React.memo` does not stop it.
+- `value={{ user, login }}` inline creates a new object each render → all consumers re-render every time the provider re-renders. Fix with `useMemo`.
+- Split contexts to reduce fan-out: e.g. `UserContext` vs `ThemeContext`, or `StateContext` vs `DispatchContext` (dispatch never changes).
 
-## Pitfalls
-- Calling Hooks conditionally or in loops.
-- Using Effects for calculations that belong in render.
-- Omitting real dependencies.
-- Treating memoization as correctness.
-- Using refs when rendered state is required.
+## Good uses vs bad uses
+| Good | Better elsewhere |
+|---|---|
+| Theme, locale, current user, permissions, feature flags | High-frequency data (mouse position, live telemetry) → store with selectors (Zustand/Redux) |
+| Dependency injection (API client, analytics) | Server data → TanStack Query |
+| Compound components (Tabs, Accordion) | Avoiding 1–2 levels of props → just pass props or compose |
 
-## Interview reasoning
-Explain what persists across renders, what triggers the Hook's work, why the Rules of Hooks exist, and what cleanup or dependency behavior matters.
+Context is **not a state manager**: it's a transport. State still lives in `useState`/`useReducer`.
 
-## Practical challenge
-Implement a small custom Hook using this concept and explain its behavior across two renders and an unmount.
+## Interview questions
+1. **What problem does context solve?** Prop drilling for widely needed values.
+2. **Why do all consumers re-render?** Context has no selector; any value change notifies all readers.
+3. **How do you optimise context?** Memoize value, split contexts, separate state/dispatch, move frequently changing state into a store.
+4. **Context vs Redux?** Context = DI mechanism; Redux = predictable global store with selectors, middleware, devtools.
 
-## Connection to next topic
-Continue into **state management, forms, and data fetching**, where Hook choices become application architecture.
+## Practice
+Build `ThemeProvider` + `useTheme` with dark mode via CSS variables. Then add a counter to the same context and use the Profiler to show which components re-render; fix it by splitting contexts.
 
-## Official reference
-https://react.dev/reference/react/hooks
+Next → [Custom hooks](../custom-hooks/README.md)

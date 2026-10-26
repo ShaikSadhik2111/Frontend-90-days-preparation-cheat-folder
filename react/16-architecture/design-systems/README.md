@@ -1,42 +1,24 @@
-# Design Systems
+# Design systems & component libraries
 
-## Connection
-This topic builds on React rendering and Hooks and leads toward scalable **architecture and interview reasoning**.
+> A design system = **design tokens + reusable components + guidelines + documentation**, so many teams build consistent, accessible UI faster.
 
-## What it is
-A design system standardizes tokens, accessibility, visual primitives, component behavior, documentation, and governance.
+## Building blocks
+- **Tokens:** colour, spacing, typography, radius, shadows, z-index, motion — as CSS variables (`--color-primary`) → theming and dark mode with no JS.
+- **Primitives:** Button, Input, Select, Checkbox, Modal, Tooltip, Tabs, Table, Toast — accessible by default.
+- **Patterns:** forms, empty states, error pages, page layouts.
+- **Headless + styled:** behaviour/a11y from headless libraries (Radix UI, React Aria, Headless UI) + your styles. Or full libraries (MUI, Ant Design) themed to your brand.
 
-## Why it exists
-As React applications grow, the difficult part is controlling boundaries: what runs where, who owns data, how UI loads, and how users recover from failure.
+## Component API checklist
+TypeScript props · `variant`/`size` unions · `...rest` + `className` forwarding · `ref` forwarding · controlled & uncontrolled · keyboard and ARIA per APG · RTL support · loading/disabled states · no business logic.
 
-## How it works
-Reason through **inputs → render → scheduling/reconciliation → commit → browser**. Keep render logic pure and isolate external effects.
+## Delivery
+- Monorepo package (`@company/ui`), **semantic versioning**, changelog (Changesets), codemods for breaking changes.
+- **Storybook** for docs/playground + a11y addon; visual regression (Chromatic/Playwright screenshots); unit tests per component.
+- Track adoption; deprecate old components gradually.
 
-## Example
-```tsx
-function Example() {
-  return <section aria-label="example">React feature</section>;
-}
-```
+## Migration angle (strong interview story)
+During AngularJS → React migration, a React component library that **matches the existing look** lets migrated screens blend in. Shared **tokens** (CSS variables) can style both AngularJS and React screens at the same time.
 
-## Real frontend use
-Apply this to SSR applications, dashboards, design systems, feature modules, and interaction-heavy screens.
+**Interview:** *How would you build a component library for multiple teams?* Tokens → accessible primitives → docs/Storybook → versioned package → visual tests → governance (contribution guidelines, design review).
 
-## Pitfalls
-- Assuming concurrent rendering means parallel JavaScript execution.
-- Using browser-only APIs during server rendering.
-- Treating Suspense as a generic promise wrapper.
-- Treating frontend authorization as security.
-- Adding abstraction without a real boundary.
-
-## Interview reasoning
-Explain the problem, runtime behavior, ownership boundary, browser impact, and production trade-off.
-
-## Practical challenge
-Build a small feature using this concept, then explain the render-to-commit lifecycle and one realistic failure mode.
-
-## Connection to next topic
-Use this understanding when moving into **architecture**, where individual React techniques become system-level decisions.
-
-## Official reference
-https://react.dev/
+Next → [Reusable components](../reusable-components/README.md)

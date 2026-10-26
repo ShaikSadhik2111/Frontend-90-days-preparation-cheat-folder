@@ -1,41 +1,40 @@
-# State Architecture
+# State architecture (how seniors answer "how do you manage state?")
 
-## Connection
-This topic connects React's rendering model to scalable state ownership or reliable verification.
+> Classify state first, then pick the tool. Most apps don't need one global store for everything.
 
-## What it is
-State architecture classifies data as local UI state, shared client state, server state, URL state, or derived state before choosing a library.
+## The 6 kinds of state
+| Kind | Examples | Tool |
+|---|---|---|
+| **Local UI** | open/closed, hover, input draft | `useState`/`useReducer` |
+| **Shared UI** | sidebar collapsed, theme, toasts | lift up / Context / Zustand |
+| **Server cache** | users, devices, orders | TanStack Query / RTK Query / SWR |
+| **URL** | filters, sort, page, selected tab, ids | router params & search params |
+| **Form** | field values, touched, errors | React Hook Form (+ Zod) |
+| **Derived** | totals, filtered lists, permissions | compute during render / selectors |
 
-## Why it exists
-State libraries should solve a real sharing problem, while tests should verify behavior that matters to users and system boundaries.
+## Principles
+1. **Single source of truth** per piece of data.
+2. **Don't copy server data into client state** — read it from the cache; invalidate after mutations.
+3. **Derive, don't store.**
+4. **Colocate** — keep state near where it's used.
+5. **Normalise** big collections (`byId`, `ids`) to make updates cheap and consistent.
+6. **Model status explicitly** (state machines / discriminated unions) — no impossible combinations.
+7. **Put shareable state in the URL** (refresh/back button/deep links work).
 
-## How it works
-Classify the state or test boundary first, then choose the smallest mechanism. For tests, prefer user inputs and observable outputs over implementation details.
+## Example: an industrial dashboard
+- Plant/line filter → URL (`?plant=PNQ&line=3`).
+- Device list & history → TanStack Query keyed by `["devices", plant, line]`.
+- Live telemetry → WebSocket feeding a Zustand store, components select one device's metrics, rendering throttled.
+- Widget layout per user → server (saved), cached in query.
+- Modal open, selected row → local state.
+- Alarm acknowledgement → mutation with optimistic update.
 
-## Example
-```tsx
-render(<Checkout />);
-await user.click(screen.getByRole('button', { name: /pay/i }));
-```
+## Migration angle (AngularJS → React)
+AngularJS apps often keep everything in `$rootScope` or singleton services with two-way binding. During migration, a **framework-agnostic store** (Redux/Zustand/plain observable) lets AngularJS and React read the same state until AngularJS is removed.
 
-## Real frontend use
-Apply this to shared filters, shopping carts, editors, critical workflows, and regression-prone components.
+## Interview questions
+1. **How do you manage state in a large React app?** Walk through the 6 kinds above with tools and reasons.
+2. **Why separate server state?** It has caching, staleness, dedupe, retries, invalidation — problems client stores don't solve well.
+3. **What goes in the URL?** Anything a user would expect to survive refresh or share.
 
-## Pitfalls
-- Putting every value into global state.
-- Mixing server cache with client state.
-- Testing implementation details.
-- Mocking so much that the test no longer resembles the workflow.
-- Choosing a library before identifying the ownership problem.
-
-## Interview reasoning
-Explain why the state/test belongs in this boundary, how updates propagate, what causes consumers to render, and what the test proves.
-
-## Practical challenge
-Build a small feature, test its critical user flow, then change an internal implementation and verify that the behavior test still passes.
-
-## Connection to next topic
-Continue toward **Accessibility → Modern React → Advanced React → Architecture → Interview Questions**.
-
-## Official reference
-https://react.dev/
+Next → [Forms](../../05-forms/README.md)

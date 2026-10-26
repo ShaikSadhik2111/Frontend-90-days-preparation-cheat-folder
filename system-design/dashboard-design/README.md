@@ -1,2 +1,0 @@
-# Dashboard Design
-Use URL state for shareable filters, query cache for server data and independent widget loading/error states. Add aggregation, lazy loading, virtualization and async exports for scale.

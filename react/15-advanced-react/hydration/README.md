@@ -1,42 +1,35 @@
 # Hydration
 
-## Connection
-This topic builds on React rendering and Hooks and leads toward scalable **architecture and interview reasoning**.
+> With SSR, the server sends ready HTML; **hydration** is React on the client attaching event listeners and state to that existing HTML (`hydrateRoot`) instead of re-creating the DOM.
 
-## What it is
-Hydration attaches React behavior to server-rendered HTML. The initial client output must be compatible with the server output.
-
-## Why it exists
-As React applications grow, the difficult part is controlling boundaries: what runs where, who owns data, how UI loads, and how users recover from failure.
-
-## How it works
-Reason through **inputs → render → scheduling/reconciliation → commit → browser**. Keep render logic pure and isolate external effects.
-
-## Example
 ```tsx
-function Example() {
-  return <section aria-label="example">React feature</section>;
-}
+import { hydrateRoot } from "react-dom/client";
+hydrateRoot(document.getElementById("root")!, <App />);
 ```
 
-## Real frontend use
-Apply this to SSR applications, dashboards, design systems, feature modules, and interaction-heavy screens.
+## Hydration mismatch
+The first client render **must produce the same HTML** as the server. Common causes:
+| Cause | Fix |
+|---|---|
+| `Date.now()`, `new Date().toLocaleString()`, time zones | Render on client after mount, or pass the server time as data |
+| `Math.random()` / random ids | `useId` |
+| `typeof window !== "undefined"` branches during render | Render a stable placeholder, switch in `useEffect` |
+| Reading `localStorage` / theme during render | Read in an effect, or use a cookie the server can read |
+| Invalid HTML nesting (`<div>` inside `<p>`, `<a>` in `<a>`) | Fix markup — browser rewrites it |
+| Browser extensions changing DOM | Usually benign; `suppressHydrationWarning` only for unavoidable single nodes (e.g. timestamps) |
 
-## Pitfalls
-- Assuming concurrent rendering means parallel JavaScript execution.
-- Using browser-only APIs during server rendering.
-- Treating Suspense as a generic promise wrapper.
-- Treating frontend authorization as security.
-- Adding abstraction without a real boundary.
+Client-only value pattern:
+```tsx
+function useIsClient() { const [c, setC] = useState(false); useEffect(() => setC(true), []); return c; }
+const isClient = useIsClient();
+return <span>{isClient ? new Date().toLocaleTimeString() : "--:--"}</span>;
+```
 
-## Interview reasoning
-Explain the problem, runtime behavior, ownership boundary, browser impact, and production trade-off.
+## Performance angle
+- HTML is visible early (good LCP) but **not interactive until hydration** finishes → large JS hurts INP/TTI.
+- **Selective hydration** (React 18): with Suspense boundaries, parts hydrate independently, and React prioritises the part the user clicks.
+- RSC reduces hydration cost: server-only components ship no JS.
 
-## Practical challenge
-Build a small feature using this concept, then explain the render-to-commit lifecycle and one realistic failure mode.
+**Interview:** *What is a hydration mismatch and how do you debug it?* Server vs client output differs; read React's diff in the console, look for time/random/browser-only values, fix by making the first render deterministic.
 
-## Connection to next topic
-Use this understanding when moving into **architecture**, where individual React techniques become system-level decisions.
-
-## Official reference
-https://react.dev/
+Next → [Streaming](../streaming/README.md)

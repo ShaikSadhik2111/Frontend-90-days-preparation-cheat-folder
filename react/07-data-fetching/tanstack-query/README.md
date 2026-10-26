@@ -1,44 +1,54 @@
-# Tanstack Query
+# TanStack Query (React Query)
 
-## Connection
-This topic connects React fundamentals to production forms and asynchronous application behavior.
+> A server-state library: `useQuery` for reads, `useMutation` for writes, a shared `QueryClient` cache keyed by **query keys**.
 
-## What it is
-TanStack Query provides server-state primitives for queries, mutations, caching, invalidation, retries, and request status.
-
-## Why it exists
-Real interfaces need predictable loading, success, empty, error, validation, and recovery states. The right boundary prevents those states from becoming scattered flags.
-
-## How it works
-Start with explicit inputs and state ownership. Then model the UI states and transitions before choosing an API or library.
-
-## Example
+## Setup
 ```tsx
-function Example({ loading, error, data }) {
-  if (loading) return <Spinner />;
-  if (error) return <ErrorMessage />;
-  return <Result data={data} />;
-}
+const queryClient = new QueryClient({ defaultOptions: { queries: { staleTime: 30_000, retry: 2 } } });
+<QueryClientProvider client={queryClient}><App /></QueryClientProvider>
 ```
 
-## Real frontend use
-Use this for forms, search, checkout, dashboards, route-level data, and reusable application components.
+## Reading
+```tsx
+function DeviceList({ plantId }: { plantId: string }) {
+  const { data, isPending, isError, error, isFetching, refetch } = useQuery({
+    queryKey: ["devices", plantId],                       // cache identity — include every variable
+    queryFn: ({ signal }) => api<Device[]>(`/plants/${plantId}/devices`, { signal }), // auto-cancel
+    enabled: !!plantId,                                   // dependent query
+  });
+  if (isPending) return <Skeleton />;
+  if (isError) return <ErrorState message={error.message} onRetry={refetch} />;
+  if (data.length === 0) return <EmptyState />;
+  return <>{isFetching && <small>Refreshing…</small>}<Table rows={data} /></>;
+}
+```
+- `isPending` = no data yet; `isFetching` = any request in flight (including background refetch).
+- **`staleTime`** (default 0): how long data counts as fresh → no refetch. **`gcTime`** (v5; `cacheTime` in v4, default 5 min): how long *unused* data stays in cache.
+- Same key in 10 components → **one** request (dedupe).
+- Pagination: put `page` in the key + `placeholderData: keepPreviousData` (v5) to avoid flashing. Infinite lists: `useInfiniteQuery` with `getNextPageParam`.
+- Polling: `refetchInterval: 5000`.
 
-## Pitfalls
-- Mixing server state with local UI state.
-- Hiding async errors in generic catch blocks.
-- Using an Error Boundary for event-handler errors.
-- Using Effects for data transformation that belongs in render.
-- Building one giant form state object without clear ownership.
+## Writing with optimistic update + rollback
+```tsx
+const qc = useQueryClient();
+const rename = useMutation({
+  mutationFn: (d: { id: string; name: string }) => api(`/devices/${d.id}`, { method: "PATCH", body: JSON.stringify(d) }),
+  onMutate: async (d) => {
+    await qc.cancelQueries({ queryKey: ["devices", plantId] });
+    const previous = qc.getQueryData<Device[]>(["devices", plantId]);
+    qc.setQueryData<Device[]>(["devices", plantId], (old = []) => old.map((x) => (x.id === d.id ? { ...x, name: d.name } : x)));
+    return { previous };
+  },
+  onError: (_e, _d, ctx) => qc.setQueryData(["devices", plantId], ctx?.previous),   // rollback
+  onSettled: () => qc.invalidateQueries({ queryKey: ["devices", plantId] }),          // resync with server
+});
+rename.mutate({ id, name });
+```
 
-## Interview reasoning
-Explain the state machine, ownership, failure boundary, retry/recovery strategy, and what React is doing during render and commit.
+## Interview questions
+1. **staleTime vs gcTime?** Freshness window vs cache lifetime for unused data.
+2. **How does dedupe work?** Same query key shares one in-flight promise and cache entry.
+3. **How do you update lists after a mutation?** `invalidateQueries`, or `setQueryData` for instant updates.
+4. **Optimistic update steps?** cancel → snapshot → set → rollback on error → invalidate on settle.
 
-## Practical challenge
-Build a form or data-driven screen with loading, success, empty, validation, and failure states. Add a recovery action.
-
-## Connection to next topic
-Continue toward **Hooks, state management, and modern React Actions**.
-
-## Official reference
-https://react.dev/
+Next → [Caching & invalidation](../caching-invalidation/README.md)

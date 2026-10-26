@@ -1,39 +1,41 @@
-# Context
+# Context as state management
 
-## Connection
-This topic explains how React turns inputs into UI and how state ownership drives application behavior.
+> Context + `useReducer` can act as a lightweight store for **low-frequency, app-wide** state. Know its re-render cost.
 
-## What it is
-Context provides values to distant descendants without manually threading props through every intermediate component.
-
-## Why it exists
-A predictable rendering and ownership model lets you reason about re-renders, state preservation, remounts, navigation, and DOM changes.
-
-## How it works
-Reason through **update → render → element tree → reconciliation → commit → browser**. Component type and keys determine identity; route state is another explicit source of application state.
-
-## Example
 ```tsx
-items.map(item => <Row key={item.id} item={item} />);
+type Settings = { unit: "metric" | "imperial"; language: "en" | "de" };
+type Action = { type: "setUnit"; unit: Settings["unit"] } | { type: "setLanguage"; language: Settings["language"] };
+
+const SettingsState = createContext<Settings | null>(null);
+const SettingsDispatch = createContext<React.Dispatch<Action> | null>(null);
+
+function reducer(s: Settings, a: Action): Settings {
+  switch (a.type) {
+    case "setUnit": return { ...s, unit: a.unit };
+    case "setLanguage": return { ...s, language: a.language };
+  }
+}
+
+export function SettingsProvider({ children }: { children: React.ReactNode }) {
+  const [state, dispatch] = useReducer(reducer, { unit: "metric", language: "en" });
+  return (
+    <SettingsDispatch.Provider value={dispatch}>         {/* dispatch never changes */}
+      <SettingsState.Provider value={state}>{children}</SettingsState.Provider>
+    </SettingsDispatch.Provider>
+  );
+}
+export const useSettings = () => { const c = useContext(SettingsState); if (!c) throw new Error("No SettingsProvider"); return c; };
+export const useSettingsDispatch = () => { const c = useContext(SettingsDispatch); if (!c) throw new Error("No SettingsProvider"); return c; };
 ```
+Components that only dispatch (buttons) read `SettingsDispatch` → they **don't re-render** when settings change.
 
-## Real frontend use
-Use this model to debug remounts, stale UI, list bugs, route transitions, and unnecessary rendering.
+## Limits of context
+- No selectors: a consumer re-renders on *any* change to the value, even fields it doesn't use.
+- Frequent updates (telemetry, typing) across a big tree → slow. Use a store with selectors.
+- Provider nesting ("provider hell") for many domains.
 
-## Pitfalls
-- Assuming every render means a DOM update.
-- Using indexes as keys for reorderable lists.
-- Treating route guards as backend security.
-- Putting all state in global stores.
+## Interview questions
+1. **Is Context a state management tool?** It's a way to pass values; combined with useState/useReducer it can manage state for small cases.
+2. **How do you prevent unnecessary consumer re-renders?** Memoize value, split state/dispatch, split by domain, or switch to a selector-based store.
 
-## Interview reasoning
-Explain what changed, why React re-renders, which component identity is preserved, and when the browser DOM actually changes.
-
-## Practical challenge
-Build a list with insertion, deletion, sorting, and navigation. Predict which items preserve local state and verify your prediction.
-
-## Connection to next topic
-Continue to **Hooks and State Management**, where this rendering model explains Hook state and ownership.
-
-## Official reference
-https://react.dev/
+Next → [Redux Toolkit](../redux/README.md)

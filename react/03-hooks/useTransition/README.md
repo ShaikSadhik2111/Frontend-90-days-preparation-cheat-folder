@@ -1,43 +1,46 @@
-# use Transition
+# useTransition
 
-## Connection
-This topic completes the core Hooks layer and connects directly to state management, performance, modern React, and interview reasoning.
+> `const [isPending, startTransition] = useTransition()` marks a state update as **non-urgent**. React keeps urgent updates (typing, clicking) responsive and renders the transition in the background, **interrupting it** if new urgent input arrives.
 
-## What it is
-useTransition marks updates as non-blocking so urgent interactions can remain responsive.
-
-## Why it exists
-React needs deliberate mechanisms for local memory, complex transitions, optimistic async UI, DOM escape hatches, external stores, and rendering priority.
-
-## How it works
-Reason in terms of snapshots, queued updates, dependencies, subscriptions, and render priority. A Hook is part of React's render model, not an ordinary utility function.
-
-## Example
+## Example — heavy filter while typing
 ```tsx
-function Example() {
-  const [count, setCount] = useState(0);
-  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+function DeviceSearch({ devices }: { devices: Device[] }) {
+  const [input, setInput] = useState("");        // urgent: the text box
+  const [query, setQuery] = useState("");        // non-urgent: drives the heavy list
+  const [isPending, startTransition] = useTransition();
+
+  function onChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setInput(e.target.value);                     // input updates immediately
+    startTransition(() => setQuery(e.target.value)); // list can lag behind
+  }
+  return (
+    <>
+      <input value={input} onChange={onChange} />
+      {isPending && <span>Updating…</span>}
+      <HeavyList devices={devices} query={query} />
+    </>
+  );
 }
 ```
 
-## Real frontend use
-Use this for local state, complex forms, optimistic mutations, expensive calculations, external stores, DOM access, and responsive non-urgent updates.
+## Key facts
+- Transitions are about **rendering priority**, not running JS in another thread. A slow synchronous function still blocks; concurrent rendering helps by yielding between components.
+- Don't wrap controlled input updates themselves in a transition (the input would lag).
+- Navigation with Suspense: wrapping a route change in a transition keeps the **old screen visible** instead of showing a fallback immediately.
+- React 19: `startTransition` accepts **async functions** (Actions) — `isPending` stays true until the async work finishes.
+- Standalone `startTransition` import exists for places without hooks.
 
-## Pitfalls
-- Adding memoization everywhere.
-- Mutating refs when the UI should update.
-- Hiding state transitions inside unrelated Effects.
-- Assuming optimistic state is permanent.
-- Confusing transitions with background JavaScript execution.
+## useTransition vs debounce
+| useTransition | debounce |
+|---|---|
+| Renders as soon as possible, interruptible | Waits N ms after typing stops |
+| No fixed delay | Reduces network requests |
+| Best for expensive **rendering** | Best for expensive **requests** |
+Often combined: debounce the API call, transition the rendering.
 
-## Interview reasoning
-Explain what persists across renders, what schedules work, what React can prioritize, and which component should own the state.
+## Interview questions
+1. **What does useTransition do?** Marks updates as low priority so urgent ones stay responsive.
+2. **Does it make code run faster?** No; it changes scheduling.
+3. **useTransition vs useDeferredValue?** Transition wraps the *setter* you control; deferred value wraps a *value* (e.g. a prop) you don't control.
 
-## Practical challenge
-Build a searchable list using local state, a reducer for filter transitions, one expensive derived calculation, and a non-urgent result update. Profile it before optimizing.
-
-## Connection to next topic
-Move into **state management and modern React** and decide when local state is enough versus shared or server state.
-
-## Official reference
-https://react.dev/reference/react/hooks
+Next → [useDeferredValue](../useDeferredValue/README.md)

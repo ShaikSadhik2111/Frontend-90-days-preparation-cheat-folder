@@ -1,42 +1,42 @@
-# Data Fetching
+# Data fetching
 
-## Connection
-This topic extends the React rendering model into production data and application architecture.
+> Fetching is easy; **correct** fetching handles loading/error/empty states, race conditions, cancellation, caching, retries, deduplication and refetching. That's why production apps use a server-state library.
 
-## What it is
-Data fetching coordinates loading, success, error, cancellation, freshness, caching, and invalidation.
+## Levels of maturity
+1. **`useEffect` + fetch** — fine for learning; you must handle races and cleanup yourself (see [useEffect](../03-hooks/useEffect/README.md)).
+2. **Custom `useFetch` hook** — reusable, but still no cache/dedupe/retry.
+3. **TanStack Query / RTK Query / SWR** — caching, dedupe, background refetch, retries, pagination, optimistic updates.
+4. **Framework/router loaders & RSC** — fetch before render on the server or at navigation time, avoid waterfalls.
 
-## Why it exists
-Large applications fail when ownership, caching, permissions, or module boundaries are implicit. This topic makes those decisions explicit.
+## Must-know problems
+| Problem | Solution |
+|---|---|
+| Race condition (old response overwrites new) | AbortController in cleanup / ignore flag / query keys |
+| Request waterfall (parent fetch → child fetch → …) | Fetch in parallel (`Promise.all`), loaders, prefetch, hoist queries |
+| Duplicate requests from many components | Shared cache (query library) dedupes by key |
+| `fetch` doesn't reject on 404/500 | Check `res.ok` and throw |
+| Flicker of loading on revisit | Cache + stale-while-revalidate |
+| Typing API data | Runtime validation (Zod) at the boundary |
+| Too many requests while typing | Debounce + min length + cancel |
 
-## How it works
-Classify the concern first: local UI state, shared client state, server state, URL state, identity, or authorization. Then define the smallest boundary that owns it.
+## A typed API client (good pattern to show)
+```ts
+export class ApiError extends Error { constructor(public status: number, message: string) { super(message); } }
 
-## Example
-```tsx
-function FeatureView({ data, onSave }) {
-  return <button onClick={onSave}>{data ? "Save" : "Create"}</button>;
+export async function api<T>(path: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(`/api${path}`, {
+    ...init,
+    headers: { "Content-Type": "application/json", ...init?.headers },
+    credentials: "include",                       // send httpOnly session cookie
+  });
+  if (!res.ok) throw new ApiError(res.status, await res.text());
+  return res.status === 204 ? (undefined as T) : ((await res.json()) as T);
 }
 ```
 
-## Real frontend use
-Use this for dashboards, multi-screen workflows, shopping carts, authentication flows, feature modules, and reusable application infrastructure.
+## Interview questions
+1. **How do you fetch data in React?** Explain levels above and why you'd use TanStack Query in production.
+2. **How do you avoid race conditions?** Cancel or ignore stale responses.
+3. **What's a waterfall and how do you fix it?** Sequential dependent fetches; parallelise / prefetch / loaders.
 
-## Pitfalls
-- Putting every value in global state.
-- Copying server state into local state without a reason.
-- Treating client permission checks as security.
-- Creating shared abstractions before real reuse exists.
-- Mixing domain logic and rendering responsibilities without a boundary.
-
-## Interview reasoning
-Explain ownership, dependency flow, caching or security implications, testability, and the trade-offs of the chosen architecture.
-
-## Practical challenge
-Take one application feature and identify its data owner, API boundary, UI boundary, loading/error states, and test boundary.
-
-## Connection to next topic
-Next, connect these decisions to **forms, error handling, performance, and interview scenarios**.
-
-## Official reference
-https://react.dev/
+Next → [Server state](server-state/README.md)

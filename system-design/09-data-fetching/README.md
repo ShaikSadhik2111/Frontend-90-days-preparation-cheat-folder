@@ -1,25 +1,26 @@
-# Data Fetching Architecture
+# 09 — Data fetching strategy
 
-## Why this matters
-Design request lifecycles, not isolated calls.
+| Decision | Options |
+|---|---|
+| When to fetch | on render (query hook), at navigation (route loader), on server (SSR/RSC), prefetch on hover/idle |
+| How to cache | query cache keyed by params, `staleTime`, background refetch, gc |
+| How fresh | stale-while-revalidate, polling interval, real-time push + invalidate |
+| Parallel vs sequential | `Promise.all` / parallel queries; dependent queries only when truly dependent |
+| Cancellation | AbortController on param change/unmount |
+| Retries | exponential backoff for idempotent requests; no retry on 4xx |
+| Large data | pagination/infinite query, streaming, server aggregation |
+| Errors | per-widget error states with retry; global handler for 401 |
 
-## Core mental model
-Model idle/loading/success/empty/error/revalidating states. Add cancellation, timeout, retry policy, deduplication, stale-response protection and request identity.
+## Waterfalls (common design mistake)
+```
+Route renders → fetch user → render → fetch permissions → render → fetch devices   (3 RTTs)
+✅ start all at navigation: Promise.all([user, permissions, devices]) or loader + parallel queries (1 RTT)
+```
 
-## Production reasoning
-Separate server state from UI state. Discuss query keys, invalidation, dependent queries and parallel fetching. Consider waterfall avoidance and progressive rendering.
+## Prefetching
+Hover on a row → `queryClient.prefetchQuery(["device", id])` → drawer opens instantly. Prefetch next page when 70% scrolled.
 
-## Example / implementation focus
-Example: dashboard loads independent cards concurrently while showing partial success instead of blocking the whole page.
+## Interview phrasing
+"I'd use TanStack Query: keys include all filter params, staleTime 30 s, refetch on focus, prefetch on hover, mutations invalidate the list; real-time events patch the cache directly."
 
-## Interview drill
-Interview drill: explain what happens when the user navigates away during a request.
-
-## Practical challenge
-Production challenge: document fetch lifecycle and failure states.
-
-## Completion contract
-You are not finished when you can repeat the definition. You are finished when you can **explain the decision, implement the core behavior, identify failure modes, debug a broken version, discuss accessibility/security/performance implications, and handle a changed constraint**.
-
-## Connection to next stage
-Use what you learned here as an input to the next numbered stage rather than treating this chapter as an isolated topic.
+Next → [10 Caching](../10-caching/README.md)

@@ -1,42 +1,60 @@
-# Derived State
+# Derived state
 
-## Connection
-This topic builds the React data-flow mental model and prepares you for the Hooks and state-management layers.
+> If a value **can be calculated from props or existing state, don't store it in state** — calculate it during render. Storing it creates two sources of truth that can drift apart.
 
-## What it is
-Derived values can usually be calculated from existing props or state instead of duplicated in state.
-
-## Why it exists
-Predictable React starts with a clear answer to **who owns the value, who can change it, and what causes the UI to update?**
-
-## How it works
-Use **parent ownership → props down → events/callbacks up → render from current inputs**. Avoid duplicating derived data or mutating snapshots.
-
-## Example
+## ❌ Storing derived values
 ```tsx
-function SearchBox({ value, onChange }) {
-  return <input value={value} onChange={e => onChange(e.target.value)} />;
-}
+const [items, setItems] = useState<Item[]>([]);
+const [total, setTotal] = useState(0);
+useEffect(() => {                         // extra render + can get out of sync
+  setTotal(items.reduce((s, i) => s + i.price * i.qty, 0));
+}, [items]);
+```
+## ✅ Derive during render
+```tsx
+const [items, setItems] = useState<Item[]>([]);
+const total = items.reduce((s, i) => s + i.price * i.qty, 0);   // always correct
+```
+If the calculation is genuinely expensive (measured!), memoize it:
+```tsx
+const visible = useMemo(() => filterAndSort(rows, query, sort), [rows, query, sort]);
 ```
 
-## Real frontend use
-Use this for search, filters, forms, reusable controls, parent/child synchronization, and shared component APIs.
+## Store IDs, not copies
+```tsx
+// ❌ selectedItem is a copy — edits to items won't reflect in it
+const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+// ✅ store the id, derive the object
+const [selectedId, setSelectedId] = useState<string | null>(null);
+const selected = items.find((i) => i.id === selectedId) ?? null;
+```
 
-## Pitfalls
-- Duplicating derived state.
-- Mutating props/state.
-- Lifting every local value to the app root.
-- Switching controlled and uncontrolled inputs.
-- Extracting a custom Hook that accidentally relies on hidden global state.
+## Resetting state when a prop changes
+```tsx
+// ❌ effect to reset
+useEffect(() => { setDraft(""); }, [contactId]);
+// ✅ give the component a key — React creates fresh state
+<ChatInput key={contactId} contactId={contactId} />
+```
+For adjusting *part* of the state on prop change, React docs allow setting state during render with a "previous value" check — but `key` or deriving is usually cleaner.
 
-## Interview reasoning
-Explain ownership, update direction, render timing, and why the chosen state location is appropriate.
+## Typical derived values in real apps
+Filtered/sorted/paginated lists · totals and counts · `isValid` of a form · `fullName` from first + last · `hasChanges` (compare draft vs saved) · selected object from selected id · status flags from a single `status` field.
 
-## Practical challenge
-Build a parent-controlled filter with a child input and preview. Add validation and explain exactly which component owns each value.
+## Common bugs → fixes
+| Bug | Fix |
+|---|---|
+| `useEffect` that only calls `setX(compute(y))` | Compute `x` during render |
+| Copy of prop in state doesn't update | Use the prop directly or reset with `key` |
+| Stale selected object after list update | Store the id |
+| Recomputing a heavy value every render (measured) | `useMemo` |
 
-## Connection to next topic
-Next, connect this model to **rendering and Hooks**, where React's snapshot and scheduling behavior becomes important.
+## Interview questions
+1. **What is derived state and why avoid storing it?** Data computable from other data; storing it duplicates the truth and needs syncing.
+2. **"You might not need an Effect" — examples?** Derived data, resetting state on prop change, handling user events, chaining state updates.
+3. **When is `useMemo` justified?** Expensive calculation (profiled), or to keep a stable reference for memoized children/effect deps.
 
-## Official reference
-https://react.dev/
+## Practice
+Take a table with search + sort + pagination. Implement it with only 3 pieces of state (`query`, `sort`, `page`) and derive everything else. Compare with the Data table in `machine-coding`.
+
+Next → [Controlled vs uncontrolled forms](../controlled-uncontrolled-forms/README.md)

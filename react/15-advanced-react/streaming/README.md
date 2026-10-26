@@ -1,42 +1,24 @@
-# Streaming
+# Streaming SSR
 
-## Connection
-This topic builds on React rendering and Hooks and leads toward scalable **architecture and interview reasoning**.
+> Instead of waiting for **all** data before sending HTML, the server **streams** the page: the shell first, then each `<Suspense>` boundary's HTML as its data resolves.
 
-## What it is
-Streaming SSR progressively sends ready HTML while slower parts continue, usually coordinated with Suspense boundaries.
-
-## Why it exists
-As React applications grow, the difficult part is controlling boundaries: what runs where, who owns data, how UI loads, and how users recover from failure.
-
-## How it works
-Reason through **inputs → render → scheduling/reconciliation → commit → browser**. Keep render logic pure and isolate external effects.
-
-## Example
-```tsx
-function Example() {
-  return <section aria-label="example">React feature</section>;
-}
 ```
+Request → server sends <html><Header/><Nav/> + <ChartSkeleton/> immediately
+        → data for chart ready → server streams chart HTML + small inline script that swaps it in
+        → JS loads → selective hydration
+```
+APIs: `renderToPipeableStream` (Node), `renderToReadableStream` (Web streams/edge). Frameworks (Next.js App Router, Remix/React Router) do this for you.
 
-## Real frontend use
-Apply this to SSR applications, dashboards, design systems, feature modules, and interaction-heavy screens.
+## Benefits
+- Faster **TTFB/FCP** — the user sees layout immediately.
+- Slow data sources don't block the whole page.
+- Works with selective hydration — interactive parts hydrate as they arrive.
 
-## Pitfalls
-- Assuming concurrent rendering means parallel JavaScript execution.
-- Using browser-only APIs during server rendering.
-- Treating Suspense as a generic promise wrapper.
-- Treating frontend authorization as security.
-- Adding abstraction without a real boundary.
+## Things to consider
+- Status codes/headers must be decided before streaming starts (redirects/404 early).
+- Put slow, non-critical parts inside Suspense boundaries; keep SEO-critical content in the shell.
+- Proxies/CDNs must not buffer the response.
 
-## Interview reasoning
-Explain the problem, runtime behavior, ownership boundary, browser impact, and production trade-off.
+**Interview:** *SSR vs streaming SSR?* Classic SSR waits for all data then sends HTML; streaming sends progressively per Suspense boundary.
 
-## Practical challenge
-Build a small feature using this concept, then explain the render-to-commit lifecycle and one realistic failure mode.
-
-## Connection to next topic
-Use this understanding when moving into **architecture**, where individual React techniques become system-level decisions.
-
-## Official reference
-https://react.dev/
+Next → [Server Components](../server-components/README.md)

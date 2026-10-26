@@ -1,25 +1,32 @@
-# System Design Foundations
+# 01 — Frontend system design fundamentals
 
-## Why this matters
-Turn system design from diagram drawing into explicit decision-making.
+> A frontend system design round (45–60 min) tests whether you can design a **client application** end to end: requirements, architecture, data model, API, and the non-functional qualities (performance, reliability, a11y, security). It is about **structured thinking and trade-offs**, not naming every library.
 
-## Core mental model
-Start with user goals, constraints and quality attributes. Separate browser responsibilities from backend/platform responsibilities. Think in boundaries: UI, state, data access, cache, realtime, persistence, observability.
+## Frontend vs backend system design
+| Backend SD | Frontend SD |
+|---|---|
+| Databases, sharding, queues, load balancers | Component architecture, state, rendering strategy |
+| Throughput, consistency | Perceived performance, responsiveness, offline, a11y |
+| Server APIs internally | API **contract between client and server** |
 
-## Production reasoning
-Core model: requirements → constraints → architecture → data flow → failure modes → trade-offs. Quality attributes include latency, availability, consistency, scalability, security, accessibility, operability and cost.
+## The RADIO framework (use it every time)
+1. **R**equirements — functional + non-functional; agree on scope (5–8 min).
+2. **A**rchitecture — boxes: views, state/store, data layer, cache, server, real-time channel (8–10 min).
+3. **D**ata model — entities and client state shape (5–8 min).
+4. **I**nterface — API endpoints/events + key component props (5–8 min).
+5. **O**ptimisations — performance, network, a11y, security, reliability, observability, testing (15 min).
+Finish with **trade-offs** and "what I'd do next".
 
-## Example / implementation focus
-Example: order dashboard with filters, pagination, live status and permissions. Ask what must be fast, what may be stale, what happens offline and who can see which orders.
+## What makes an answer senior
+- Asks clarifying questions before drawing.
+- States assumptions with numbers ("~10k devices, 1 update/s each").
+- Names trade-offs explicitly ("cursor pagination: stable but no jump-to-page").
+- Covers failure modes: slow network, partial failure, offline, concurrent edits, stale data.
+- Mentions a11y, i18n, security, and observability without being asked.
+- Connects to real experience ("in our Bosch app we had a similar problem…").
 
-## Interview drill
-Interview drill: design a dashboard in 10 minutes, then answer what changes at 10× users and 10× data.
+## Common prompts
+Autocomplete · news feed · chat · IoT/operations dashboard · Kanban · data grid with 100k rows · file upload · e-commerce listing + cart · notification center · Google Docs-like editor · photo gallery · video player page · design system · micro-frontend platform.
+Worked answers: [27 — Worked designs](../27-worked-designs/README.md).
 
-## Practical challenge
-Production challenge: write a one-page architecture decision record (ADR) for a feature in the flagship project.
-
-## Completion contract
-You are not finished when you can repeat the definition. You are finished when you can **explain the decision, implement the core behavior, identify failure modes, debug a broken version, discuss accessibility/security/performance implications, and handle a changed constraint**.
-
-## Connection to next stage
-Use what you learned here as an input to the next numbered stage rather than treating this chapter as an isolated topic.
+Next → [02 Requirements & constraints](../02-requirements-constraints/README.md)

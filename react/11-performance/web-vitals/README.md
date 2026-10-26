@@ -1,43 +1,25 @@
-# Web Vitals
+# Core Web Vitals for React apps
 
-## Connection
-This topic extends React rendering into production performance and modern async UI.
+| Metric | Measures | Good | Typical React causes |
+|---|---|---|---|
+| **LCP** Largest Contentful Paint | loading of main content | ≤ 2.5 s | Big JS bundle before render (CSR), late data fetch, unoptimised hero image |
+| **INP** Interaction to Next Paint (replaced FID in March 2024) | responsiveness to clicks/typing | ≤ 200 ms | Expensive re-renders, long tasks, synchronous heavy work in handlers |
+| **CLS** Cumulative Layout Shift | visual stability | ≤ 0.1 | Images without size, content injected above (banners), late-loading fonts, skeletons with wrong size |
+Other: **TTFB** (server/CDN), **FCP**, **TBT** (lab proxy for INP).
 
-## What it is
-Web Vitals connect implementation choices to user-perceived loading, responsiveness, and visual stability.
+## Fixes
+- **LCP:** SSR/SSG or at least render the shell fast; code-split; preload the hero image (`fetchpriority="high"`) and critical fonts; CDN + compression; fetch data in parallel (no waterfalls).
+- **INP:** keep handlers light, break long tasks (yield with `await new Promise(r => setTimeout(r))` or `scheduler.yield()` where supported), `useTransition` for heavy updates, debounce, virtualize, move CPU work to a Web Worker.
+- **CLS:** width/height/aspect-ratio on media, reserve space for async content, `font-display: swap` + matched fallback font, avoid inserting content above existing content.
 
-## Why it exists
-Performance work should reduce user-visible cost. The correct technique depends on whether the bottleneck is network, JavaScript, rendering, DOM size, or interaction scheduling.
-
-## How it works
-Trace **user input → scheduled work → render → reconciliation → commit → browser paint/interaction** and measure before and after.
-
-## Example
-```tsx
-const Chart = lazy(() => import('./Chart'));
-function Dashboard() {
-  return <Suspense fallback={<Spinner />}><Chart /></Suspense>;
-}
+## Measuring
+- Lab: Lighthouse, Chrome Performance panel.
+- Field (real users): `web-vitals` library → send to analytics.
+```ts
+import { onLCP, onINP, onCLS } from "web-vitals";
+[onLCP, onINP, onCLS].forEach((fn) => fn((metric) => navigator.sendBeacon("/rum", JSON.stringify(metric))));
 ```
 
-## Real frontend use
-Use this for large dashboards, charts, admin modules, route-level code, long lists, and interaction-heavy screens.
+**Interview:** *How did you improve performance?* Give a measured before/after for one metric.
 
-## Pitfalls
-- Optimizing without profiling.
-- Memoizing when props are always new.
-- Creating too many network chunks.
-- Ignoring accessibility with virtualization.
-- Optimizing development measurements instead of production behavior.
-
-## Interview reasoning
-Explain the bottleneck, measurement, optimization, trade-off, and verification method.
-
-## Practical challenge
-Profile a slow list or dashboard, apply one targeted optimization, and compare before/after behavior.
-
-## Connection to next topic
-Connect performance to **testing and architecture** so optimizations remain maintainable.
-
-## Official reference
-https://react.dev/
+Next → [Testing](../../12-testing/unit-testing/README.md)

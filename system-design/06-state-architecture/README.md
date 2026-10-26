@@ -1,25 +1,30 @@
-# State Architecture
+# 06 — State architecture
 
-## Why this matters
-Make state placement an explicit design decision.
+## Classify, then choose
+| State | Example | Where |
+|---|---|---|
+| Server cache | devices, orders, users | TanStack Query / RTK Query / Apollo |
+| URL | filters, sort, page, selected tab, selected id | router search/path params |
+| Local UI | modal open, hover, input draft | component state |
+| Shared client | theme, sidebar, toasts, live telemetry buffer | context (low-frequency) / Zustand / Redux (high-frequency, many writers) |
+| Form | values, errors, dirty | React Hook Form |
+| Persistent client | preferences, drafts, offline data | localStorage / IndexedDB |
+| Derived | totals, filtered lists, permissions | compute / memoized selectors |
 
-## Core mental model
-Classify state as local UI state, URL state, server state, shared client state, derived state or persisted/offline state. Each category has different ownership and invalidation rules.
+## Normalised client data
+```ts
+type DevicesState = {
+  byId: Record<string, Device>;
+  allIds: string[];
+  byPlant: Record<string, string[]>;   // index for fast lookup
+};
+```
+→ one update path per entity, no duplicates across lists, O(1) lookups. (RTK `createEntityAdapter`, Apollo cache normalisation.)
 
-## Production reasoning
-Discuss reducers/state machines, Context, external stores, query caches and URL synchronization. Avoid duplicating server state in multiple stores unless synchronization is deliberate.
+## State machines for complex flows
+File upload, checkout, wizard, connection status: model explicit states (`idle → uploading → paused → failed → done`) with allowed transitions (reducer or XState). Prevents impossible states and makes edge cases visible in the design.
 
-## Example / implementation focus
-Example: filters belong in URL state; fetched orders belong in server-state cache; modal visibility is local UI state.
+## Interview phrasing
+"I keep server data in a query cache keyed by filters, filters in the URL so the view is shareable, live telemetry in a small store with per-device selectors, and UI state local."
 
-## Interview drill
-Interview drill: justify where five pieces of state belong.
-
-## Practical challenge
-Production challenge: create a state ownership map for the project.
-
-## Completion contract
-You are not finished when you can repeat the definition. You are finished when you can **explain the decision, implement the core behavior, identify failure modes, debug a broken version, discuss accessibility/security/performance implications, and handle a changed constraint**.
-
-## Connection to next stage
-Use what you learned here as an input to the next numbered stage rather than treating this chapter as an isolated topic.
+Next → [07 Data flow](../07-data-flow/README.md)

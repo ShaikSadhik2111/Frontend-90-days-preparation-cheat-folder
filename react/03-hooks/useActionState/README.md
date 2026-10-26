@@ -1,43 +1,35 @@
-# use ActionState
+# useActionState (React 19)
 
-## Connection
-Hooks extend the component/rendering model. Learn the Rules of Hooks first, then understand each Hook's ownership and timing.
+> `const [state, formAction, isPending] = useActionState(action, initialState)` manages the **result of a form action**: pending state, the returned value (errors/success), and sequential submissions.
 
-## What it is
-useActionState manages state produced by an Action and exposes pending state for modern async mutations and forms.
-
-## Why it exists
-Hooks let function components participate in state, effects, context, refs, external stores, and rendering priorities.
-
-## How it works
-A Hook participates in React's render model. Call order must stay stable, and dependencies determine when related work can be reused or must run again.
-
-## Example
 ```tsx
-function Example() {
-  const value = useState(0);
-  return null;
+type FormState = { error?: string; ok?: boolean };
+
+async function saveDevice(prev: FormState, formData: FormData): Promise<FormState> {
+  const name = String(formData.get("name") ?? "").trim();
+  if (!name) return { error: "Name is required" };
+  const res = await fetch("/api/devices", { method: "POST", body: formData });
+  if (!res.ok) return { error: "Server error, try again" };
+  return { ok: true };
+}
+
+function AddDeviceForm() {
+  const [state, formAction, isPending] = useActionState(saveDevice, {});
+  return (
+    <form action={formAction}>
+      <input name="name" aria-invalid={!!state.error} />
+      <button disabled={isPending}>{isPending ? "Saving…" : "Save"}</button>
+      {state.error && <p role="alert">{state.error}</p>}
+      {state.ok && <p>Saved!</p>}
+    </form>
+  );
 }
 ```
+- The action receives `(previousState, formData)` and returns the next state.
+- Works with **Server Functions** (`"use server"`) in frameworks like Next.js → progressive enhancement (form works before JS loads).
+- Was called `useFormState` (in `react-dom`) in React canary/18.3 era.
+- Related: `useFormStatus()` (from `react-dom`) gives `pending` to a child component inside the `<form>` (e.g. a reusable SubmitButton).
 
-## Real frontend use
-Use this for reusable interaction logic, subscriptions, async UI, accessibility, shared configuration, and responsive rendering.
+**Interview:** *What are Actions in React 19?* Async functions passed to `action`/`startTransition`; React tracks pending state, errors and optimistic updates for you.
 
-## Pitfalls
-- Calling Hooks conditionally or in loops.
-- Using Effects for calculations that belong in render.
-- Omitting real dependencies.
-- Treating memoization as correctness.
-- Using refs when rendered state is required.
-
-## Interview reasoning
-Explain what persists across renders, what triggers the Hook's work, why the Rules of Hooks exist, and what cleanup or dependency behavior matters.
-
-## Practical challenge
-Implement a small custom Hook using this concept and explain its behavior across two renders and an unmount.
-
-## Connection to next topic
-Continue into **state management, forms, and data fetching**, where Hook choices become application architecture.
-
-## Official reference
-https://react.dev/reference/react/hooks
+Next → [useOptimistic](../useOptimistic/README.md)

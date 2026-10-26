@@ -1,42 +1,27 @@
-# Server State
+# Server state vs client state
 
-## Connection
-This topic extends the React rendering model into production data and application architecture.
+> **Server state** is data owned by the backend that your UI only *caches* (users, devices, orders). **Client state** is owned by the browser (modal open, theme, draft text). They have different problems and deserve different tools.
 
-## What it is
-Server state is remote data with ownership outside the component tree and requires freshness and synchronization policies.
+| | Client state | Server state |
+|---|---|---|
+| Owner | The UI | The server (other users can change it) |
+| Freshness | Always current | Can be **stale** |
+| Problems | Sharing, updates | Caching, dedupe, refetching, invalidation, pagination, retries, optimistic updates |
+| Tools | useState, Zustand, Redux | TanStack Query, RTK Query, SWR, Apollo (GraphQL) |
 
-## Why it exists
-Large applications fail when ownership, caching, permissions, or module boundaries are implicit. This topic makes those decisions explicit.
-
-## How it works
-Classify the concern first: local UI state, shared client state, server state, URL state, identity, or authorization. Then define the smallest boundary that owns it.
-
-## Example
-```tsx
-function FeatureView({ data, onSave }) {
-  return <button onClick={onSave}>{data ? "Save" : "Create"}</button>;
-}
+## Anti-pattern: copying server data into global client state
+```ts
+// ❌ fetch in a thunk → store in Redux → manually track loading/error/staleness everywhere
+// ✅ useQuery(["devices", plantId], fetchDevices) — the cache IS the source of truth
 ```
 
-## Real frontend use
-Use this for dashboards, multi-screen workflows, shopping carts, authentication flows, feature modules, and reusable application infrastructure.
+## Key ideas to explain
+- **Stale-while-revalidate:** show cached data immediately, refetch in the background, update when fresh.
+- **Query keys:** identity of the data (`["devices", { plantId, status }]`) → caching + dedupe + invalidation.
+- **Invalidation after mutations:** after creating a device, invalidate `["devices"]` so lists refetch.
+- **Refetch triggers:** window focus, reconnect, interval (polling), manual.
+- **Garbage collection:** unused cache entries removed after a timeout.
 
-## Pitfalls
-- Putting every value in global state.
-- Copying server state into local state without a reason.
-- Treating client permission checks as security.
-- Creating shared abstractions before real reuse exists.
-- Mixing domain logic and rendering responsibilities without a boundary.
+**Interview:** *Why not keep API data in Redux?* You'd re-implement caching/staleness/dedupe manually; a server-state library solves it with less code and fewer bugs. (RTK Query exists precisely for this.)
 
-## Interview reasoning
-Explain ownership, dependency flow, caching or security implications, testability, and the trade-offs of the chosen architecture.
-
-## Practical challenge
-Take one application feature and identify its data owner, API boundary, UI boundary, loading/error states, and test boundary.
-
-## Connection to next topic
-Next, connect these decisions to **forms, error handling, performance, and interview scenarios**.
-
-## Official reference
-https://react.dev/
+Next → [TanStack Query](../tanstack-query/README.md)

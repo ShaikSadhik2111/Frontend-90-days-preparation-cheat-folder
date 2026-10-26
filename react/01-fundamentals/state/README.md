@@ -1,52 +1,81 @@
 # State
 
-## Connection
-This topic builds the React data-flow mental model and prepares you for the Hooks and state-management layers.
+> State is a component's **memory between renders**. Updating state **schedules a re-render**; each render sees a **snapshot** of state that never changes during that render.
 
-## What it is
-State is component memory and each render sees a snapshot. Setters schedule future renders.
-
-## Why it exists
-Predictable React starts with a clear answer to **who owns the value, who can change it, and what causes the UI to update?**
-
-## How it works
-Use **parent ownership → props down → events/callbacks up → render from current inputs**. Avoid duplicating derived data or mutating snapshots.
-
-## Example
+## Snapshot model (most-asked concept)
 ```tsx
-function SearchBox({ value, onChange }) {
-  return <input value={value} onChange={e => onChange(e.target.value)} />;
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  function handleClick() {
+    setCount(count + 1);
+    setCount(count + 1);
+    console.log(count);      // 0 — this render's snapshot
+  }
+  // after click → 1 (both calls computed 0 + 1)
+
+  function handleClickFixed() {
+    setCount((c) => c + 1);  // updater function: uses the latest queued value
+    setCount((c) => c + 1);
+  }
+  // after click → 2
 }
 ```
+- `setState` does not change the variable immediately. It queues an update; React re-renders and the *next* render gets the new value.
+- **Batching:** all updates in the same event (and since React 18, in timeouts/promises too) are combined into one render.
 
-## Real frontend use
-Use this for search, filters, forms, reusable controls, parent/child synchronization, and shared component APIs.
+## Updating objects and arrays — immutably
+React compares old and new state with `Object.is`. Same reference → no re-render.
+```tsx
+const [user, setUser] = useState({ name: "A", address: { city: "Pune" } });
+setUser({ ...user, name: "B" });                                   // ✅ new object
+setUser((u) => ({ ...u, address: { ...u.address, city: "Hyderabad" } })); // ✅ nested copy
 
-## Pitfalls
-- Duplicating derived state.
-- Mutating props/state.
-- Lifting every local value to the app root.
-- Switching controlled and uncontrolled inputs.
-- Extracting a custom Hook that accidentally relies on hidden global state.
+const [todos, setTodos] = useState<Todo[]>([]);
+setTodos((t) => [...t, newTodo]);                       // add
+setTodos((t) => t.filter((x) => x.id !== id));          // remove
+setTodos((t) => t.map((x) => (x.id === id ? { ...x, done: !x.done } : x))); // update
 
-## Interview reasoning
-Explain ownership, update direction, render timing, and why the chosen state location is appropriate.
+// ❌ no re-render: same reference
+todos.push(newTodo); setTodos(todos);
+```
+Deeply nested state is painful → flatten/normalise it, or use Immer (`produce`) — Redux Toolkit uses Immer internally.
 
-## Practical challenge
-Build a parent-controlled filter with a child input and preview. Add validation and explain exactly which component owns each value.
+## Lazy initial state
+```tsx
+const [rows] = useState(() => expensiveParse(csv)); // function runs only on first render
+const [rows] = useState(expensiveParse(csv));       // ❌ runs every render (result ignored)
+```
 
-## Connection to next topic
-Next, connect this model to **rendering and Hooks**, where React's snapshot and scheduling behavior becomes important.
+## What should be state?
+Ask: does it change over time? Can it be computed from props/other state? Is it needed for rendering?
+- Can be computed → **don't store it** (see derived state).
+- Not used for rendering (timer id, previous value) → `useRef`.
+- Shared by siblings → lift it up.
+- Comes from the server → server-state cache (TanStack Query), not `useState` copies.
 
-## Official reference
-https://react.dev/
+## State is tied to position in the tree
+React keeps state for a component at the same **position + type**. Rendering a different component type at that position, or changing its `key`, resets state.
+```tsx
+{isAdmin ? <Profile key="admin" /> : <Profile key="user" />}  // different keys → separate state
+<Chat key={contactId} contact={contact} />                    // reset draft when contact changes
+```
 
+## Common bugs → fixes
+| Bug | Fix |
+|---|---|
+| Reading state right after `setState` and getting old value | Use the value you passed, or compute in the next render / effect |
+| Multiple `setX(x + 1)` only add 1 | Updater function `setX(x => x + 1)` |
+| Mutation → UI doesn't update | Create new objects/arrays |
+| `isLoading`, `isError`, `data` contradicting each other | One `status` field / discriminated union / `useReducer` |
 
-## Deep reasoning
-State is a render snapshot, not a mutable variable React rewrites immediately. Calling a setter schedules another render, while event handlers close over the snapshot from the render that created them.
+## Interview questions
+1. **Is `setState` async?** It's *scheduled*, not a promise. The current render's variable never changes; React re-renders later (batched).
+2. **What is batching?** Grouping multiple state updates into one render; automatic everywhere since React 18 (`flushSync` opts out).
+3. **Why immutability?** Cheap change detection by reference, predictable renders, enables memoization and time-travel debugging.
+4. **When do you use the updater form?** When the new value depends on the previous one, especially with multiple updates or async callbacks.
 
-### Production reasoning
-Keep state minimal. Derive values from existing state where possible, colocate state with the component that owns the behavior, and lift it only when multiple consumers need one source of truth.
+## Practice
+Build a shopping cart: add, remove, change quantity, total (derived!). Then break it by mutating the array and observe why the UI stops updating.
 
-### Interview drill
-Build a cart with quantity updates and a derived total. Explain which values are state, which are derived, and why functional updates matter.
+Next → [Events](../events/README.md)

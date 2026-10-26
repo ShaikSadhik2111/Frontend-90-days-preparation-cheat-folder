@@ -1,43 +1,24 @@
-# use Id
+# useId
 
-## Connection
-Hooks extend the component/rendering model. Learn the Rules of Hooks first, then understand each Hook's ownership and timing.
+> `useId()` generates a **unique, stable ID** per component instance that's the **same on server and client** — for accessibility attributes, not for list keys.
 
-## What it is
-useId creates stable unique IDs useful for accessibility relationships between labels and controls.
-
-## Why it exists
-Hooks let function components participate in state, effects, context, refs, external stores, and rendering priorities.
-
-## How it works
-A Hook participates in React's render model. Call order must stay stable, and dependencies determine when related work can be reused or must run again.
-
-## Example
 ```tsx
-function Example() {
-  const value = useState(0);
-  return null;
+function TextField({ label, error }: { label: string; error?: string }) {
+  const id = useId();
+  return (
+    <div>
+      <label htmlFor={`${id}-input`}>{label}</label>
+      <input id={`${id}-input`} aria-invalid={!!error} aria-describedby={error ? `${id}-error` : undefined} />
+      {error && <p id={`${id}-error`}>{error}</p>}
+    </div>
+  );
 }
 ```
+- Render `<TextField>` twice → different IDs, no collisions.
+- Why not `Math.random()` or a global counter? Random → hydration mismatch (server ≠ client); counter → depends on render order, also mismatches with streaming SSR.
+- **Not for keys** in lists — keys must come from your data.
+- One `useId` call per component; derive multiple IDs with suffixes.
 
-## Real frontend use
-Use this for reusable interaction logic, subscriptions, async UI, accessibility, shared configuration, and responsive rendering.
+**Interview:** *Why does useId exist?* Stable, SSR-safe unique IDs for `htmlFor`, `aria-*` linking in reusable components.
 
-## Pitfalls
-- Calling Hooks conditionally or in loops.
-- Using Effects for calculations that belong in render.
-- Omitting real dependencies.
-- Treating memoization as correctness.
-- Using refs when rendered state is required.
-
-## Interview reasoning
-Explain what persists across renders, what triggers the Hook's work, why the Rules of Hooks exist, and what cleanup or dependency behavior matters.
-
-## Practical challenge
-Implement a small custom Hook using this concept and explain its behavior across two renders and an unmount.
-
-## Connection to next topic
-Continue into **state management, forms, and data fetching**, where Hook choices become application architecture.
-
-## Official reference
-https://react.dev/reference/react/hooks
+Next → [useTransition](../useTransition/README.md)

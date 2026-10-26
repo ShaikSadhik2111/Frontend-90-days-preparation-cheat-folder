@@ -1,39 +1,37 @@
 # Reconciliation
 
-## Connection
-This topic explains how React turns inputs into UI and how state ownership drives application behavior.
+> Reconciliation is how React **compares the previous and next element trees** to decide which DOM nodes and component instances to keep, update or destroy. It uses **type** and **key** to identify elements.
 
-## What it is
-Reconciliation compares previous and next React element trees and uses type and key identity to decide what can be reused.
+## The diffing heuristics (make it O(n) instead of O(n³))
+1. **Different type at the same position → replace the whole subtree.**
+   `<div>` → `<section>`, or `<UserForm>` → `<AdminForm>`: old DOM and **all state below is destroyed**; new tree mounted.
+2. **Same type → keep the instance/DOM node, update props, recurse into children.**
+   `<div className="a">` → `<div className="b">`: only the attribute changes.
+3. **Lists → match children by `key`.** Without keys React matches by index.
 
-## Why it exists
-A predictable rendering and ownership model lets you reason about re-renders, state preservation, remounts, navigation, and DOM changes.
-
-## How it works
-Reason through **update → render → element tree → reconciliation → commit → browser**. Component type and keys determine identity; route state is another explicit source of application state.
-
-## Example
 ```tsx
-items.map(item => <Row key={item.id} item={item} />);
+// State is preserved — same type at same position
+{isEditing ? <Field label="Name" /> : <Field label="Full name" />}
+
+// State is reset — different types
+{isEditing ? <input /> : <textarea />}
+
+// Force a reset on purpose with key
+<ProfileForm key={userId} userId={userId} />
 ```
 
-## Real frontend use
-Use this model to debug remounts, stale UI, list bugs, route transitions, and unnecessary rendering.
+## Fiber (what's under the hood)
+- **Fiber** is React's internal unit of work: one fiber per element, linked as a tree (child/sibling/return pointers). It stores state (hooks list), props, effects.
+- Two trees: **current** (on screen) and **work-in-progress**. React builds the WIP tree during render and swaps it on commit (double buffering).
+- Because work is split into fibers, React can **pause, prioritise and resume** rendering (concurrent features: `useTransition`, Suspense). The **commit phase is always synchronous**.
 
-## Pitfalls
-- Assuming every render means a DOM update.
-- Using indexes as keys for reorderable lists.
-- Treating route guards as backend security.
-- Putting all state in global stores.
+## Interview questions
+1. **What is reconciliation?** The diff between old and new element trees using type and key.
+2. **What happens when the element type changes?** Unmount old subtree (state lost), mount new.
+3. **What is Fiber and why was it introduced?** Re-architecture (React 16) making rendering incremental and interruptible; enables concurrency, Suspense, error boundaries.
+4. **Is the virtual DOM diff the same as Fiber?** Diffing is the algorithm; Fiber is the data structure/scheduler executing it.
 
-## Interview reasoning
-Explain what changed, why React re-renders, which component identity is preserved, and when the browser DOM actually changes.
+## Practice
+Build a list of 5 rows with an input in each. Insert a row at the top using index keys, type text, and observe the bug. Switch to stable ids and explain the difference in terms of reconciliation.
 
-## Practical challenge
-Build a list with insertion, deletion, sorting, and navigation. Predict which items preserve local state and verify your prediction.
-
-## Connection to next topic
-Continue to **Hooks and State Management**, where this rendering model explains Hook state and ownership.
-
-## Official reference
-https://react.dev/
+Next → [Virtual DOM](../virtual-dom/README.md)

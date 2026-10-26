@@ -1,43 +1,30 @@
-# Code Splitting
+# Code splitting
 
-## Connection
-This topic extends React rendering into production performance and modern async UI.
+> Split the bundle into chunks loaded **on demand** so users download only what the current screen needs. Built on dynamic `import()`.
 
-## What it is
-Code splitting delays JavaScript loading until a feature or route needs it, reducing initial bundle cost.
-
-## Why it exists
-Performance work should reduce user-visible cost. The correct technique depends on whether the bottleneck is network, JavaScript, rendering, DOM size, or interaction scheduling.
-
-## How it works
-Trace **user input → scheduled work → render → reconciliation → commit → browser paint/interaction** and measure before and after.
-
-## Example
 ```tsx
-const Chart = lazy(() => import('./Chart'));
-function Dashboard() {
-  return <Suspense fallback={<Spinner />}><Chart /></Suspense>;
+import { lazy, Suspense } from "react";
+
+const ReportsPage = lazy(() => import("./pages/ReportsPage"));   // separate chunk
+const HeavyChart = lazy(() => import("./components/HeavyChart"));
+
+function App() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <Routes>
+        <Route path="/reports" element={<ReportsPage />} />
+      </Routes>
+    </Suspense>
+  );
 }
 ```
+- `lazy` needs a **default export** (or `import("./X").then(m => ({ default: m.X }))`).
+- Declare `lazy` components at **module level**, not inside a component (would recreate and remount).
+- Wrap in an **error boundary** — chunk load can fail (deploy replaced the file, offline). Offer "Reload".
+- **Where to split:** routes first, then heavy widgets (charts, editors, maps, PDF viewers), admin-only features, rarely used modals.
+- **Prefetch** likely-next chunks on hover/idle: `const load = () => import("./pages/ReportsPage");` `onMouseEnter={load}`.
+- Vendor splitting: bundlers split `node_modules` automatically; avoid one giant `vendor.js` that changes every deploy.
 
-## Real frontend use
-Use this for large dashboards, charts, admin modules, route-level code, long lists, and interaction-heavy screens.
+**Interview:** *How do you reduce initial bundle size?* Route-based splitting, lazy heavy components, tree-shaking (ESM imports), replace heavy libraries (moment → date-fns/dayjs), analyse the bundle, compress (Brotli).
 
-## Pitfalls
-- Optimizing without profiling.
-- Memoizing when props are always new.
-- Creating too many network chunks.
-- Ignoring accessibility with virtualization.
-- Optimizing development measurements instead of production behavior.
-
-## Interview reasoning
-Explain the bottleneck, measurement, optimization, trade-off, and verification method.
-
-## Practical challenge
-Profile a slow list or dashboard, apply one targeted optimization, and compare before/after behavior.
-
-## Connection to next topic
-Connect performance to **testing and architecture** so optimizations remain maintainable.
-
-## Official reference
-https://react.dev/
+Next → [Lazy loading](../lazy-loading/README.md)
