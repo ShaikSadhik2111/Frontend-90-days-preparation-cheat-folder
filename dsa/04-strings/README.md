@@ -502,6 +502,13 @@ function isAnagram(a, b) {
 }
 ```
 
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(isAnagram("anagram", "nagaram")); // → true
+console.log(isAnagram("rat", "car")); // → false
+```
+
 ### Trace
 
 For `a = "abb"`:
@@ -537,6 +544,16 @@ function isPalindrome(s) {
   return true;
 }
 ```
+
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(isPalindrome("racecar")); // → true
+console.log(isPalindrome("hello")); // → false
+console.log(isPalindrome("Racecar")); // → false
+```
+
+> This version compares characters exactly (case-sensitive, spaces count). The interview version that ignores case and punctuation (LeetCode 125) is in [06 — Two pointers](../06-two-pointers/README.md).
 
 Invariant:
 
@@ -591,6 +608,14 @@ function lengthOfLongestSubstring(s) {
 
   return best;
 }
+```
+
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(lengthOfLongestSubstring("abcabcbb")); // → 3
+console.log(lengthOfLongestSubstring("bbbbb")); // → 1
+console.log(lengthOfLongestSubstring("pwwkew")); // → 3
 ```
 
 Each character enters and leaves the set at most once, so the algorithm is O(n), not O(n²).

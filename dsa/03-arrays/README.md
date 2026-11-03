@@ -31,6 +31,12 @@ function reverse(nums) {
 }
 ```
 
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(reverse([1, 2, 3, 4])); // → [4,3,2,1]
+```
+
 Invariant: positions outside [left,right] are already correct.
 
 ## Problem 2 — Move Zeroes
@@ -65,6 +71,13 @@ function maxProfit(prices) {
 }
 ```
 
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(maxProfit([7, 1, 5, 3, 6, 4])); // → 5
+console.log(maxProfit([7, 6, 4, 3, 1])); // → 0
+```
+
 Invariant: minPrice is the cheapest valid buying price seen before/currently; best is the best profit discovered.
 
 ## Problem 6 — Maximum Subarray
@@ -83,6 +96,13 @@ function maxSubArray(nums) {
 
   return best;
 }
+```
+
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(maxSubArray([-2, 1, -3, 4, -1, 2, 1, -5, 4])); // → 6
+console.log(maxSubArray([-3, -1, -2])); // → -1
 ```
 
 State: current = best sum ending at the current index.
@@ -138,3 +158,35 @@ Advanced: product except self, majority element, sort colors.
 ## Connection
 
 Arrays → Strings because strings are also sequences, but strings introduce immutability and Unicode behavior.
+
+---
+
+## More solutions — code, complexity, LeetCode
+
+> **How to run:** copy a function and its **Try it** lines into `practice.js` and run `node practice.js` (or paste into the browser console). The expected output is after `// →`.
+
+### Find All Numbers Disappeared in an Array — [LeetCode 448](https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/)
+
+**Idea:** Values are in 1..n, so each value points to an index. **Mark index `v - 1` as seen by making it negative**; indices still positive at the end are the missing numbers. O(1) extra space.
+
+```js
+function findDisappearedNumbers(nums) {
+  for (const v of nums) {
+    const i = Math.abs(v) - 1;
+    if (nums[i] > 0) nums[i] = -nums[i];      // mark value i + 1 as seen
+  }
+  const missing = [];
+  for (let i = 0; i < nums.length; i++) if (nums[i] > 0) missing.push(i + 1);
+  return missing;
+}
+```
+
+**Try it:**
+
+```js
+console.log(JSON.stringify(findDisappearedNumbers([4,3,2,7,8,2,3,1]))); // → [5,6]
+console.log(JSON.stringify(findDisappearedNumbers([1,1]))); // → [2]
+```
+
+**Complexity:** Time O(n) · Space O(1) besides output (it mutates the input — mention it, or copy first).  
+**Edge cases:** No missing numbers → []; all equal values.

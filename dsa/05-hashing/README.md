@@ -61,6 +61,12 @@ function frequency(text) {
 }
 ```
 
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log([...frequency("hello")]); // → [["h",1],["e",1],["l",2],["o",1]]
+```
+
 ### Line-by-line reasoning
 
 `new Map()` creates empty state.
@@ -104,6 +110,13 @@ function isAnagram(a, b) {
 }
 ```
 
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(isAnagram("listen", "silent")); // → true
+console.log(isAnagram("aab", "abb")); // → false
+```
+
 The key idea is **remaining required frequency**.
 
 ---
@@ -123,6 +136,13 @@ function containsDuplicate(nums) {
 
   return false;
 }
+```
+
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(containsDuplicate([1, 2, 3, 1])); // → true
+console.log(containsDuplicate([1, 2, 3, 4])); // → false
 ```
 
 The moment a value is already present, the duplicate is proven.
@@ -161,6 +181,13 @@ function twoSum(nums, target) {
 }
 ```
 
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(twoSum([2, 7, 11, 15], 9)); // → [0,1]
+console.log(twoSum([3, 3], 6)); // → [0,1]
+```
+
 At index i:
 
 `needed = target - current`.
@@ -196,6 +223,12 @@ function groupAnagrams(words) {
 }
 ```
 
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(groupAnagrams(["eat", "tea", "tan", "ate", "nat", "bat"])); // → [["eat","tea","ate"],["tan","nat"],["bat"]]
+```
+
 For production-scale inputs, consider a frequency signature instead of sorting every word.
 
 This demonstrates an important pattern:
@@ -222,6 +255,14 @@ function firstUniqueChar(s) {
 
   return -1;
 }
+```
+
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(firstUniqueChar("leetcode")); // → 0
+console.log(firstUniqueChar("loveleetcode")); // → 2
+console.log(firstUniqueChar("aabb")); // → -1
 ```
 
 Why two passes?
@@ -264,6 +305,13 @@ function subarraySum(nums, k) {
 }
 ```
 
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(subarraySum([1, 1, 1], 2)); // → 2
+console.log(subarraySum([1, 2, 3], 3)); // → 2
+```
+
 The `[0, 1]` initialization represents an empty prefix whose sum is zero.
 
 This is a major interview pattern:
@@ -301,6 +349,13 @@ function longestConsecutive(nums) {
 }
 ```
 
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(longestConsecutive([100, 4, 200, 1, 3, 2])); // → 4
+console.log(longestConsecutive([0, 3, 7, 2, 5, 8, 4, 6, 0, 1])); // → 9
+```
+
 Why is this O(n) expected rather than O(n²)?
 
 Every sequence is expanded only from its smallest element. A number is not repeatedly used as the start of the same sequence.
@@ -335,6 +390,14 @@ function isIsomorphic(s, t) {
 
   return true;
 }
+```
+
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(isIsomorphic("egg", "add")); // → true
+console.log(isIsomorphic("foo", "bar")); // → false
+console.log(isIsomorphic("badc", "baba")); // → false
 ```
 
 One map prevents one-to-many mappings; the reverse map prevents many-to-one mappings.
@@ -471,3 +534,100 @@ Hashing gives fast lookup by remembering information.
 Next:
 
 **Hashing → Two Pointers → Sliding Window**
+
+---
+
+## More solutions — code, complexity, LeetCode
+
+> **How to run:** copy a function and its **Try it** lines into `practice.js` and run `node practice.js` (or paste into the browser console). The expected output is after `// →`.
+
+### Ransom Note — [LeetCode 383](https://leetcode.com/problems/ransom-note/)
+
+**Idea:** Count letters in the magazine, then spend them on the note. If any count goes below zero, it's impossible.
+
+```js
+function canConstruct(ransomNote, magazine) {
+  const count = new Map();
+  for (const ch of magazine) count.set(ch, (count.get(ch) ?? 0) + 1);
+  for (const ch of ransomNote) {
+    const left = (count.get(ch) ?? 0) - 1;
+    if (left < 0) return false;
+    count.set(ch, left);
+  }
+  return true;
+}
+```
+
+**Try it:**
+
+```js
+console.log(canConstruct("a","b")); // → false
+console.log(canConstruct("aa","ab")); // → false
+console.log(canConstruct("aa","aab")); // → true
+```
+
+**Complexity:** Time O(m + n) · Space O(1) (at most 26 letters).  
+**Edge cases:** Each magazine letter can be used once.
+
+### Word Pattern — [LeetCode 290](https://leetcode.com/problems/word-pattern/)
+
+**Idea:** Like Isomorphic Strings: a **two-way mapping** letter ↔ word. One Map isn't enough ("abba" vs "dog dog dog dog").
+
+```js
+function wordPattern(pattern, s) {
+  const words = s.split(" ");
+  if (words.length !== pattern.length) return false;
+  const charToWord = new Map(), wordToChar = new Map();
+  for (let i = 0; i < pattern.length; i++) {
+    const c = pattern[i], w = words[i];
+    if ((charToWord.has(c) && charToWord.get(c) !== w) || (wordToChar.has(w) && wordToChar.get(w) !== c)) return false;
+    charToWord.set(c, w); wordToChar.set(w, c);
+  }
+  return true;
+}
+```
+
+**Try it:**
+
+```js
+console.log(wordPattern("abba","dog cat cat dog")); // → true
+console.log(wordPattern("abba","dog cat cat fish")); // → false
+console.log(wordPattern("abba","dog dog dog dog")); // → false
+```
+
+**Complexity:** Time O(n) · Space O(n).  
+**Edge cases:** Different lengths → false.
+
+### Valid Sudoku — [LeetCode 36](https://leetcode.com/problems/valid-sudoku/)
+
+**Idea:** One pass with Sets for every row, column and 3×3 box. Box index = `Math.floor(r / 3) * 3 + Math.floor(c / 3)`.
+
+```js
+function isValidSudoku(board) {
+  const rows = Array.from({ length: 9 }, () => new Set());
+  const cols = Array.from({ length: 9 }, () => new Set());
+  const boxes = Array.from({ length: 9 }, () => new Set());
+  for (let r = 0; r < 9; r++)
+    for (let c = 0; c < 9; c++) {
+      const v = board[r][c];
+      if (v === ".") continue;
+      const b = Math.floor(r / 3) * 3 + Math.floor(c / 3);
+      if (rows[r].has(v) || cols[c].has(v) || boxes[b].has(v)) return false;
+      rows[r].add(v); cols[c].add(v); boxes[b].add(v);
+    }
+  return true;
+}
+```
+
+**Try it:**
+
+```js
+const SB=[["5","3",".",".","7",".",".",".","."],["6",".",".","1","9","5",".",".","."],[".","9","8",".",".",".",".","6","."],["8",".",".",".","6",".",".",".","3"],["4",".",".","8",".","3",".",".","1"],["7",".",".",".","2",".",".",".","6"],[".","6",".",".",".",".","2","8","."],[".",".",".","4","1","9",".",".","5"],[".",".",".",".","8",".",".","7","9"]];
+console.log(isValidSudoku(SB)); // → true
+const SB2=SB.map(r=>[...r]);
+SB2[0][0]="8";
+console.log(isValidSudoku(SB2)); // → false
+```
+
+**Complexity:** Time O(81) = O(1) · Space O(81) = O(1).  
+**Edge cases:** Only filled cells are checked; the board doesn't need to be solvable.

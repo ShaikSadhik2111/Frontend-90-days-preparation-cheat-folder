@@ -33,6 +33,12 @@ function insertionSort(nums) {
 }
 ```
 
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(insertionSort([5, 2, 4, 6, 1, 3])); // → [1,2,3,4,5,6]
+```
+
 Invariant: indices 0..i-1 are sorted before inserting nums[i].
 
 Worst case O(n²), extra space O(1).
@@ -58,6 +64,12 @@ function mergeSort(nums) {
 
   return result.concat(left.slice(i), right.slice(j));
 }
+```
+
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(mergeSort([5, 2, 3, 1])); // → [1,2,3,5]
 ```
 
 Divide into halves, sort each half, then merge two sorted sequences.
@@ -91,6 +103,12 @@ function quickSort(nums, left = 0, right = nums.length - 1) {
 }
 ```
 
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(quickSort([3, 6, 8, 10, 1, 2, 1])); // → [1,1,2,3,6,8,10]
+```
+
 Average O(n log n), worst O(n²) with poor pivot choices.
 
 ## Sorting as a problem-solving technique
@@ -116,6 +134,12 @@ function mergeIntervals(intervals) {
 
   return result;
 }
+```
+
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(mergeIntervals([[1, 3], [2, 6], [8, 10], [15, 18]])); // → [[1,6],[8,10],[15,18]]
 ```
 
 Sorting exposes the ordering that makes overlap decisions local.

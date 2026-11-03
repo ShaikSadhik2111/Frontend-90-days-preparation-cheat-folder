@@ -42,6 +42,12 @@ function reverseString(chars) {
 }
 ```
 
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(reverseString(["h", "e", "l", "l", "o"])); // → ["o","l","l","e","h"]
+```
+
 Invariant:
 
 > Everything outside [left, right] has already been placed correctly.
@@ -57,6 +63,10 @@ Time O(n), auxiliary space O(1).
 If normalization is required, normalize first.
 
 ```js
+function isAlphaNumeric(ch) {
+  return /^[a-z0-9]$/i.test(ch);   // letter or digit
+}
+
 function isPalindrome(s) {
   let left = 0;
   let right = s.length - 1;
@@ -75,6 +85,14 @@ function isPalindrome(s) {
 
   return true;
 }
+```
+
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(isPalindrome("A man, a plan, a canal: Panama")); // → true
+console.log(isPalindrome("race a car")); // → false
+console.log(isPalindrome(" ")); // → true
 ```
 
 The two pointers compare the next meaningful characters.
@@ -110,6 +128,14 @@ function twoSumSorted(nums, target) {
 }
 ```
 
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(twoSumSorted([2, 7, 11, 15], 9)); // → [1,2]
+console.log(twoSumSorted([2, 3, 4], 6)); // → [1,3]
+console.log(twoSumSorted([-1, 0], -1)); // → [1,2]
+```
+
 ### Why can we move safely?
 
 If sum is too small, moving the right pointer left can only make the sum smaller or equal. It cannot help.
@@ -141,6 +167,15 @@ function removeDuplicates(nums) {
 
   return write;
 }
+```
+
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+const nums = [0, 0, 1, 1, 1, 2, 2, 3, 3, 4];
+const k = removeDuplicates(nums);
+console.log(k); // → 5
+console.log(nums.slice(0, k)); // → [0,1,2,3,4]
 ```
 
 Meaning:
@@ -178,6 +213,14 @@ function moveZeroes(nums) {
 }
 ```
 
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+const arr = [0, 1, 0, 3, 12];
+moveZeroes(arr);
+console.log(arr); // → [1,3,12,0,0]
+```
+
 This is a partition/compression pattern.
 
 The first pass preserves the relative order of non-zero values.
@@ -206,6 +249,16 @@ function hasCycle(head) {
 }
 ```
 
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+const toList = (arr) => arr.reduceRight((next, val) => ({ val, next }), null);
+const toArray = (head) => { const out = []; while (head) { out.push(head.val); head = head.next; } return out; };
+const cyclic = toList([3, 2, 0, -4]); cyclic.next.next.next.next = cyclic.next; // tail points back to node 2
+console.log(hasCycle(cyclic)); // → true
+console.log(hasCycle(toList([1, 2, 3]))); // → false
+```
+
 Why does this work?
 
 If a cycle exists, fast eventually laps slow inside the cycle.
@@ -232,6 +285,15 @@ function middleNode(head) {
 
   return slow;
 }
+```
+
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+const toList = (arr) => arr.reduceRight((next, val) => ({ val, next }), null);
+const toArray = (head) => { const out = []; while (head) { out.push(head.val); head = head.next; } return out; };
+console.log(middleNode(toList([1, 2, 3, 4, 5])).val); // → 3
+console.log(middleNode(toList([1, 2, 3, 4, 5, 6])).val); // → 4
 ```
 
 Fast travels twice as quickly, so when fast reaches the end, slow is around the middle.
@@ -263,6 +325,13 @@ function maxArea(height) {
 
   return best;
 }
+```
+
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(maxArea([1, 8, 6, 2, 5, 4, 8, 3, 7])); // → 49
+console.log(maxArea([1, 1])); // → 1
 ```
 
 The area is limited by the shorter wall.
@@ -313,6 +382,14 @@ function threeSum(nums) {
 
   return result;
 }
+```
+
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(threeSum([-1, 0, 1, 2, -1, -4])); // → [[-1,-1,2],[-1,0,1]]
+console.log(threeSum([0, 0, 0, 0])); // → [[0,0,0]]
+console.log(threeSum([0, 1, 1])); // → []
 ```
 
 Expected complexity after sorting: O(n²).
@@ -440,3 +517,67 @@ Two pointers work when pointer movement can be justified by ordering or structur
 Next:
 
 **Two Pointers → Sliding Window**
+
+---
+
+## More solutions — code, complexity, LeetCode
+
+> **How to run:** copy a function and its **Try it** lines into `practice.js` and run `node practice.js` (or paste into the browser console). The expected output is after `// →`.
+
+### Valid Palindrome II — [LeetCode 680](https://leetcode.com/problems/valid-palindrome-ii/)
+
+**Idea:** Move two pointers inward. At the first mismatch you may delete **one** character: check whether skipping the left one **or** the right one leaves a palindrome.
+
+```js
+function validPalindrome(s) {
+  const isPal = (l, r) => {
+    while (l < r) { if (s[l] !== s[r]) return false; l++; r--; }
+    return true;
+  };
+  let left = 0, right = s.length - 1;
+  while (left < right) {
+    if (s[left] !== s[right]) return isPal(left + 1, right) || isPal(left, right - 1);
+    left++; right--;
+  }
+  return true;
+}
+```
+
+**Try it:**
+
+```js
+console.log(validPalindrome("aba")); // → true
+console.log(validPalindrome("abca")); // → true
+console.log(validPalindrome("abc")); // → false
+console.log(validPalindrome("deeee")); // → true
+```
+
+**Complexity:** Time O(n) · Space O(1).  
+**Edge cases:** Already a palindrome → true; deleting is optional.
+
+### Squares of a Sorted Array — [LeetCode 977](https://leetcode.com/problems/squares-of-a-sorted-array/)
+
+**Idea:** The largest square is at one of the **two ends** (big negative or big positive). Compare ends and fill the result from the back.
+
+```js
+function sortedSquares(nums) {
+  const result = Array(nums.length);
+  let left = 0, right = nums.length - 1;
+  for (let i = nums.length - 1; i >= 0; i--) {
+    if (Math.abs(nums[left]) > Math.abs(nums[right])) { result[i] = nums[left] ** 2; left++; }
+    else { result[i] = nums[right] ** 2; right--; }
+  }
+  return result;
+}
+```
+
+**Try it:**
+
+```js
+console.log(JSON.stringify(sortedSquares([-4,-1,0,3,10]))); // → [0,1,9,16,100]
+console.log(JSON.stringify(sortedSquares([-7,-3,2,3,11]))); // → [4,9,9,49,121]
+console.log(JSON.stringify(sortedSquares([-3,-2]))); // → [4,9]
+```
+
+**Complexity:** Time O(n) · Space O(n) for the output (sorting the squares would be O(n log n)).  
+**Edge cases:** All negative; all positive; single element.

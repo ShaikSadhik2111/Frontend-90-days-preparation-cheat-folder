@@ -26,6 +26,15 @@ class Queue {
 }
 ```
 
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+const q = new Queue();
+q.enqueue(1); q.enqueue(2); q.enqueue(3);
+console.log(q.dequeue()); // → 1
+console.log(q.size()); // → 2
+```
+
 The head index advances instead of physically removing the first array element.
 
 ## Problem 2 — Number of Recent Calls
@@ -49,6 +58,13 @@ class RecentCounter {
     return this.queue.length - this.head;
   }
 }
+```
+
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+const rc = new RecentCounter();
+console.log([1, 100, 3001, 3002].map((t) => rc.ping(t))); // → [1,2,3,3]
 ```
 
 Invariant: all retained timestamps belong to [t - 3000, t].
@@ -82,6 +98,14 @@ function levelOrder(root) {
 
   return result;
 }
+```
+
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+const node = (val, left = null, right = null) => ({ val, left, right });
+console.log(levelOrder(node(3, node(9), node(20, node(15), node(7))))); // → [[3],[9,20],[15,7]]
+console.log(levelOrder(null)); // → []
 ```
 
 Capture the current queue boundary before processing the level.
@@ -121,6 +145,12 @@ function maxSlidingWindow(nums, k) {
 
   return result;
 }
+```
+
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(maxSlidingWindow([1, 3, -1, -3, 5, 3, 6, 7], 3)); // → [3,3,5,5,6,7]
 ```
 
 Each index enters and leaves the deque at most once: O(n).

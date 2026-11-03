@@ -31,6 +31,13 @@ function twoSumBrute(nums, target) {
 }
 ```
 
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(twoSumBrute([2, 7, 11, 15], 9)); // → [0,1]
+console.log(twoSumBrute([3, 3], 6)); // → [0,1]
+```
+
 The important observation is that the inner loop repeatedly searches for a complement.
 
 ## Step 3 — Identify the bottleneck
@@ -57,6 +64,13 @@ function twoSum(nums, target) {
 
   return [];
 }
+```
+
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(twoSum([2, 7, 11, 15], 9)); // → [0,1]
+console.log(twoSum([3, 2, 4], 6)); // → [1,2]
 ```
 
 ## Step 5 — State the invariant

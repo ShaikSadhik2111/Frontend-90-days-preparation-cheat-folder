@@ -27,6 +27,12 @@ function runningSum(nums) {
 }
 ```
 
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(runningSum([1, 2, 3, 4])); // → [1,3,6,10]
+```
+
 Invariant: sum equals the total of all processed values.
 
 ## Problem 2 — Pivot Index
@@ -44,6 +50,13 @@ function pivotIndex(nums) {
 
   return -1;
 }
+```
+
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(pivotIndex([1, 7, 3, 6, 5, 6])); // → 3
+console.log(pivotIndex([1, 2, 3])); // → -1
 ```
 
 The key observation is that right sum can be derived from total instead of rescanning.
@@ -65,6 +78,13 @@ function subarraySum(nums, k) {
 
   return answer;
 }
+```
+
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(subarraySum([1, 1, 1], 2)); // → 2
+console.log(subarraySum([1, -1, 0], 0)); // → 3
 ```
 
 Derivation:
@@ -107,3 +127,37 @@ Given a range query, ask whether repeated aggregation can be replaced by cumulat
 
 ## Connection
 **Prefix Sum → Stack**: prefix methods preserve cumulative state; stacks preserve unresolved order and allow reverse/last-in-first-out reasoning.
+
+---
+
+## More solutions — code, complexity, LeetCode
+
+> **How to run:** copy a function and its **Try it** lines into `practice.js` and run `node practice.js` (or paste into the browser console). The expected output is after `// →`.
+
+### Range Sum Query - Immutable — [LeetCode 303](https://leetcode.com/problems/range-sum-query-immutable/)
+
+**Idea:** Precompute `prefix[i]` = sum of the first i numbers. Then `sum(left..right) = prefix[right + 1] - prefix[left]` in O(1).
+
+```js
+class NumArray {
+  constructor(nums) {
+    this.prefix = [0];
+    for (const n of nums) this.prefix.push(this.prefix[this.prefix.length - 1] + n);
+  }
+  sumRange(left, right) {
+    return this.prefix[right + 1] - this.prefix[left];
+  }
+}
+```
+
+**Try it:**
+
+```js
+const na=new NumArray([-2,0,3,-5,2,-1]);
+console.log(na.sumRange(0,2)); // → 1
+console.log(na.sumRange(2,5)); // → -1
+console.log(na.sumRange(0,5)); // → -3
+```
+
+**Complexity:** Constructor O(n) · each query O(1) · Space O(n).  
+**Edge cases:** left === right → single element.

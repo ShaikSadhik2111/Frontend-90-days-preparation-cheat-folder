@@ -44,6 +44,18 @@ Every important problem must be understood at four levels:
 
 **4. Complexity** — why the runtime and memory scale the way they do.
 
+## How to run the code in these notes
+
+Every solution has a **Try it** block with example inputs and the expected output after `// →`.
+
+1. Create a scratch file, for example `dsa/practice.js` (it doesn't need to be committed).
+2. Paste the function (and any helper it uses) plus its **Try it** lines.
+3. Run it in the VS Code terminal: `node dsa/practice.js`.
+
+Or paste the same code into the browser console (F12 → Console). Try your own inputs too, especially edge cases (empty array, one element, duplicates, negatives).
+
+From topic 14 onwards, each file ends with a **Full solutions** section: code, idea, complexity, edge cases and a LeetCode link for every problem in that topic.
+
 ## Interview method
 
 Clarify → constraints → brute force → bottleneck → observation → data structure/pattern → invariant → implementation → dry run → complexity → edge cases → trade-offs.

@@ -69,6 +69,13 @@ function fib(n) {
 }
 ```
 
+**Try it** (run with `node file.js` or in the browser console):
+
+```js
+console.log(fib(10)); // → 55
+console.log(fib(1)); // → 1
+```
+
 There are exponentially many repeated subproblems.
 
 ## Space categories

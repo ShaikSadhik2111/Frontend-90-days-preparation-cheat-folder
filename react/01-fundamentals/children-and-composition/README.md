@@ -77,4 +77,95 @@ This "move state down / lift content up" trick often beats `React.memo`.
 ## Practice
 Build a `Modal` that accepts `title`, `footer` and `children` slots, and a `Page` layout with `header`/`sidebar` slots. Then remove one level of prop drilling in your project with composition.
 
+### Solution
+
+**Idea:** The parent decides **what** to show; the wrapper decides **where** to show it. Slots are just props containing JSX.
+
+```tsx
+import type { ReactNode } from "react";
+
+type ModalProps = {
+  title: ReactNode;
+  footer?: ReactNode;
+  children: ReactNode;
+};
+
+function Modal({ title, footer, children }: ModalProps) {
+  return (
+    <div className="modal">
+      <h2>{title}</h2>
+      <div>{children}</div>
+      <footer>{footer}</footer>
+    </div>
+  );
+}
+
+type PageProps = {
+  header: ReactNode;
+  sidebar: ReactNode;
+  children: ReactNode;
+};
+
+function Page({ header, sidebar, children }: PageProps) {
+  return (
+    <div>
+      <header>{header}</header>
+      <aside>{sidebar}</aside>
+      <main>{children}</main>
+    </div>
+  );
+}
+```
+
+Usage:
+
+```tsx
+function App() {
+  return (
+    <Page header={<h1>Dashboard</h1>} sidebar={<nav>Home | Profile</nav>}>
+      <Modal title="Profile" footer={<button type="button">Save</button>}>
+        <p>Edit your profile here.</p>
+      </Modal>
+    </Page>
+  );
+}
+```
+
+`title`, `footer`, `header`, and `sidebar` are **named slots**. Content between opening and closing tags becomes **`children`**.
+
+This example shows composition only. A production modal also needs open/close behavior, focus management, Escape handling, and accessible dialog semantics.
+
+### Removing one level of prop drilling
+
+**Before:** `Page` receives `user` only to pass it to `UserMenu`.
+
+```tsx
+type User = { name: string };
+
+function UserMenu({ user }: { user: User }) {
+  return <p>{user.name}</p>;
+}
+
+function Page({ user, children }: { user: User; children: ReactNode }) {
+  return (
+    <div>
+      <aside><UserMenu user={user} /></aside>
+      <main>{children}</main>
+    </div>
+  );
+}
+
+<Page user={user}><p>Account content</p></Page>
+```
+
+**After:** Use the slot-based `Page` above. The parent creates `UserMenu` directly (`user` is the parent's existing data).
+
+```tsx
+<Page header={<h1>Account</h1>} sidebar={<UserMenu user={user} />}>
+  <p>Account content</p>
+</Page>
+```
+
+**Interview answer:** "Composition means building UI by passing components through props or children. Here, `Page` no longer needs to know about `user`; it only renders the sidebar element. This removes one level of prop drilling without context."
+
 Next → [Lifting state](../lifting-state/README.md)
